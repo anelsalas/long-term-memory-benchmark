@@ -53,6 +53,18 @@ add_library(ltm_fresh_facts STATIC src/fresh_facts.cpp)
 add_library(LongTermMemoryBenchmark::fresh_facts ALIAS ltm_fresh_facts)
 target_link_libraries(ltm_fresh_facts PUBLIC LongTermMemoryBenchmark::dataset)
 
+add_library(ltm_http_provider STATIC src/http_provider.cpp)
+add_library(LongTermMemoryBenchmark::http_provider ALIAS ltm_http_provider)
+target_link_libraries(ltm_http_provider PUBLIC LongTermMemoryBenchmark::provider PRIVATE winhttp)
+target_include_directories(ltm_http_provider SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+
+add_executable(ltm-compare src/compare_main.cpp)
+target_link_libraries(ltm-compare PRIVATE LongTermMemoryBenchmark::core
+  LongTermMemoryBenchmark::dataset LongTermMemoryBenchmark::provider
+  LongTermMemoryBenchmark::scoring LongTermMemoryBenchmark::fresh_facts
+  LongTermMemoryBenchmark::http_provider)
+target_include_directories(ltm-compare SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+
 if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   enable_testing()
   add_executable(ltm_component_tests tests/component_tests.cpp)
@@ -97,4 +109,15 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_link_libraries(ltm_fresh_facts_tests PRIVATE LongTermMemoryBenchmark::fresh_facts)
   add_test(NAME ltm.unit.fresh_facts COMMAND ltm_fresh_facts_tests)
   set_tests_properties(ltm.unit.fresh_facts PROPERTIES LABELS "memory;unit;component;offline")
+  add_executable(ltm_http_provider_tests tests/http_provider_tests.cpp)
+  target_link_libraries(ltm_http_provider_tests PRIVATE LongTermMemoryBenchmark::http_provider)
+  target_include_directories(ltm_http_provider_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  add_test(NAME ltm.unit.http_provider COMMAND ltm_http_provider_tests)
+  set_tests_properties(ltm.unit.http_provider PROPERTIES LABELS "memory;unit;component;offline")
+  add_test(NAME ltm.integration.compare_cli COMMAND ${CMAKE_COMMAND}
+    "-DLTM_COMPARE_EXE=$<TARGET_FILE:ltm-compare>"
+    "-DLTM_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+    "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/compare_cli_checks.cmake")
+  set_tests_properties(ltm.integration.compare_cli PROPERTIES LABELS "memory;integration;offline")
 endif()
