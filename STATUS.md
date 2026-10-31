@@ -1,29 +1,24 @@
 # Current progress
 
-October 31 resource update: native ARM64 Release CTest 19/19 passed under
-independent coordinator verification. CLI JSON reports local-process CPU deltas,
-sampled resident/private-commit bytes and lifetime peak resident bytes for
-run work, ingestion and retrieval. Windows and Linux collectors have explicit
-scope and unavailable counters. [Measurement definitions](docs/RESOURCES.md).
+Updated October 31, 2026. [Pending tasks and completion criteria](TASKS.md).
 
-Project name: Long-Term Memory Benchmark.
-Repository: https://github.com/anelsalas/long-term-memory-benchmark
-October 31 rename validation: native ARM64 Release CTest 15/15 passed.
-Public CMake API: `LongTermMemoryBenchmark::core`; executable:
-`long-term-memory-benchmark`; headers: `long_term_memory_benchmark/`.
+## Working now
 
-October 31, 2026. Native C++17 foundation and research protocol completed.
+- Native C++17 Windows ARM64 memory interface and lexical retrieval reference.
+- Synthetic development fixture with source, person and historical-date checks.
+- JSON output with retrieval coverage, timing and local-process CPU/RAM measurements.
+- 19 native checks passed; the application consumer suite passes 20 including those 19.
+- GitHub CI passed on Linux and Windows ARM64 at source revision `0db858b`.
+- Published research protocol, citations and application integration guide.
 
-- Coordinator independently built Release with native ARM64 MSVC 19.44.
-- CTest: 15/15 checks passed (14 component tests and one offline CLI integration).
-- Independent JSON parsing and PE-header checks verified report fields and ARM64.
-- Two agent assignments delivered implementation and methodological review.
-- GitHub CI targets Linux and Windows ARM64; results appear in Actions.
+Current runnable milestone: offline synthetic retrieval and resource instrumentation.
 
-The executable reports synthetic lexical source retrieval and measured search
-time. Model-backed accuracy, token/cost accounting and published benchmark
-comparisons are the next implementation stage.
+## Next
 
-Next: dataset/model/scorer adapters for one fixed LongMemEval-S question and one
-fresh-fact case, followed by a bounded two-arm pilot with request accounting.
-Research ownership instructions: research/CLAUDE.md.
+P01 experiment/result schema and P02 published dataset adapter can start in parallel.
+Provider/scorer adapters and fresh-fact generation lead to P06: one published
+question and one fresh-fact case in a controlled model-backed comparison.
+
+The [task board](TASKS.md) lists dependencies and the model-access/budget gate.
+Research ownership: [research/CLAUDE.md](research/CLAUDE.md).
+Measurement scope: [docs/RESOURCES.md](docs/RESOURCES.md).

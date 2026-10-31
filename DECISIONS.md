@@ -40,3 +40,10 @@ and process-lifetime peak resident memory through native OS APIs. Keep snapshots
 intervals and lifetime peaks distinct; include local-runner scope in every report.
 Use null for unavailable collectors. Treat the tiny development run as an
 instrumentation check; use frozen larger workloads for efficiency comparisons.
+
+## Central task board
+
+Maintain TASKS.md as the ordered implementation queue, with dependencies, owner
+roles and acceptance evidence. Keep verified capabilities and next actions in
+STATUS.md. Model-access/budget setup gates live inference; offline implementation
+work progresses independently.
