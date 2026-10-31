@@ -49,3 +49,8 @@ Public results identify dataset, model, method, scorer and execution versions.
 process-lifetime peak memory and stage timing for fair efficiency comparisons.
 
 License: [Apache-2.0](LICENSE).
+
+## Dashboard
+
+See [dashboard continuation](DASHBOARD-START-HERE.md) and
+[UI/API contract](docs/DASHBOARD.md) for the lightweight Surface/cellphone interface.

@@ -20,7 +20,9 @@ Agent reports record observed behavioral TDD and scoped parity checks.
 
 ## Next
 
-Responsive dashboard implementation is active: Control, Setup, Results and Credits.
+Dashboard UI is implemented on codex/dashboard: Control, Setup, Results and Credits.
+Node helper/API-envelope tests, JavaScript syntax and static HTML checks pass.
+Native backend/authentication and browser/cellphone verification are next.
 Coordinator review/publication of P03-P05 is pending. G01 selects
 model access and a pilot budget before live inference. P06 then compares one
 published question and one fresh case under fixed conditions.
