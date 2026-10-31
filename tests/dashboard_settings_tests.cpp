@@ -66,10 +66,10 @@ void rejects_bad_decimals() {
 std::string endpoint(const std::string& url) { return with("\"https://provider.example/v1\"", "\"" + url + "\""); }
 void endpoint_rules() {
     for (const std::string ok : {"https://provider.example/v1", "https://provider.example:8443",
-            "http://localhost:8080/v1", "http://127.0.0.1:1234/v1", "http://[::1]:9000/v1"})
+            "https://localhost:8443/v1"})
         require(ltm::dashboard::settings_from_json(endpoint(ok)).endpoint_url == ok, "Accept endpoint " + ok);
     for (const std::string bad : {"provider.example/v1", "ftp://provider.example", "https://", "https:///v1",
-            "http://provider.example/v1", "http://192.168.1.20:8080/v1", "http://localhost.evil.example/v1",
+            "http://provider.example/v1", "http://localhost:8080/v1", "http://127.0.0.1:1234/v1", "http://localhost.evil.example/v1",
             "https://user:secret@provider.example/v1", "https://provider.example/v1?key=secret",
             "https://provider.example/v1#frag"})
         rejected(endpoint(bad), "endpoint " + bad);

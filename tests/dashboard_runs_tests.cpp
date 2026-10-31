@@ -39,7 +39,7 @@ struct FakeLauncher : Launcher {
 };
 Settings settings() {
     Settings s;
-    s.endpoint_url = "http://localhost:8080/v1";
+    s.endpoint_url = "https://provider.example/v1";
     s.reader = {"local", "reader", "1"}; s.judge = {"local", "judge", "1"};
     s.max_requests = 4; s.max_tokens = 1000; s.max_cost_nanos = 0; s.seed = 7;
     return s;
@@ -122,6 +122,28 @@ void survives_restart() {
     launcher.started.back()->exit = 0;
     require(again.start(settings()) == "run-13", "Gaps never cause an ID to be reused");
 }
+void prepare_adds_arguments() {
+    const TempDir dir; FakeLauncher launcher;
+    std::filesystem::path prepared_in;
+    RunControl control(launcher, dir.path, {"ltm-compare.exe"},
+        [&](const Settings& s, const std::filesystem::path& folder) {
+            prepared_in = folder;
+            return std::vector<std::string>{"--seed", std::to_string(s.seed)};
+        });
+    control.start(settings());
+    require(prepared_in == dir.path / "run-1", "Each run is prepared in its own folder");
+    require(launcher.command == std::vector<std::string>{"ltm-compare.exe", "--seed", "7"}, "Prepared arguments are added");
+}
+void failed_prepare_starts_nothing() {
+    const TempDir dir; FakeLauncher launcher;
+    RunControl control(launcher, dir.path, {"ltm-compare.exe"},
+        [](const Settings&, const std::filesystem::path&) -> std::vector<std::string> {
+            throw std::invalid_argument("bad plan");
+        });
+    require(refused([&] { control.start(settings()); }), "A run that cannot be prepared is refused");
+    require(launcher.started.empty() && control.runs().empty(), "Nothing was launched or listed");
+    require(!std::filesystem::exists(dir.path / "run-1"), "No folder is left behind");
+}
 }
 
 int main(int argc, char** argv) {
@@ -129,7 +151,8 @@ int main(int argc, char** argv) {
         {"start_launches_command", start_launches_command},
         {"one_run_at_a_time", one_run_at_a_time},
         {"status_follows_exit", status_follows_exit}, {"stop_run", stop_run},
-        {"survives_restart", survives_restart}};
+        {"survives_restart", survives_restart}, {"prepare_adds_arguments", prepare_adds_arguments},
+        {"failed_prepare_starts_nothing", failed_prepare_starts_nothing}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

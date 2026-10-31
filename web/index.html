@@ -29,8 +29,8 @@
         <article class="card">
           <div class="card-heading"><h2>New run</h2><span id="setup-state" class="badge">Setup unavailable</span></div>
           <dl class="details"><div><dt>Reader</dt><dd id="summary-reader">Unavailable</dd></div><div><dt>Judge</dt><dd id="summary-judge">Unavailable</dd></div><div><dt>Limits</dt><dd id="summary-limits">Unavailable</dd></div></dl>
-          <p class="field-help">The service runs its configured benchmark command. One run at a time.</p>
-          <button id="start-run" class="primary" type="button" disabled>Start run</button>
+          <p class="field-help">Plans a comparison with ltm-compare as a dry run: no provider calls. One run at a time.</p>
+          <button id="start-run" class="primary" type="button" disabled>Start dry run</button>
         </article>
         <article class="card">
           <div class="card-heading"><h2>Selected run</h2><span id="run-status" class="badge">Unavailable</span></div>
@@ -44,7 +44,7 @@
       <div class="page-heading"><div><p class="eyebrow">Experiment setup</p><h1 id="setup-title">Fix the models and limits</h1><p>Save explicit model versions and hard limits before starting a run.</p></div></div>
       <form id="setup-form" class="card">
         <div class="form-grid">
-          <div class="wide"><label for="endpoint">Endpoint</label><input id="endpoint" type="url" required autocomplete="off" placeholder="https://provider.example/v1" aria-describedby="endpoint-help"></div>
+          <div class="wide"><label for="endpoint">Endpoint</label><input id="endpoint" type="url" required autocomplete="off" placeholder="https://provider.example/v1/chat/completions" aria-describedby="endpoint-help"></div>
           <div><label for="reader-provider">Reader provider</label><input id="reader-provider" required autocomplete="off"></div>
           <div><label for="judge-provider">Judge provider</label><input id="judge-provider" required autocomplete="off"></div>
           <div><label for="reader-id">Reader model</label><input id="reader-id" required autocomplete="off"></div>
@@ -56,7 +56,7 @@
           <div><label for="max-cost">Maximum cost · USD</label><input id="max-cost" inputmode="decimal" pattern="[0-9]+(\.[0-9]{1,9})?" required></div>
           <div><label for="seed">Seed</label><input id="seed" inputmode="numeric" pattern="[0-9]+" required></div>
         </div>
-        <p id="endpoint-help" class="field-help">Use https, or plain http only for a model on this computer. No passwords, keys or query strings in the URL.</p>
+        <p id="endpoint-help" class="field-help">The full https chat-completions URL. No passwords, keys or query strings in the URL. Provider is recorded with the run; the plan uses the model and exact version.</p>
         <div class="actions"><button id="save-setup" class="primary" type="submit" disabled>Save setup</button></div>
       </form>
     </section>

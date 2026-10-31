@@ -1,6 +1,7 @@
 #pragma once
 #include "long_term_memory_benchmark/dashboard_settings.hpp"
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -30,10 +31,14 @@ struct RunInfo {
     std::optional<int> exit_code;
 };
 
+// Writes whatever a run needs into its folder and returns arguments to add to the command.
+using PrepareRun = std::function<std::vector<std::string>(const Settings&, const std::filesystem::path& folder)>;
+
 // Starts one benchmark run at a time; each run lives in runs_dir/<id>/.
 class RunControl {
   public:
-    RunControl(Launcher& launcher, std::filesystem::path runs_dir, std::vector<std::string> command);
+    RunControl(Launcher& launcher, std::filesystem::path runs_dir, std::vector<std::string> command,
+        PrepareRun prepare = {});
     std::string start(const Settings& settings);
     void stop(const std::string& id);
     std::filesystem::path output_file(const std::string& id) const;
@@ -42,6 +47,7 @@ class RunControl {
     Launcher& launcher_;
     std::filesystem::path runs_dir_;
     std::vector<std::string> command_;
+    PrepareRun prepare_;
     struct Run {
         std::string id;
         std::unique_ptr<Process> process;  // null for runs found on disk

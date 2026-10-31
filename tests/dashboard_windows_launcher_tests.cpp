@@ -1,3 +1,4 @@
+#include "long_term_memory_benchmark/dashboard_plan.hpp"
 #include "long_term_memory_benchmark/dashboard_windows_launcher.hpp"
 #include <chrono>
 #include <filesystem>
@@ -79,30 +80,31 @@ void dropping_process_kills_child() {
     std::this_thread::sleep_for(std::chrono::milliseconds(1500));
     require(read_file(output).find("late") == std::string::npos, "Child dies with its process object");
 }
-void runs_offline_demo() {
+void runs_compare_dry_run() {
     const TempDir dir; WindowsLauncher launcher;
-    RunControl control(launcher, dir.path, {LTM_BENCHMARK_EXE, "--offline-demo"});
+    RunControl control(launcher, dir.path, {LTM_COMPARE_EXE}, compare_dry_run(read_file(LTM_PLAN_TEMPLATE)));
     Settings s;
-    s.endpoint_url = "http://localhost:8080/v1";
-    s.reader = {"local", "reader", "1"}; s.judge = {"local", "judge", "1"};
-    s.max_requests = 1; s.max_tokens = 1; s.max_cost_nanos = 0; s.seed = 1;
+    s.endpoint_url = "https://provider.example/v1/chat/completions";
+    s.reader = {"example", "reader", "reader-1"}; s.judge = {"example", "judge", "judge-1"};
+    s.max_requests = 2; s.max_tokens = 1000; s.max_cost_nanos = 0; s.seed = 1;
     const auto id = control.start(s);
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(30);
     while (control.runs()[0].status == RunStatus::running) {
-        require(std::chrono::steady_clock::now() < deadline, "Offline demo finishes");
+        require(std::chrono::steady_clock::now() < deadline, "Dry run finishes");
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-    require(control.runs()[0].status == RunStatus::completed, "Offline demo completes");
-    require(read_file(dir.path / id / "output.txt").find("offline_component") != std::string::npos,
-        "Benchmark report is captured in the run folder");
-}
+    const auto output = read_file(dir.path / id / "output.txt");
+    require(control.runs()[0].status == RunStatus::completed, "Dry run completes: " + output);
+    require(output.find("\"run_kind\":\"dry_run_plan\"") != std::string::npos, "The comparison plan summary is captured");
+    require(output.find("\"provider_requests_made\":0") != std::string::npos, "No provider requests are made");
+    require(std::filesystem::is_directory(dir.path / id / "artifacts"), "Artifacts stay in the run folder");}
 }
 
 int main(int argc, char** argv) {
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"quoting", quoting}, {"captures_output_and_exit", captures_output_and_exit},
         {"stop_ends_process", stop_ends_process}, {"dropping_process_kills_child", dropping_process_kills_child},
-        {"runs_offline_demo", runs_offline_demo}};
+        {"runs_compare_dry_run", runs_compare_dry_run}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

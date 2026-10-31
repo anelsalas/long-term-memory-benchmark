@@ -1,8 +1,8 @@
 # Dashboard
 
 A thin local control panel for benchmark runs: save the model setup and limits,
-start and stop runs, and read their output. The benchmark itself does the work;
-the dashboard only launches its configured command.
+start and stop runs, and read their output. [ltm-compare](COMPARE.md) does the
+work; the dashboard prepares its configuration and launches it as a dry run.
 
 ## Build and run
 
@@ -22,16 +22,25 @@ Open http://127.0.0.1:18080/. Options (`--help` lists them):
 | `--port PORT` | `18080` |
 | `--data DIR` | `runtime/dashboard` (git-ignored): `settings.json` and `runs/` |
 | `--web DIR` | this repository's `web/` |
-| `-- COMMAND...` | the benchmark next to the dashboard with `--offline-demo` |
+| `--plan FILE` | `configs/pilot-fresh-plan.example.json`: the reviewed ltm-compare plan each run starts from |
+| `-- COMMAND...` | `ltm-compare` next to the dashboard |
 
-Each run starts the command once, with no arguments added. When the comparison
-command exists, pass it after `--`. Ctrl+C stops the dashboard and ends any active run.
+Each run copies the plan, fills in the saved endpoint, reader and judge
+(`id`, `version`), request/token/cost limits and seed, sets `output_directory` to
+`artifacts`, writes it to the run folder as `config.json` and starts
+`COMMAND --config <run folder>/config.json --dry-run`. Every other plan field
+(source revision, credential variable name, prices, token limits, top-k,
+timeouts, public case) stays as reviewed in the plan file. A dry run makes zero
+provider calls and reads no credentials. The dashboard has no execute option;
+live runs need G01's model access and an approved budget.
+Ctrl+C stops the dashboard and ends any active run.
 
 ## Runs
 
 One run at a time. `runs/run-N/` holds `settings.json` (the setup used),
-`output.txt` (stdout and stderr) and, once the run ends, `status.txt`.
-Statuses: running, completed (exit 0), failed (other exit codes), stopped
+`config.json` (the ltm-compare configuration), `output.txt` (stdout and stderr),
+`artifacts/` (the plan, manifest and evaluator files) and, once the run ends, `status.txt`.
+Statuses: running, completed (exit 0), failed (other exit codes; ltm-compare uses 2 for configuration errors), stopped
 (Stop pressed) and interrupted (the dashboard closed while the run was active).
 Run numbers are never reused. On Windows each run is placed in a kill-on-close
 Job Object, so Stop or closing the dashboard ends the benchmark and any processes
@@ -41,9 +50,9 @@ it started. The run inherits only its output file.
 
 Saved settings are validated in C++ before they are written:
 
-- `endpoint_url`: https, or plain http to `localhost`, `127.0.0.1` or `[::1]`;
-  no credentials, query or fragment.
-- `reader` and `judge`: nonblank `provider`, `id` and `version`.
+- `endpoint_url`: the full https chat-completions URL; no credentials, query or fragment.
+- `reader` and `judge`: nonblank `provider`, `id` and `version`. The plan receives
+  `id` and `version` (the exact model sent on the wire); `provider` is recorded with the run.
 - `max_requests`, `max_tokens`, `max_cost_nanos` (USD × 10^9) and `seed`: uint64
   decimal strings.
 
@@ -74,6 +83,6 @@ Responses are `no-store`, `nosniff`, with a same-origin Content Security Policy.
 
 ## Verification
 
-`ctest -L dashboard` covers settings, run control, the API, the Windows launcher
-(real processes) and the HTTP server. `node web/tests.mjs` checks the page helpers.
+`ctest -L dashboard` covers settings, plan preparation, run control, the API, the
+Windows launcher (real processes, including an ltm-compare dry run) and the HTTP server. `node web/tests.mjs` checks the page helpers.
 Browser checks are recorded in [reports/dashboard-service.md](../reports/dashboard-service.md).

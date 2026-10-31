@@ -52,7 +52,7 @@ struct Fixture {
         return api.handle({method, target, "application/json", body});
     }
 };
-const std::string valid_settings = R"({"schema_version":1,"endpoint_url":"http://localhost:8080/v1",
+const std::string valid_settings = R"({"schema_version":1,"endpoint_url":"https://provider.example/v1",
     "reader":{"provider":"local","id":"reader","version":"1"},"judge":{"provider":"local","id":"judge","version":"1"},
     "max_requests":"4","max_tokens":"1000","max_cost_nanos":"0","seed":"7"})";
 

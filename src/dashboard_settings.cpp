@@ -54,22 +54,20 @@ bool starts(const std::string& s, const char* prefix) { return s.rfind(prefix, 0
 bool digits(const std::string& s) {
     return !s.empty() && s.size() <= 5 && std::all_of(s.begin(), s.end(), [](char c) { return c >= '0' && c <= '9'; });
 }
-// HTTPS anywhere; plain HTTP only to this machine (local model servers).
+// The comparison command sends requests over HTTPS only.
 void check_endpoint(const std::string& url) {
     if (std::any_of(url.begin(), url.end(), [](unsigned char c) { return c <= 32 || c == '?' || c == '#' || c == '@'; }))
         invalid("Endpoint must not contain spaces, credentials, query or fragment");
-    const bool https = starts(url, "https://");
-    if (!https && !starts(url, "http://")) invalid("Endpoint must use http or https");
-    const auto rest = url.substr(https ? 8 : 7);
+    if (!starts(url, "https://")) invalid("Endpoint must use https");
+    const auto rest = url.substr(8);
     const auto authority = rest.substr(0, rest.find('/'));
     const auto host_end = starts(authority, "[") ? authority.find(']') + 1 : authority.find(':');
     const auto host = authority.substr(0, host_end);
     const auto port = host_end < authority.size() ? authority.substr(host_end) : std::string();
     if (host.empty() || host == "[" || (!port.empty() && (port[0] != ':' || !digits(port.substr(1)))))
         invalid("Endpoint requires a host and optional numeric port");
-    if (!https && host != "localhost" && host != "127.0.0.1" && host != "[::1]")
-        invalid("Plain http endpoints must be on this machine");
 }
+
 Json model_json(const ModelIdentity& m) { return {{"provider", m.provider}, {"id", m.id}, {"version", m.version}}; }
 ModelIdentity model_from(const Json& j) {
     fields(j, {"provider", "id", "version"});

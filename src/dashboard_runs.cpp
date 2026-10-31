@@ -33,8 +33,9 @@ void write_recorded(const std::filesystem::path& folder, const RunInfo& info) {
 }
 }
 
-RunControl::RunControl(Launcher& launcher, std::filesystem::path runs_dir, std::vector<std::string> command)
-    : launcher_(launcher), runs_dir_(std::move(runs_dir)), command_(std::move(command)) {
+RunControl::RunControl(Launcher& launcher, std::filesystem::path runs_dir, std::vector<std::string> command,
+    PrepareRun prepare)
+    : launcher_(launcher), runs_dir_(std::move(runs_dir)), command_(std::move(command)), prepare_(std::move(prepare)) {
     std::vector<std::pair<std::uint64_t, std::string>> found;
     if (std::filesystem::is_directory(runs_dir_))
         for (const auto& entry : std::filesystem::directory_iterator(runs_dir_)) {
@@ -54,8 +55,17 @@ std::string RunControl::start(const Settings& settings) {
     const std::string id = "run-" + std::to_string(next_number_);
     const auto folder = runs_dir_ / id;
     std::filesystem::create_directories(folder);
-    save_settings(folder / "settings.json", settings);
-    runs_.push_back({id, launcher_.start(command_, folder / "output.txt")});
+    auto command = command_;
+    try {
+        save_settings(folder / "settings.json", settings);
+        if (prepare_)
+            for (auto& argument : prepare_(settings, folder)) command.push_back(std::move(argument));
+    } catch (...) {
+        std::error_code ignored;
+        std::filesystem::remove_all(folder, ignored);
+        throw;
+    }
+    runs_.push_back({id, launcher_.start(command, folder / "output.txt")});
     ++next_number_;
     return id;
 }

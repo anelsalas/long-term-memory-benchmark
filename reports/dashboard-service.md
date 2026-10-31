@@ -47,3 +47,26 @@ Windows ARM64, Visual Studio Community 2026 18.11 (CMake 4.3.1, generator
 
 Not verified: phone layout and access over the LAN, and runs of a real
 comparison command (not written yet). No model calls were made.
+
+## Comparison command runs
+
+Later the same day, after merging main (00c97e0, `ltm-compare`). Each run now
+writes `config.json` from the reviewed plan template plus the saved setup and
+starts `ltm-compare --config ... --dry-run`. Endpoints became https-only to match
+the command. Behavioral TDD with the red observed for: https-only endpoints,
+filling the plan, rejecting a bad template, the prepare hook adding arguments,
+a failed preparation leaving nothing behind, and the dry-run hook writing its
+configuration. `keeps_template_fields` passed against the stub (it guards against
+overwriting), and the real dry-run launch test passed first time (it connects
+tested parts).
+
+- `ctest -C Release`: 56/56 passed (27 core including Codex's HTTPS provider and
+  CLI checks, 29 dashboard). No /W4 warnings.
+- `node --check web/app.js` and `node web/tests.mjs`: passed.
+- Headless Edge against 127.0.0.1:18080: setup saved, Start dry run completed
+  (exit 0), Output showed `run_kind: dry_run_plan`, 2 planned requests and
+  `provider_requests_made: 0`; the run folder held `config.json` and
+  `artifacts/run-*/` with plan, manifest and evaluator files. No console errors.
+
+Not verified: an execute run (not offered by the dashboard; needs G01 and a
+budget), phone/LAN access. No model calls were made.

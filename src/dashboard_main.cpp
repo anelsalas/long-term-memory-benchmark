@@ -1,22 +1,28 @@
 // long-term-memory-dashboard: thin local control panel for benchmark runs.
+#include "long_term_memory_benchmark/dashboard_plan.hpp"
 #include "long_term_memory_benchmark/dashboard_server.hpp"
 #include "long_term_memory_benchmark/dashboard_windows_launcher.hpp"
 #include <windows.h>
 #include <cstdlib>
 #include <exception>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <vector>
 
 namespace {
 const char* usage =
-    "Usage: long-term-memory-dashboard [--bind ADDRESS] [--port PORT] [--data DIR] [--web DIR] [-- COMMAND...]\n"
+    "Usage: long-term-memory-dashboard [--bind ADDRESS] [--port PORT] [--data DIR] [--web DIR] [--plan FILE]\n"
+    "                                  [-- COMMAND...]\n"
     "  --bind  listen address (default 127.0.0.1; use a LAN address to allow other devices)\n"
     "  --port  listen port (default 18080)\n"
     "  --data  folder for settings.json and runs/ (default runtime/dashboard)\n"
     "  --web   folder with index.html, app.js and styles.css\n"
-    "  COMMAND benchmark command line each run starts (default: the benchmark next to this program\n"
-    "          with --offline-demo)\n";
+    "  --plan  reviewed ltm-compare plan; each run fills in the saved setup (default:\n"
+    "          configs/pilot-fresh-plan.example.json)\n"
+    "  COMMAND comparison program (default: ltm-compare next to this program). Each run adds\n"
+    "          --config <run folder>/config.json --dry-run, so no provider calls are made.\n";
 
 ltm::dashboard::Server* active_server = nullptr;
 BOOL WINAPI on_console_close(DWORD) {
@@ -36,6 +42,7 @@ int main(int argc, char** argv) {
     unsigned long port = 18080;
     std::filesystem::path data = "runtime/dashboard";
     std::filesystem::path web = LTM_DASHBOARD_WEB_DIR;
+    std::filesystem::path plan = LTM_DASHBOARD_PLAN;
     std::vector<std::string> command;
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
@@ -46,21 +53,27 @@ int main(int argc, char** argv) {
         else if (arg == "--port" && has_value) port = std::strtoul(argv[++i], nullptr, 10);
         else if (arg == "--data" && has_value) data = argv[++i];
         else if (arg == "--web" && has_value) web = argv[++i];
+        else if (arg == "--plan" && has_value) plan = argv[++i];
         else { std::cerr << usage; return 2; }
     }
     if (port == 0 || port > 65535) { std::cerr << "Port must be 1-65535\n"; return 2; }
     if (command.empty())
-        command = {(program_folder() / "long-term-memory-benchmark.exe").string(), "--offline-demo"};
+        command = {(program_folder() / "ltm-compare.exe").string()};
     try {
+        std::ifstream plan_file(plan, std::ios::binary);
+        if (!plan_file) throw std::runtime_error("Cannot read plan " + plan.string());
+        const std::string plan_template((std::istreambuf_iterator<char>(plan_file)), {});
+        ltm::dashboard::compare_config(plan_template, {});  // reject a malformed plan at startup
         std::filesystem::create_directories(data / "runs");
         ltm::dashboard::WindowsLauncher launcher;
-        ltm::dashboard::RunControl runs(launcher, data / "runs", command);
+        ltm::dashboard::RunControl runs(launcher, data / "runs", command, ltm::dashboard::compare_dry_run(plan_template));
         ltm::dashboard::Api api(data, runs, web);
         ltm::dashboard::Server server(api, bind, static_cast<unsigned short>(port));
         active_server = &server;
         SetConsoleCtrlHandler(on_console_close, TRUE);
         std::cout << "Dashboard: http://" << (bind == "0.0.0.0" ? "127.0.0.1" : bind) << ':' << server.port() << "/\n"
-                  << "Data: " << std::filesystem::absolute(data).string() << "\nPress Ctrl+C to stop.\n" << std::flush;
+                  << "Data: " << std::filesystem::absolute(data).string() << "\nPlan: " << plan.string()
+                  << "\nPress Ctrl+C to stop.\n" << std::flush;
         server.run();
         active_server = nullptr;
         std::cout << "Dashboard stopped; any active run was ended.\n";
