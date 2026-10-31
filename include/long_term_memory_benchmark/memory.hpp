@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace dmb {
+namespace ltm {
 
 struct Record {
     std::string id;
@@ -40,4 +40,4 @@ private:
     std::vector<Record> records_;
 };
 
-} // namespace dmb
+} // namespace ltm

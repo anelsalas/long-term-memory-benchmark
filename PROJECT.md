@@ -6,7 +6,7 @@ Build a public, reproducible benchmark for trustworthy, affordable personal memo
 2. Document adaptations and compare methods under matched conditions.
 3. Test new fictional facts, corrections, dates, identities and missing information.
 4. Measure correctness, supporting evidence, speed, tokens and total inference cost.
-5. Integrate fast component tests and selected experiments into Dumas through a
+5. Integrate fast component tests and selected experiments into applications through a
    versioned CMake dependency and a small memory adapter.
 
 The Surface runs native ARM64 control, storage, retrieval and reporting. Model

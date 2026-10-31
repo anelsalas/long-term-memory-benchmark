@@ -25,3 +25,10 @@ LongMemEval retrieval definitions. Model measurements enter reports when observe
 Publish original C++ source under Apache-2.0, with primary-paper citations and
 pinned upstream references for adaptation. Use Linux and Windows ARM64 CI for
 component checks. Dumas consumes a reviewed commit through an optional CMake target.
+
+## Independent project name
+
+October 31, 2026. User requested independent branding. Use Long-Term Memory
+Benchmark, repository `long-term-memory-benchmark`, CMake namespace
+`LongTermMemoryBenchmark`, C++ namespace `ltm` and neutral executable/header names.
+Historical reports retain the identifiers used by their recorded revisions.

@@ -4,7 +4,7 @@
 #include <vector>
 #include "memory.hpp"
 
-namespace dmb {
+namespace ltm {
 
 struct RetrievalCheck {
     std::string case_id;
@@ -15,4 +15,4 @@ struct RetrievalCheck {
 
 std::string offline_report(const std::vector<RetrievalCheck>& checks);
 
-} // namespace dmb
+} // namespace ltm

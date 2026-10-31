@@ -1,6 +1,6 @@
 # Offline retrieval example
 
-Run `dumas-memory-benchmark --offline-demo` to emit a JSON component report.
+Run `long-term-memory-benchmark --offline-demo` to emit a JSON component report.
 
 | Source | Person | Recorded UTC | Fictional event |
 | --- | --- | --- | --- |

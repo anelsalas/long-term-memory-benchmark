@@ -1,10 +1,10 @@
-# Dumas Memory Benchmark
+# Long-Term Memory Benchmark
 
 Measure and improve reliable long-term memory access on everyday computers.
 
 Compare memory methods by answer accuracy, evidence retrieval, latency, token
 usage and cost. Build native C++17 components for Windows ARM64, with portable
-CMake targets and automated tests that Dumas can consume as a pinned dependency.
+CMake targets and automated tests that applications can consume as a pinned dependency.
 
 ## Run
 
@@ -18,8 +18,8 @@ ctest --test-dir build -C Release --output-on-failure
 ```
 
 On Windows ARM64, configure with `-G "Visual Studio 17 2022" -A ARM64`.
-Run `build/Release/dumas-memory-benchmark --offline-demo` on Visual Studio builds,
-or `build/dumas-memory-benchmark --offline-demo` on single-configuration builds.
+Run `build/Release/long-term-memory-benchmark --offline-demo` on Visual Studio builds,
+or `build/long-term-memory-benchmark --offline-demo` on single-configuration builds.
 
 ## Research foundation
 
@@ -30,7 +30,7 @@ or `build/dumas-memory-benchmark --offline-demo` on single-configuration builds.
 ## Develop and evaluate
 
 Use [the objective](PROJECT.md), [research protocol](research/PROTOCOL.md),
-[source attribution](research/SOURCES.md), [Dumas integration](docs/INTEGRATION.md),
+[source attribution](research/SOURCES.md), [Application integration](docs/INTEGRATION.md),
 and [current progress](STATUS.md). Research ownership instructions are in
 [research/CLAUDE.md](research/CLAUDE.md).
 

@@ -1,11 +1,11 @@
-#include "dumas_memory_benchmark/memory.hpp"
+#include "long_term_memory_benchmark/memory.hpp"
 
 #include <algorithm>
 #include <set>
 #include <stdexcept>
 #include <utility>
 
-namespace dmb {
+namespace ltm {
 namespace {
 std::set<std::string> tokens(const std::string& text) {
     std::set<std::string> result;
@@ -71,4 +71,4 @@ std::vector<Match> LexicalMemory::search(const Query& query) const {
     if (matches.size() > query.limit) matches.resize(query.limit);
     return matches;
 }
-} // namespace dmb
+} // namespace ltm

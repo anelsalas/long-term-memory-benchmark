@@ -1,5 +1,11 @@
 # Current progress
 
+Project name: Long-Term Memory Benchmark.
+Repository: https://github.com/anelsalas/long-term-memory-benchmark
+October 31 rename validation: native ARM64 Release CTest 15/15 passed.
+Public CMake API: `LongTermMemoryBenchmark::core`; executable:
+`long-term-memory-benchmark`; headers: `long_term_memory_benchmark/`.
+
 October 31, 2026. Native C++17 foundation and research protocol completed.
 
 - Coordinator independently built Release with native ARM64 MSVC 19.44.

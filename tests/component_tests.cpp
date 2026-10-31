@@ -5,15 +5,15 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "dumas_memory_benchmark/memory.hpp"
-#include "dumas_memory_benchmark/report.hpp"
+#include "long_term_memory_benchmark/memory.hpp"
+#include "long_term_memory_benchmark/report.hpp"
 
 namespace {
 void require(bool condition, const std::string& message) {
     if (!condition) throw std::runtime_error(message);
 }
-dmb::LexicalMemory school() {
-    dmb::LexicalMemory memory;
+ltm::LexicalMemory school() {
+    ltm::LexicalMemory memory;
     memory.store({"old", "maya", "2026-03-03T10:00:00Z", "Science project score 83"});
     memory.store({"new", "maya", "2026-03-12T10:00:00Z", "Science project score corrected 91"});
     memory.store({"other", "sam", "2026-03-13T10:00:00Z", "Science project score 72"});
@@ -55,12 +55,12 @@ void duplicate_id() {
     require(memory.search({"83", "maya", 1, ""}).size() == 1, "Failed insert preserves evidence");
 }
 void empty_record() {
-    for (const dmb::Record& record : std::vector<dmb::Record>{
+    for (const ltm::Record& record : std::vector<ltm::Record>{
         {"", "maya", "2026-03-03T10:00:00Z", "score"},
         {"id", "", "2026-03-03T10:00:00Z", "score"},
         {"id", "maya", "", "score"}, {"id", "maya", "2026-03-03T10:00:00Z", ""}}) {
         bool threw = false;
-        try { dmb::LexicalMemory memory; memory.store(record); }
+        try { ltm::LexicalMemory memory; memory.store(record); }
         catch (const std::invalid_argument&) { threw = true; }
         require(threw, "Incomplete evidence is rejected");
     }
@@ -70,7 +70,7 @@ void punctuation() {
     require(result.size() == 2 && result[0].score == 2, "Case and punctuation normalized");
 }
 void score_tie() {
-    dmb::LexicalMemory memory;
+    ltm::LexicalMemory memory;
     memory.store({"b", "maya", "2026-03-03T10:00:00Z", "science"});
     memory.store({"a", "maya", "2026-03-03T10:00:00Z", "science"});
     const auto result = memory.search({"science science", "maya", 5, ""});
@@ -78,7 +78,7 @@ void score_tie() {
     require(result[0].score == 1, "Repeated query terms do not inflate lexical overlap");
 }
 void report_escape() {
-    const auto json = dmb::offline_report({{"case\"\n", {"x"}, {{{"x", "maya", "2026-03-03T10:00:00Z", "tab\tquote\""}, 1}}, 0.25}});
+    const auto json = ltm::offline_report({{"case\"\n", {"x"}, {{{"x", "maya", "2026-03-03T10:00:00Z", "tab\tquote\""}, 1}}, 0.25}});
     require(json.find("case\\\"\\n") != std::string::npos, "Case identifiers JSON escaped");
     require(json.find("tab\\tquote\\\"") != std::string::npos, "Evidence text JSON escaped");
     require(json.find("\"model_answer_accuracy\":null") != std::string::npos, "Model accuracy explicitly unmeasured");
@@ -88,11 +88,11 @@ void invalid_timestamp() {
     for (const std::string stamp : {"2026-02-29T10:00:00Z", "2026-13-01T10:00:00Z",
          "2026-03-03T24:00:00Z", "2026-03-03", "2026-03-03T10:00:00+00:00"}) {
         bool threw = false;
-        try { dmb::LexicalMemory memory; memory.store({"x", "maya", stamp, "score"}); }
+        try { ltm::LexicalMemory memory; memory.store({"x", "maya", stamp, "score"}); }
         catch (const std::invalid_argument&) { threw = true; }
         require(threw, "Reject malformed or impossible source date");
     }
-    dmb::LexicalMemory leap;
+    ltm::LexicalMemory leap;
     leap.store({"leap", "maya", "2024-02-29T10:00:00Z", "score"});
     require(leap.search({"score", "maya", 1, "2024-02-29T10:00:00Z"}).size() == 1, "Accept valid leap date");
     bool threw = false;
@@ -101,19 +101,19 @@ void invalid_timestamp() {
     require(threw, "Reject invalid historical cutoff");
 }
 void report_fraction() {
-    const dmb::Match match{{"a", "maya", "2026-03-03T10:00:00Z", "score"}, 1};
-    const auto partial = dmb::offline_report({{"partial", {"a", "a", "b"}, {match, match}, 0.0}});
+    const ltm::Match match{{"a", "maya", "2026-03-03T10:00:00Z", "score"}, 1};
+    const auto partial = ltm::offline_report({{"partial", {"a", "a", "b"}, {match, match}, 0.0}});
     require(partial.find("\"source_recall\":0.5") != std::string::npos, "Count unique expected and found sources");
     require(partial.find("\"all_sources_recalled\":false") != std::string::npos, "Missing source visible");
-    const auto absent = dmb::offline_report({{"no-gold", {}, {}, 0.0}});
+    const auto absent = ltm::offline_report({{"no-gold", {}, {}, 0.0}});
     require(absent.find("\"source_recall\":null") != std::string::npos, "Undefined metric remains null");
-    require(dmb::offline_report({}).find("\"cases\":[]") != std::string::npos, "Empty report stays valid");
+    require(ltm::offline_report({}).find("\"cases\":[]") != std::string::npos, "Empty report stays valid");
 }
 void report_invalid_time() {
     for (const double elapsed : {-0.1, std::numeric_limits<double>::infinity(),
          std::numeric_limits<double>::quiet_NaN()}) {
         bool threw = false;
-        try { (void)dmb::offline_report({{"bad", {}, {}, elapsed}}); }
+        try { (void)ltm::offline_report({{"bad", {}, {}, elapsed}}); }
         catch (const std::invalid_argument&) { threw = true; }
         require(threw, "Invalid timing cannot produce misleading JSON");
     }

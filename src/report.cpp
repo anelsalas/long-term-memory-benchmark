@@ -1,4 +1,4 @@
-#include "dumas_memory_benchmark/report.hpp"
+#include "long_term_memory_benchmark/report.hpp"
 
 #include <cmath>
 #include <iomanip>
@@ -7,7 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace dmb {
+namespace ltm {
 namespace {
 std::string json_string(const std::string& value) {
     const char* hex = "0123456789abcdef";
@@ -70,4 +70,4 @@ std::string offline_report(const std::vector<RetrievalCheck>& checks) {
     out << "]}";
     return out.str();
 }
-} // namespace dmb
+} // namespace ltm

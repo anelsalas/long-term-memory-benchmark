@@ -1,18 +1,18 @@
-# Dumas integration
+# Application integration
 
 Pin this repository to a reviewed commit. Add it as a CMake subdirectory and link
-the adapter or test target to `DumasMemoryBenchmark::core`.
+the adapter or test target to `LongTermMemoryBenchmark::core`.
 
 ```cmake
 add_subdirectory("${MEMORY_BENCHMARK_SOURCE}" memory-benchmark EXCLUDE_FROM_ALL)
-target_link_libraries(my_memory_adapter PRIVATE DumasMemoryBenchmark::core)
+target_link_libraries(my_memory_adapter PRIVATE LongTermMemoryBenchmark::core)
 ```
 
-Set `DUMAS_MEMORY_BENCHMARK_BUILD_TESTS=ON` before adding the subdirectory to
+Set `LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS=ON` before adding the subdirectory to
 register the component suite. Enable testing in the parent project. CTest labels
 select `unit`, `integration`, `offline` or `memory` checks.
 
-Implement `dmb::MemoryPort` for a candidate's `store` and `search` operations.
+Implement `ltm::MemoryPort` for a candidate's `store` and `search` operations.
 Keep source IDs, person identity and timestamps attached to retrieved records.
 Each experiment gets an isolated store and a versioned configuration.
 
