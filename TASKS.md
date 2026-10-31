@@ -1,6 +1,6 @@
 # Task board
 
-Updated October 31, 2026. Status: P01-P05 implemented; integrated suite passes 25/25. Review/publication pending.
+Updated October 31, 2026. Status: P01-P05 implemented; integrated suite passes 25/25. Published on codex/memory-review; core review/main integration pending.
 Owner names below describe roles. Agents are activated for bounded assignments.
 
 ## Completed
@@ -37,8 +37,8 @@ evidence, official grades, timing, resources, token usage and cost.
 | P09 | Resource scaling and regression workloads | Ready | Runner/research | P01, P02 | Frozen larger histories, repeated queries, ingestion cost, cold/warm median/p95 and resource records |
 | P10 | LoCoMo and independent Mem0/Graphiti comparisons | Waiting | Research/adapters | P08 | Documented configurations, attribution and comparable accuracy/resource tradeoffs |
 
-P03 provider lifecycle and P04 official scoring can progress in parallel. P05
-fresh-fact generation and P09 scaling workloads are also ready for assignment. The [protocol](research/PROTOCOL.md) defines
+P03-P05 have integrated test evidence and are published for review. P09 scaling
+workloads remain ready for assignment. The [protocol](research/PROTOCOL.md) defines
 the comparison; [resource definitions](docs/RESOURCES.md) define measurement scope.
 
 ## Live-run gate
@@ -60,6 +60,7 @@ and [coordinator integration](reports/p01-p02-integration.md).
 
 ## Dashboard
 
-D01 active: lightweight responsive Control, Setup, Results and Credits UI for Surface and cellphone.
+D01 UI published at codex/dashboard 4f40c15: Control, Setup, Results and Credits.
+The user has started Claude on dashboard continuation.
 D02 pending: authenticated native service, setup validation and benchmark control endpoints.
-Coordinator owns model-selection review and publication of P03-P05.
+Coordinator owns core review/main integration, model selection and pilot preparation.

@@ -81,3 +81,9 @@ controls and server-side credential storage. UI work is delegated; backend
 integration follows. Generate fresh development histories in C++17 from seeded
 structured ledgers with independently resolved expected answers and explicit
 correction chains. Combined native ARM64 Release verification passed 25/25.
+
+## Dashboard ownership checkpoint
+
+October 31, 2026. User has started Claude on dashboard continuation. Keep
+coordinator work focused on core benchmark review, model access and pilot results.
+Dashboard branch and API contract provide the integration boundary.
