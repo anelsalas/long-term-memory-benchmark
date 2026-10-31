@@ -1,68 +1,79 @@
-# Dashboard interface
+# Dashboard
 
-Serve `web/` from the authenticated native service with its same-origin `/api`.
-The responsive HTML/CSS/JavaScript interface provides Control, Setup, Results and
-Credits. Assets use system fonts and local files. Opening the page before the
-service exists shows a disconnected state with run actions disabled.
+A thin local control panel for benchmark runs: save the model setup and limits,
+start and stop runs, and read their output. The benchmark itself does the work;
+the dashboard only launches its configured command.
 
-Control submits selected cases and evidence conditions, lists recorded runs and
-uses server-provided resume/stop capabilities. Setup edits endpoint/model versions,
-request/token/spend caps and seed. Results renders supplied measurements and case
-grades; null or missing measurements display Unavailable. Credits links the three
-papers, source repositories and licenses, with adaptation guidance.
+## Build and run
 
-## API version 1
+The dashboard server needs Boost headers (Beast/Asio). The benchmark core does not.
 
-All JSON responses include `schema_version: 1`. Encode uint64 counters, seeds and
-nanodollar amounts as decimal strings. Ratios are finite values from 0 to 1.
+```powershell
+cmake -S . -B build-vs2026 -G "Visual Studio 18 2026" -A ARM64 -DLTM_BOOST_INCLUDE_DIR=<boost-root>
+cmake --build build-vs2026 --config Release
+.\build-vs2026\Release\long-term-memory-dashboard.exe
+```
 
-| Method and path | Request / response |
+Open http://127.0.0.1:18080/. Options (`--help` lists them):
+
+| Option | Default |
 | --- | --- |
-| GET /api/status | `authenticated`, `csrf_token`, `capabilities: {can_start, can_configure}`, optional `operation_states: {operationId: accepted/rejected/completed}` |
-| GET /api/setup | `setup`: saved configuration or null |
-| PUT /api/setup | Version, provider, endpoint_url, reader_model_id/version, judge_model_id/version, max_requests, max_tokens, max_cost_nanos, seed; returns `setup` with opaque `revision` |
-| GET /api/runs | `runs`: array of id, status, completed, expected, configuration_hash, can_resume, can_stop |
-| POST /api/runs | Version, setup_revision, dataset, condition, case_ids; returns `run` with id |
-| POST /api/runs/{id}/resume | Version; returns accepted operation JSON |
-| POST /api/runs/{id}/stop | Version; returns accepted operation JSON; actual run state comes from GET |
-| GET /api/runs/{id}/results | measurement_scope, summary with graded/expected, metrics, cases |
+| `--bind ADDRESS` | `127.0.0.1`. Use the computer's LAN address to reach it from a phone on the same network. Anyone on that network can then use it. |
+| `--port PORT` | `18080` |
+| `--data DIR` | `runtime/dashboard` (git-ignored): `settings.json` and `runs/` |
+| `--web DIR` | this repository's `web/` |
+| `-- COMMAND...` | the benchmark next to the dashboard with `--offline-demo` |
 
-Setup model field names are `reader_model_id`, `reader_model_version`,
-`judge_model_id` and `judge_model_version`. Supported UI conditions are full_history,
-retrieved_evidence, no_history and direct_evidence; datasets are longmemeval_s and
-fresh_facts. The backend validates actual adapters, dataset revisions and cases.
+Each run starts the command once, with no arguments added. When the comparison
+command exists, pass it after `--`. Ctrl+C stops the dashboard and ends any active run.
 
-Results metric keys: answer_accuracy (graded subset; show its denominator),
-source_recall (declared source metric), retrieval_p50_ms, retrieval_p95_ms,
-answer_p50_ms, billable_tokens, cpu_delta_ms, resident_bytes,
-lifetime_peak_resident_bytes and cost_nanos. Cases contain case_id, status,
-correct (boolean/null) and source_ids. Backend aggregation preserves failed,
-missing and ungraded cases. Scope distinguishes measured local, remote and total
-resources; absent provider accounting remains null.
+## Runs
 
-## Authenticated operations
+One run at a time. `runs/run-N/` holds `settings.json` (the setup used),
+`output.txt` (stdout and stderr) and, once the run ends, `status.txt`.
+Statuses: running, completed (exit 0), failed (other exit codes), stopped
+(Stop pressed) and interrupted (the dashboard closed while the run was active).
+Run numbers are never reused. On Windows each run is placed in a kill-on-close
+Job Object, so Stop or closing the dashboard ends the benchmark and any processes
+it started. The run inherits only its output file.
 
-Authenticate through the service with a protected same-origin session. The UI
-sends same-origin credentials, an ephemeral `X-CSRF-Token` and a unique
-`Idempotency-Key` for mutations. The server verifies session/CSRF/origin, authorizes
-operations and enforces model access, endpoint allowlists and budgets. Credential
-values stay in server-side protected storage. Browser forms accept endpoint URLs
-without embedded credentials, query parameters or fragments.
+## Settings
 
-An eight-second HTTP timeout or ambiguous response keeps the operation pending and
-disables further mutations. Refresh asks the service to reconcile that operation
-through `operation_states`; the client performs no automatic mutation retry.
-Backend idempotency and durable operation records remain authoritative across page
-reloads. The service must recover unresolved operations before admitting new runs.
+Saved settings are validated in C++ before they are written:
 
-Use HTTPS with authentication for phone access; localhost supports local preview.
-Run status refreshes every five seconds while an active run is visible. Manual
-refresh is available in disconnected and idle states.
+- `endpoint_url`: https, or plain http to `localhost`, `127.0.0.1` or `[::1]`;
+  no credentials, query or fragment.
+- `reader` and `judge`: nonblank `provider`, `id` and `version`.
+- `max_requests`, `max_tokens`, `max_cost_nanos` (USD × 10^9) and `seed`: uint64
+  decimal strings.
 
-## Verification and handoff
+Model credentials are never entered in the dashboard.
 
-Run `node --check web/app.js` and `node web/tests.mjs` for syntax and request/format
-checks. The interface currently awaits the native HTTP/auth/operation backend.
-Phone browser layout, keyboard flow and end-to-end authenticated run control require
-browser verification against that service. Runtime test data comes only from API
-responses; the default UI contains no fixture results.
+## HTTP API
+
+JSON unless noted. Errors are `{"error": "..."}`.
+
+| Method and path | Result |
+| --- | --- |
+| GET /api/settings | `{"settings": {...} or null}` |
+| PUT /api/settings | Saves and returns `{"settings": {...}}`; 400 with the reason if invalid |
+| GET /api/runs | `{"runs": [{"id", "status", "exit_code"}]}` |
+| POST /api/runs | 201 `{"run": {...}}`; 409 without saved settings or while a run is active |
+| POST /api/runs/{id}/stop | 200; stopping a finished run changes nothing; 404 for unknown runs |
+| GET /api/runs/{id}/output | `text/plain`, the last 256 KiB |
+| GET /, /index.html, /app.js, /styles.css, /icon.svg | Page files |
+
+There is no login. Two cheap guards keep other websites out:
+
+- Requests that change something must use `Content-Type: application/json`,
+  which browsers will not send cross-site without permission the server never grants.
+- The `Host` header must name the server's own address and port, which blocks
+  DNS-rebinding access.
+
+Responses are `no-store`, `nosniff`, with a same-origin Content Security Policy.
+
+## Verification
+
+`ctest -L dashboard` covers settings, run control, the API, the Windows launcher
+(real processes) and the HTTP server. `node web/tests.mjs` checks the page helpers.
+Browser checks are recorded in [reports/dashboard-service.md](../reports/dashboard-service.md).

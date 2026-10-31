@@ -15,271 +15,184 @@ export function dollarsToNanos(value) {
 }
 
 export function nanosToDollars(value) {
-  if (value === null || value === undefined) return "Unavailable";
   const amount = BigInt(integerValue(value));
   const fraction = (amount % 1000000000n).toString().padStart(9, "0").replace(/0+$/, "");
   return `${amount / 1000000000n}${fraction ? `.${fraction}` : ""}`;
 }
 
-export function measuredValue(value, type = "number") {
-  if (value === null || value === undefined) return "Unavailable";
-  if (!["string", "number"].includes(typeof value) || String(value).trim() === "") return "Unavailable";
+// Shows JSON output indented; any other text is shown as printed.
+export function formatOutput(text) {
   try {
-    if (type === "integer") return BigInt(integerValue(value)).toLocaleString();
-    if (type === "cost") return `$${nanosToDollars(value)}`;
-    const number = Number(value);
-    if (!Number.isFinite(number) || number < 0 || typeof value === "boolean") return "Unavailable";
-    if (type === "percent") return number <= 1 ? `${(number * 100).toFixed(1)}%` : "Unavailable";
-    return `${number.toLocaleString(undefined, { maximumFractionDigits: 3 })}${type === "ms" ? " ms" : ""}`;
+    return JSON.stringify(JSON.parse(text), null, 2);
   } catch {
-    return "Unavailable";
+    return text;
   }
 }
 
-export async function apiRequest(path, options = {}, session = {}, fetcher = fetch) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
-  try {
-    const method = options.method || "GET";
-    const headers = { Accept: "application/json" };
-    if (method !== "GET") {
-      if (!session.csrfToken || !options.operationId) throw new Error("Authenticated operation context is required.");
-      headers["Content-Type"] = "application/json";
-      headers["X-CSRF-Token"] = session.csrfToken;
-      headers["Idempotency-Key"] = options.operationId;
-    }
-    const response = await fetcher(path, {
-      method, headers, credentials: "same-origin", cache: "no-store", redirect: "error",
-      signal: controller.signal, body: options.body ? JSON.stringify(options.body) : undefined,
-    });
-    if (!response.ok) throw new Error(`Local service returned HTTP ${response.status}.`);
-    if (!(response.headers.get("content-type") || "").includes("application/json")) throw new Error("The local service must return JSON.");
-    const data = await response.json();
-    if (!data || data.schema_version !== 1) throw new Error("Unsupported service response version.");
-    return data;
-  } catch (error) {
-    if (error.name === "AbortError") throw new Error("Service request timed out. Reconcile a submitted operation before retrying.");
-    if (error instanceof SyntaxError) throw new Error("Local service returned invalid JSON.");
-    if (error instanceof TypeError) throw new Error("Local benchmark service unavailable. Start it, then refresh.");
-    throw error;
-  } finally {
-    clearTimeout(timer);
+// Calls the dashboard service. Changes are sent as JSON; errors carry the service's message.
+export async function api(path, { method = "GET", body } = {}, fetcher = (...args) => globalThis.fetch(...args)) {
+  const options = { method, headers: { Accept: "application/json" }, cache: "no-store", credentials: "same-origin" };
+  if (body !== undefined) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
   }
+  let response;
+  try {
+    response = await fetcher(path, options);
+  } catch {
+    throw new Error("Dashboard service unavailable. Start it, then refresh.");
+  }
+  const json = (response.headers.get("content-type") || "").startsWith("application/json");
+  const data = json ? await response.json() : await response.text();
+  if (!response.ok) throw new Error((json && data?.error) || `Service returned HTTP ${response.status}.`);
+  return data;
 }
 
 if (typeof document !== "undefined") {
   const byId = (id) => document.getElementById(id);
-  const state = { status: null, setup: null, runs: [], selectedRunId: "", busy: false, pendingOperationId: null, refreshing: false };
-  const metricDefinitions = [
-    ["answer_accuracy", "Graded answer accuracy", "percent"],
-    ["source_recall", "Source recall · declared metric", "percent"],
-    ["retrieval_p50_ms", "Retrieval · median", "ms"],
-    ["retrieval_p95_ms", "Retrieval · p95", "ms"],
-    ["answer_p50_ms", "Complete answer · median", "ms"],
-    ["billable_tokens", "Billable tokens", "integer"],
-    ["cpu_delta_ms", "Local process CPU", "ms"],
-    ["resident_bytes", "Sampled resident bytes", "integer"],
-    ["lifetime_peak_resident_bytes", "Process lifetime peak bytes", "integer"],
-    ["cost_nanos", "Accounted cost · USD", "cost"],
-  ];
+  const state = { connected: false, settings: null, runs: [], selected: "", busy: false };
+  const modelText = (m) => (m ? `${m.provider} · ${m.id} · ${m.version}` : "Unavailable");
 
   function notice(message, error = false) {
     byId("notice").textContent = message;
     byId("notice").classList.toggle("error", error);
   }
 
-  function renderMetrics(metrics = {}) {
-    byId("metrics").replaceChildren(...metricDefinitions.map(([key, label, type]) => {
-      const item = document.createElement("dl");
-      item.className = "metric";
-      const term = document.createElement("dt");
-      term.textContent = label;
-      const value = document.createElement("dd");
-      value.textContent = measuredValue(metrics[key], type);
-      value.classList.toggle("unavailable", value.textContent === "Unavailable");
-      item.append(term, value);
-      return item;
-    }));
-  }
-
-  function updateControls() {
-    const authenticated = state.status?.authenticated === true;
-    const available = authenticated && !state.busy && !state.pendingOperationId;
-    byId("save-setup").disabled = !available || state.status?.capabilities?.can_configure !== true;
-    byId("start-run").disabled = !available || !state.setup?.revision || state.status?.capabilities?.can_start !== true;
-    const run = state.runs.find((item) => item.id === state.selectedRunId);
-    byId("resume-run").disabled = !available || run?.can_resume !== true;
-    byId("stop-run").disabled = !available || run?.can_stop !== true;
+  function render() {
+    const run = state.runs.find((r) => r.id === state.selected);
+    const active = state.runs.some((r) => r.status === "running");
+    byId("connection-state").textContent = state.connected ? "Connected" : "Disconnected";
+    byId("connection-state").classList.toggle("connected", state.connected);
+    byId("save-setup").disabled = !state.connected || state.busy;
+    byId("start-run").disabled = !state.connected || state.busy || !state.settings || active;
+    byId("stop-run").disabled = !state.connected || state.busy || run?.status !== "running";
+    byId("setup-state").textContent = state.settings ? "Saved setup" : "Setup unavailable";
+    byId("summary-reader").textContent = modelText(state.settings?.reader);
+    byId("summary-judge").textContent = modelText(state.settings?.judge);
+    byId("summary-limits").textContent = state.settings
+      ? `${state.settings.max_requests} requests · ${state.settings.max_tokens} tokens · $${nanosToDollars(state.settings.max_cost_nanos)}`
+      : "Unavailable";
     byId("run-status").textContent = run?.status || "Unavailable";
     byId("run-id").textContent = run?.id || "Unavailable";
-    byId("run-config").textContent = run?.configuration_hash || "Unavailable";
-    byId("run-progress").textContent = run?.completed !== undefined && run?.expected !== undefined
-      ? `${measuredValue(run.completed, "integer")} / ${measuredValue(run.expected, "integer")}` : "Unavailable";
-    byId("setup-state").textContent = state.setup?.revision ? "Saved setup" : "Setup unavailable";
-  }
-
-  function applySetup(setup) {
-    state.setup = setup;
-    const mapping = {
-      provider: "provider", endpoint_url: "endpoint", reader_model_id: "reader-id", reader_model_version: "reader-version",
-      judge_model_id: "judge-id", judge_model_version: "judge-version", max_requests: "max-requests", max_tokens: "max-tokens", seed: "seed",
-    };
-    for (const [field, id] of Object.entries(mapping)) byId(id).value = setup?.[field] ?? "";
-    byId("max-cost").value = setup?.max_cost_nanos !== undefined ? nanosToDollars(setup.max_cost_nanos) : "";
-    byId("setup-revision").textContent = setup?.revision ? `Saved revision: ${setup.revision}` : "Saved revision unavailable";
-    updateControls();
+    byId("run-exit").textContent = run?.exit_code ?? "Unavailable";
   }
 
   function renderRuns() {
     const select = byId("run-select");
-    const first = document.createElement("option");
-    first.value = "";
-    first.textContent = "Select a run";
-    select.replaceChildren(first, ...state.runs.map((run) => {
+    if (!state.runs.some((r) => r.id === state.selected)) state.selected = state.runs.at(-1)?.id || "";
+    const options = [...state.runs].reverse().map((run) => {
       const option = document.createElement("option");
       option.value = run.id;
       option.textContent = `${run.id} · ${run.status}`;
       return option;
-    }));
-    if (!state.runs.some((run) => run.id === state.selectedRunId)) state.selectedRunId = "";
-    select.value = state.selectedRunId;
-    updateControls();
+    });
+    if (!options.length) {
+      const empty = document.createElement("option");
+      empty.value = "";
+      empty.textContent = "No runs yet";
+      options.push(empty);
+    }
+    select.replaceChildren(...options);
+    select.value = state.selected;
   }
 
-  async function loadResults() {
-    renderMetrics();
-    byId("case-results").replaceChildren();
-    if (!state.selectedRunId) {
-      byId("result-context").textContent = "Select a run on Control to load its results.";
-      byId("coverage").textContent = "Coverage unavailable";
+  function fillSetup(settings) {
+    const fields = {
+      endpoint: settings?.endpoint_url, "reader-provider": settings?.reader.provider, "reader-id": settings?.reader.id,
+      "reader-version": settings?.reader.version, "judge-provider": settings?.judge.provider, "judge-id": settings?.judge.id,
+      "judge-version": settings?.judge.version, "max-requests": settings?.max_requests, "max-tokens": settings?.max_tokens,
+      "max-cost": settings ? nanosToDollars(settings.max_cost_nanos) : "", seed: settings?.seed,
+    };
+    for (const [id, value] of Object.entries(fields)) byId(id).value = value ?? "";
+  }
+
+  async function loadOutput() {
+    if (!state.selected) {
+      byId("output-context").textContent = "Select a run on Control to see its output.";
+      byId("output-text").textContent = "No output yet.";
       return;
     }
-    const id = state.selectedRunId;
-    const data = await apiRequest(`/api/runs/${encodeURIComponent(id)}/results`);
-    if (id !== state.selectedRunId) return;
-    renderMetrics(data.metrics);
-    byId("result-context").textContent = `${id} · ${data.measurement_scope || "Measurement scope unavailable"}`;
-    byId("coverage").textContent = data.summary
-      ? `${measuredValue(data.summary.graded, "integer")} graded / ${measuredValue(data.summary.expected, "integer")} expected` : "Coverage unavailable";
-    for (const record of data.cases || []) {
-      const row = document.createElement("tr");
-      for (const value of [record.case_id, record.status, record.correct === true ? "Correct" : record.correct === false ? "Incorrect" : "Unavailable", Array.isArray(record.source_ids) ? record.source_ids.join(", ") : "Unavailable"]) {
-        const cell = document.createElement("td");
-        cell.textContent = value ?? "Unavailable";
-        row.append(cell);
-      }
-      byId("case-results").append(row);
-    }
+    const id = state.selected;
+    const text = await api(`/api/runs/${encodeURIComponent(id)}/output`);
+    if (id !== state.selected) return;
+    const run = state.runs.find((r) => r.id === id);
+    byId("output-context").textContent = `${id} · ${run?.status || "unknown"}`;
+    byId("output-text").textContent = formatOutput(text) || "No output yet.";
   }
 
-  async function refresh() {
-    if (state.refreshing || state.busy) return;
-    state.refreshing = true;
-    byId("refresh").disabled = true;
+  async function refresh(quiet = false) {
     try {
-      const status = await apiRequest("/api/status");
-      state.status = status;
-      byId("connection-state").textContent = status.authenticated ? "Connected" : "Sign-in required";
-      byId("connection-state").classList.toggle("connected", status.authenticated === true);
-      if (state.pendingOperationId && ["accepted", "rejected", "completed"].includes(status.operation_states?.[state.pendingOperationId])) state.pendingOperationId = null;
-      if (status.authenticated) {
-        const [setupData, runsData] = await Promise.all([apiRequest("/api/setup"), apiRequest("/api/runs")]);
-        state.runs = Array.isArray(runsData.runs) ? runsData.runs : [];
-        if (document.activeElement?.closest("#setup-form") === null) applySetup(setupData.setup);
-        else state.setup = setupData.setup;
-        renderRuns();
-        if (location.hash === "#results") await loadResults();
-      } else {
-        state.setup = null;
-        state.runs = [];
-        renderRuns();
-      }
-      notice(state.pendingOperationId ? `Operation ${state.pendingOperationId} needs service reconciliation before another action.` : status.authenticated ? "Connected to the local service. Review the saved setup and run limits." : "Sign in through the local benchmark service, then refresh.");
+      const [settingsData, runsData] = await Promise.all([api("/api/settings"), api("/api/runs")]);
+      state.connected = true;
+      state.settings = settingsData.settings;
+      state.runs = runsData.runs;
+      if (!byId("setup-form").contains(document.activeElement)) fillSetup(state.settings);
+      renderRuns();
+      if (location.hash === "#output") await loadOutput();
+      if (!quiet) notice(state.settings ? "Connected. Review the saved setup, then start a run." : "Connected. Save a setup before starting a run.");
     } catch (error) {
-      state.status = null;
-      byId("connection-state").textContent = "Disconnected";
-      byId("connection-state").classList.remove("connected");
+      state.connected = false;
       notice(error.message, true);
     } finally {
-      state.refreshing = false;
-      byId("refresh").disabled = false;
-      updateControls();
+      render();
     }
   }
 
-  async function mutate(path, method, body) {
-    if (state.busy || state.pendingOperationId || !state.status?.authenticated || !state.status.csrf_token) throw new Error("An authenticated, reconciled service session is required.");
-    if (typeof globalThis.crypto?.randomUUID !== "function") throw new Error("Open the authenticated dashboard over HTTPS or localhost.");
-    const operationId = crypto.randomUUID();
+  async function act(action, success) {
     state.busy = true;
-    state.pendingOperationId = operationId;
-    updateControls();
+    render();
     try {
-      const data = await apiRequest(path, { method, body, operationId: state.pendingOperationId }, { csrfToken: state.status.csrf_token });
-      state.pendingOperationId = null;
-      return data;
+      await action();
+      notice(success);
     } catch (error) {
-      throw new Error(`${error.message} Refresh to reconcile operation ${state.pendingOperationId}.`);
+      notice(error.message, true);
     } finally {
       state.busy = false;
-      updateControls();
+      await refresh(true);
     }
   }
 
   function navigate() {
-    const page = ["control", "setup", "results", "credits"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "control";
+    const pages = ["control", "setup", "output", "credits"];
+    const page = pages.includes(location.hash.slice(1)) ? location.hash.slice(1) : "control";
     for (const section of document.querySelectorAll(".page")) section.hidden = section.id !== page;
     for (const link of document.querySelectorAll("nav a")) {
       if (link.hash === `#${page}`) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     }
-    if (page === "results" && state.status?.authenticated) loadResults().catch((error) => notice(error.message, true));
+    if (page === "output" && state.connected) loadOutput().catch((error) => notice(error.message, true));
   }
 
-  byId("setup-form").addEventListener("submit", async (event) => {
+  byId("setup-form").addEventListener("submit", (event) => {
     event.preventDefault();
-    try {
-      const endpoint = new URL(byId("endpoint").value);
-      if (!["https:", "http:"].includes(endpoint.protocol) || endpoint.username || endpoint.password || endpoint.search || endpoint.hash) throw new Error("Use an HTTP(S) endpoint without credentials, query parameters or fragments.");
-      const body = { schema_version: 1, provider: byId("provider").value.trim(), endpoint_url: endpoint.href,
-        reader_model_id: byId("reader-id").value.trim(), reader_model_version: byId("reader-version").value.trim(),
-        judge_model_id: byId("judge-id").value.trim(), judge_model_version: byId("judge-version").value.trim(),
-        max_requests: integerValue(byId("max-requests").value), max_tokens: integerValue(byId("max-tokens").value),
-        max_cost_nanos: dollarsToNanos(byId("max-cost").value), seed: integerValue(byId("seed").value) };
-      const data = await mutate("/api/setup", "PUT", body);
-      applySetup(data.setup);
-      notice("Setup saved. Review the selected cases on Control.");
-    } catch (error) { notice(error.message, true); }
+    act(async () => {
+      const text = (id) => byId(id).value.trim();
+      const data = await api("/api/settings", { method: "PUT", body: {
+        schema_version: 1, endpoint_url: text("endpoint"),
+        reader: { provider: text("reader-provider"), id: text("reader-id"), version: text("reader-version") },
+        judge: { provider: text("judge-provider"), id: text("judge-id"), version: text("judge-version") },
+        max_requests: integerValue(text("max-requests")), max_tokens: integerValue(text("max-tokens")),
+        max_cost_nanos: dollarsToNanos(text("max-cost")), seed: integerValue(text("seed")),
+      } });
+      fillSetup(data.settings);
+    }, "Setup saved.");
   });
-
-  byId("run-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    try {
-      const caseIds = byId("case-ids").value.split(/\r?\n/).map((id) => id.trim()).filter(Boolean);
-      if (!caseIds.length || new Set(caseIds).size !== caseIds.length) throw new Error("Select at least one unique case ID.");
-      const data = await mutate("/api/runs", "POST", { schema_version: 1, setup_revision: state.setup?.revision,
-        dataset: byId("dataset").value, condition: byId("condition").value, case_ids: caseIds });
-      state.selectedRunId = data.run.id;
-      await refresh();
-      notice("Run accepted by the service. Its recorded status appears on Control.");
-    } catch (error) { notice(error.message, true); }
+  byId("start-run").addEventListener("click", () => act(async () => {
+    const data = await api("/api/runs", { method: "POST", body: {} });
+    state.selected = data.run.id;
+  }, "Run started."));
+  byId("stop-run").addEventListener("click", () => act(
+    () => api(`/api/runs/${encodeURIComponent(state.selected)}/stop`, { method: "POST", body: {} }), "Stop requested."));
+  byId("run-select").addEventListener("change", () => {
+    state.selected = byId("run-select").value;
+    render();
   });
-
-  for (const action of ["resume", "stop"]) byId(`${action}-run`).addEventListener("click", async () => {
-    try {
-      await mutate(`/api/runs/${encodeURIComponent(state.selectedRunId)}/${action}`, "POST", { schema_version: 1 });
-      await refresh();
-      notice(`${action === "stop" ? "Stop" : "Resume"} request accepted. Status reflects the service response.`);
-    } catch (error) { notice(error.message, true); }
-  });
-  byId("run-select").addEventListener("change", () => { state.selectedRunId = byId("run-select").value; updateControls(); });
-  byId("refresh").addEventListener("click", refresh);
+  byId("refresh").addEventListener("click", () => refresh());
   window.addEventListener("hashchange", navigate);
-  window.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+  window.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(true); });
   setInterval(() => {
-    if (!document.hidden && state.status?.authenticated && state.runs.some((run) => ["queued", "running", "stop_requested"].includes(run.status))) refresh();
-  }, 5000);
-  renderMetrics();
+    if (!document.hidden && state.connected && state.runs.some((r) => r.status === "running")) refresh(true);
+  }, 3000);
   navigate();
   refresh();
 }

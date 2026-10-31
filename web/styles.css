@@ -68,3 +68,5 @@ footer { max-width: 1160px; margin: auto; padding: 20px 0 30px; border-top: 1px 
 @media (max-width: 1240px) { main, nav, footer { margin-left: 5%; margin-right: 5%; } }
 @media (max-width: 760px) { .two-columns, .credit-grid { grid-template-columns: 1fr; gap: 0; } .metrics { grid-template-columns: 1fr 1fr; } .page-heading { align-items: flex-start; flex-direction: column; gap: 12px; } .card { padding: 20px; } }
 @media (max-width: 480px) { .app-header { align-items: flex-start; flex-direction: column; gap: 15px; padding-top: 18px; padding-bottom: 16px; } .connection { width: 100%; justify-content: space-between; } nav { gap: 0; justify-content: space-between; } nav a { padding: 10px 12px; font-size: 14px; } .form-grid { grid-template-columns: 1fr; } .card-heading { align-items: flex-start; } .badge { font-size: 11px; } footer { flex-direction: column; } .metric { padding: 15px; } .metric dd { font-size: 19px; } }
+.form-grid .wide { grid-column: 1 / -1; }
+.output { margin: 0; max-height: 60vh; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.5; }

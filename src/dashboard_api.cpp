@@ -58,6 +58,7 @@ std::optional<std::string> page_type(const std::string& name) {
     if (extension == ".html") return "text/html; charset=utf-8";
     if (extension == ".js") return "text/javascript; charset=utf-8";
     if (extension == ".css") return "text/css; charset=utf-8";
+    if (extension == ".svg") return "image/svg+xml";
     return std::nullopt;
 }
 }

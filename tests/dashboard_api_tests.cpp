@@ -106,6 +106,9 @@ void web_files() {
         "Root serves index.html");
     r = f.get("/app.js");
     require(r.status == 200 && r.content_type.rfind("text/javascript", 0) == 0, "Scripts are served as JavaScript");
+    std::ofstream(f.dir.path / "web" / "icon.svg") << "<svg xmlns=\"http://www.w3.org/2000/svg\"/>";
+    r = f.get("/icon.svg");
+    require(r.status == 200 && r.content_type == "image/svg+xml", "The page icon is served as SVG");
     require(f.get("/missing.js").status == 404, "Missing file is not found");
     require(f.get("/notes.txt").status == 404, "Only page file types are served");
     require(f.get("/../settings.json").status == 404 && f.get("/runs/run-1/output.txt").status == 404,

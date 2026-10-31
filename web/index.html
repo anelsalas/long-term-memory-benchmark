@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Long-Term Memory Benchmark</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
 </head>
@@ -17,59 +18,52 @@
   <nav aria-label="Main navigation">
     <a href="#control" aria-current="page">Control</a>
     <a href="#setup">Setup</a>
-    <a href="#results">Results</a>
+    <a href="#output">Output</a>
     <a href="#credits">Credits</a>
   </nav>
   <main id="main" tabindex="-1">
-    <p id="notice" class="notice" role="status" aria-live="polite">Connect to the local benchmark service to configure and run experiments.</p>
+    <p id="notice" class="notice" role="status" aria-live="polite">Connecting to the local dashboard service…</p>
     <section id="control" class="page" aria-labelledby="control-title">
-      <div class="page-heading"><div><p class="eyebrow">Experiment control</p><h1 id="control-title">Run a measured comparison</h1><p>Choose a saved setup, select cases and track the evidence.</p></div><a class="text-link" href="#setup">Configure setup →</a></div>
+      <div class="page-heading"><div><p class="eyebrow">Benchmark control</p><h1 id="control-title">Start and watch runs</h1><p>Each run uses the saved setup and keeps its own settings, output and status.</p></div><a class="text-link" href="#setup">Configure setup →</a></div>
       <div class="two-columns">
         <article class="card">
           <div class="card-heading"><h2>New run</h2><span id="setup-state" class="badge">Setup unavailable</span></div>
-          <form id="run-form">
-            <label for="dataset">Dataset</label>
-            <select id="dataset" name="dataset"><option value="longmemeval_s">LongMemEval-S</option><option value="fresh_facts">Fresh fictional facts</option></select>
-            <label for="condition">Evidence condition</label>
-            <select id="condition" name="condition"><option value="full_history">Full history</option><option value="retrieved_evidence">Retrieved evidence</option><option value="no_history">No history control</option><option value="direct_evidence">Direct evidence control</option></select>
-            <label for="case-ids">Case IDs</label><textarea id="case-ids" name="case_ids" rows="3" required placeholder="One case ID per line" aria-describedby="case-help"></textarea>
-            <p id="case-help" class="field-help">Select a fixed set of cases for each comparison.</p>
-            <button id="start-run" class="primary" type="submit" disabled>Start run</button>
-          </form>
+          <dl class="details"><div><dt>Reader</dt><dd id="summary-reader">Unavailable</dd></div><div><dt>Judge</dt><dd id="summary-judge">Unavailable</dd></div><div><dt>Limits</dt><dd id="summary-limits">Unavailable</dd></div></dl>
+          <p class="field-help">The service runs its configured benchmark command. One run at a time.</p>
+          <button id="start-run" class="primary" type="button" disabled>Start run</button>
         </article>
         <article class="card">
           <div class="card-heading"><h2>Selected run</h2><span id="run-status" class="badge">Unavailable</span></div>
-          <label for="run-select">Saved runs</label><select id="run-select"><option value="">Select a run</option></select>
-          <dl class="details"><div><dt>Run ID</dt><dd id="run-id">Unavailable</dd></div><div><dt>Completed / expected</dt><dd id="run-progress">Unavailable</dd></div><div><dt>Configuration</dt><dd id="run-config" class="mono">Unavailable</dd></div></dl>
-          <div class="actions"><button id="resume-run" type="button" disabled>Resume</button><button id="stop-run" class="danger" type="button" disabled>Stop</button><a class="text-link" href="#results">View results →</a></div>
-          <p class="field-help">Resume and stop availability comes from the service.</p>
+          <label for="run-select">Runs</label><select id="run-select"><option value="">No runs yet</option></select>
+          <dl class="details"><div><dt>Run ID</dt><dd id="run-id">Unavailable</dd></div><div><dt>Exit code</dt><dd id="run-exit">Unavailable</dd></div></dl>
+          <div class="actions"><button id="stop-run" class="danger" type="button" disabled>Stop</button><a class="text-link" href="#output">View output →</a></div>
         </article>
       </div>
     </section>
     <section id="setup" class="page" aria-labelledby="setup-title" hidden>
-      <div class="page-heading"><div><p class="eyebrow">Experiment setup</p><h1 id="setup-title">Fix the model and budget</h1><p>Save an explicit model version and limits before starting a run.</p></div></div>
+      <div class="page-heading"><div><p class="eyebrow">Experiment setup</p><h1 id="setup-title">Fix the models and limits</h1><p>Save explicit model versions and hard limits before starting a run.</p></div></div>
       <form id="setup-form" class="card">
         <div class="form-grid">
-          <div><label for="provider">Provider</label><input id="provider" name="provider" required autocomplete="off" placeholder="Provider identifier"></div>
-          <div><label for="endpoint">Endpoint</label><input id="endpoint" name="endpoint" type="url" required autocomplete="off" placeholder="https://provider.example/v1" aria-describedby="endpoint-help"></div>
-          <div><label for="reader-id">Reader model</label><input id="reader-id" name="reader_id" required autocomplete="off"></div>
-          <div><label for="reader-version">Reader version</label><input id="reader-version" name="reader_version" required autocomplete="off"></div>
-          <div><label for="judge-id">Judge model</label><input id="judge-id" name="judge_id" required autocomplete="off"></div>
-          <div><label for="judge-version">Judge version</label><input id="judge-version" name="judge_version" required autocomplete="off"></div>
-          <div><label for="max-requests">Maximum requests</label><input id="max-requests" name="max_requests" inputmode="numeric" pattern="[0-9]+" required></div>
-          <div><label for="max-tokens">Maximum billable tokens</label><input id="max-tokens" name="max_tokens" inputmode="numeric" pattern="[0-9]+" required></div>
-          <div><label for="max-cost">Maximum cost · USD</label><input id="max-cost" name="max_cost" inputmode="decimal" pattern="[0-9]+(\.[0-9]{1,9})?" required></div>
-          <div><label for="seed">Seed</label><input id="seed" name="seed" inputmode="numeric" pattern="[0-9]+" required></div>
+          <div class="wide"><label for="endpoint">Endpoint</label><input id="endpoint" type="url" required autocomplete="off" placeholder="https://provider.example/v1" aria-describedby="endpoint-help"></div>
+          <div><label for="reader-provider">Reader provider</label><input id="reader-provider" required autocomplete="off"></div>
+          <div><label for="judge-provider">Judge provider</label><input id="judge-provider" required autocomplete="off"></div>
+          <div><label for="reader-id">Reader model</label><input id="reader-id" required autocomplete="off"></div>
+          <div><label for="judge-id">Judge model</label><input id="judge-id" required autocomplete="off"></div>
+          <div><label for="reader-version">Reader version</label><input id="reader-version" required autocomplete="off"></div>
+          <div><label for="judge-version">Judge version</label><input id="judge-version" required autocomplete="off"></div>
+          <div><label for="max-requests">Maximum requests</label><input id="max-requests" inputmode="numeric" pattern="[0-9]+" required></div>
+          <div><label for="max-tokens">Maximum billable tokens</label><input id="max-tokens" inputmode="numeric" pattern="[0-9]+" required></div>
+          <div><label for="max-cost">Maximum cost · USD</label><input id="max-cost" inputmode="decimal" pattern="[0-9]+(\.[0-9]{1,9})?" required></div>
+          <div><label for="seed">Seed</label><input id="seed" inputmode="numeric" pattern="[0-9]+" required></div>
         </div>
-        <p id="endpoint-help" class="field-help">The service validates the endpoint and manages credentials in protected server-side storage. Use an endpoint URL without embedded credentials.</p>
-        <div class="actions"><button id="save-setup" class="primary" type="submit" disabled>Save setup</button><span id="setup-revision" class="field-help">Saved revision unavailable</span></div>
+        <p id="endpoint-help" class="field-help">Use https, or plain http only for a model on this computer. No passwords, keys or query strings in the URL.</p>
+        <div class="actions"><button id="save-setup" class="primary" type="submit" disabled>Save setup</button></div>
       </form>
     </section>
-    <section id="results" class="page" aria-labelledby="results-title" hidden>
-      <div class="page-heading"><div><p class="eyebrow">Measured results</p><h1 id="results-title">Inspect accuracy and resources</h1><p id="result-context">Select a run on Control to load its results.</p></div></div>
-      <div id="metrics" class="metrics" aria-label="Measured run metrics"></div>
-      <article class="card"><div class="card-heading"><h2>Cases and evidence</h2><span id="coverage" class="badge">Coverage unavailable</span></div><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Status</th><th scope="col">Grade</th><th scope="col">Evidence sources</th></tr></thead><tbody id="case-results"><tr><td colspan="4" class="empty">Measured case results appear here.</td></tr></tbody></table></div></article>
-      <p class="field-help">Unavailable measurements remain labeled. Process memory samples and lifetime peaks describe different quantities.</p>
+    <section id="output" class="page" aria-labelledby="output-title" hidden>
+      <div class="page-heading"><div><p class="eyebrow">Run output</p><h1 id="output-title">What the benchmark printed</h1><p id="output-context">Select a run on Control to see its output.</p></div></div>
+      <article class="card"><pre id="output-text" class="output">No output yet.</pre></article>
+      <p class="field-help">Shows the last 256 KiB. Measured results appear here once the comparison command writes them.</p>
     </section>
     <section id="credits" class="page" aria-labelledby="credits-title" hidden>
       <div class="page-heading"><div><p class="eyebrow">Research and attribution</p><h1 id="credits-title">Build on published evidence</h1><p>Every comparison records its source versions and adaptations.</p></div></div>
