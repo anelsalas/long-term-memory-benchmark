@@ -1,6 +1,6 @@
 # Task board
 
-Updated October 31, 2026. Status: P01-P05 implemented; integrated suite passes 25/25. Review/publication pending.
+Updated October 31, 2026. Status: P01-P05 reviewed on main; paired command implemented; integrated suite passes27/27.
 Owner names below describe roles. Agents are activated for bounded assignments.
 
 ## Completed
@@ -9,7 +9,7 @@ Owner names below describe roles. Agents are activated for bounded assignments.
 - [x] Native C++17 ARM64 library, memory interface and lexical retrieval reference.
 - [x] Source identity, person/date filtering, correction-record preservation and JSON output.
 - [x] CPU time, resident/private-commit samples and process-lifetime peak memory.
-- [x] 25 native CTest checks, including the dataset-to-manifest integration.
+- [x] 27 native CTest checks, including the dataset-to-manifest integration.
 - [x] Windows ARM64 CI; pinned application dependency integration.
 - [x] Research protocol, contamination-control design and research-owner instructions.
 
@@ -28,17 +28,17 @@ evidence, official grades, timing, resources, token usage and cost.
 | --- | --- | --- | --- | --- | --- |
 | P01 | Versioned experiment manifest and per-case result schema | Complete | Runner | Foundation | Round-trip configuration hashes; expected cases and failed/missing outputs accounted for |
 | P02 | Pinned LongMemEval-S dataset adapter | Complete | Data/evaluation | Foundation | Read question/history; isolate gold and annotations; preserve source/date mapping |
-| P03 | Provider interface and bounded request lifecycle | Verified locally | Runner | P01 | Stubbed failures/retries/cancellation; request/token/spend caps; usage and request IDs recorded |
-| P04 | Official QA and retrieval scorer adapters | Verified locally | Data/evaluation | P01, P02 | Parity fixtures against upstream rules, including abstention and source-mapping exclusions |
-| P05 | Fresh event-ledger generator and independent gold | Verified locally | Data/evaluation | P01 | Consistent updates/dates/identities; changed-fact pairs; isolated hidden stories |
-| P06 | First live two-case comparison | Waiting | Integrator | P02â€“P05, G01 | Published and fresh case complete in both conditions; auditable result report |
+| P03 | Provider interface and bounded request lifecycle | Complete | Runner | P01 | Stubbed failures/retries/cancellation; request/token/spend caps; usage and request IDs recorded |
+| P04 | Official QA and retrieval scorer adapters | Complete | Data/evaluation | P01, P02 | Parity fixtures against upstream rules, including abstention and source-mapping exclusions |
+| P05 | Fresh event-ledger generator and independent gold | Complete | Data/evaluation | P01 | Consistent updates/dates/identities; changed-fact pairs; isolated hidden stories |
+| P06 | First live two-case comparison | Command verified; G01 pending | Integrator | P02â€“P05, G01 | Published and fresh case complete in both conditions; auditable result report |
 | P07 | Resumable fixed development subset | Waiting | Integrator | P06 | Interrupted run resumes; matched comparison; failures and contamination controls reported |
 | P08 | Complete 500-question LongMemEval-S comparison | Waiting | Integrator/research | P07 | Frozen configuration; category results, uncertainty, human audit and reviewed artifacts |
 | P09 | Resource scaling and regression workloads | Ready | Runner/research | P01, P02 | Frozen larger histories, repeated queries, ingestion cost, cold/warm median/p95 and resource records |
 | P10 | LoCoMo and independent Mem0/Graphiti comparisons | Waiting | Research/adapters | P08 | Documented configurations, attribution and comparable accuracy/resource tradeoffs |
 
-P03 provider lifecycle and P04 official scoring can progress in parallel. P05
-fresh-fact generation and P09 scaling workloads are also ready for assignment. The [protocol](research/PROTOCOL.md) defines
+P03-P05 have integrated test evidence and are published for review. P09 scaling
+workloads remain ready for assignment. The [protocol](research/PROTOCOL.md) defines
 the comparison; [resource definitions](docs/RESOURCES.md) define measurement scope.
 
 ## Live-run gate
@@ -60,6 +60,17 @@ and [coordinator integration](reports/p01-p02-integration.md).
 
 ## Dashboard
 
-D01 active: lightweight responsive Control, Setup, Results and Credits UI for Surface and cellphone.
+D01 UI published at codex/dashboard 4f40c15: Control, Setup, Results and Credits.
+The user has started Claude on dashboard continuation.
 D02 pending: authenticated native service, setup validation and benchmark control endpoints.
-Coordinator owns model-selection review and publication of P03-P05.
+Coordinator owns paired command integration, model access and pilot results.
+Core P03-P05 published main454b486; command publication follows verified27/27.
+
+## Current pilot acceptance
+
+- [x] Windows HTTPS adapter and runnable ltm-compare command.
+- [x] Fresh two-reader plan and published/fresh six-request plan, zero dispatch.
+- [x] Independent CLI checks in native CTest27/27.
+- [ ] G01: accessible account/key, exact returned version/token bounds and approved cap.
+- [ ] P06: actual responses, grades, usage and audited comparison.
+- [ ] Complete user-only corpus ranking connection for official retrieval metrics.

@@ -12,7 +12,8 @@ CMake targets and automated tests that applications can consume as a pinned depe
 
 The current executable runs synthetic lexical-retrieval component checks and
 prints source coverage, timing, CPU time and process-memory samples as JSON.
-Model-backed evaluations are the next milestone.
+The paired comparison command prepares fresh/published cases and executes
+configured HTTPS model requests under declared budgets.
 
 ```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A ARM64
@@ -24,6 +25,17 @@ Run `build/Release/long-term-memory-benchmark --offline-demo`.
 
 Library modules provide [experiment manifests and results](docs/EXPERIMENT.md)
 and a [LongMemEval dataset adapter](docs/LONGMEMEVAL.md).
+
+## Paired comparison
+
+```powershell
+build/Release/ltm-compare --config configs/pilot-fresh-plan.example.json --dry-run
+```
+
+Dry-run saves full-history/retrieved-evidence plans with zero model calls.
+[Command and artifacts](docs/COMPARE.md) define dashboard integration and execute
+configuration. [Model access](research/MODEL-ACCESS.md) records the current shortlist
+and proposed pilot envelope. Example configs have zero spending allowances.
 
 ## Research foundation
 

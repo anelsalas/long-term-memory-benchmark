@@ -81,3 +81,31 @@ controls and server-side credential storage. UI work is delegated; backend
 integration follows. Generate fresh development histories in C++17 from seeded
 structured ledgers with independently resolved expected answers and explicit
 correction chains. Combined native ARM64 Release verification passed 25/25.
+
+## Dashboard ownership checkpoint
+
+October 31, 2026. User has started Claude on dashboard continuation. Keep
+coordinator work focused on core benchmark review, model access and pilot results.
+Dashboard branch and API contract provide the integration boundary.
+
+## Evidence-dependent fictional values
+
+October 31, 2026. Sample other-person values independently and vary correction
+values rather than preserving fixed offsets. A failing-to-passing regression
+exposed a shortcut that weakened evidence-dependence tests. Keep source revision
+with seeds because the draw sequence changed. Coordinator reviewed source paths,
+observed3/3 scoped suites and independently matched12 upstream grading prompts.
+
+## Native comparison command and measured boundaries
+
+October31,2026. Expose ltm-compare --config FILE --dry-run/--execute for dashboard
+process integration. Dry-run plans declare zero dispatch and null accuracy;
+execute uses protected environment credentials, verified token-bound declaration
+and global request/token/cost caps. Fresh score grading is deterministic; public
+answers use isolated official-compatible judge prompts after the reader artifact
+is saved. Record judge-cap changes and lexical retrieval as adaptations.
+
+Public retrieval metrics require a full user-only ranking. Keep their value
+unavailable with a reason until that adapter is connected. Record source IDs now.
+The new transport and CLI have offline verification27/27; live provider acceptance
+and approved pilot spending remain G01. Claude retains dashboard ownership.

@@ -1,6 +1,7 @@
 #include "long_term_memory_benchmark/fresh_facts.hpp"
 #include <functional>
 #include <iostream>
+#include <set>
 #include <stdexcept>
 
 namespace {
@@ -38,6 +39,21 @@ void generation() {
     const auto qb = ltm::render_fresh_fact_case(b, {"Lina-1", "astronomy", "2026-03-13T10:00:00Z"});
     require(ltm::candidate_input_json(qa.candidate) == ltm::candidate_input_json(qb.candidate), "Seeded development generation repeatable");
     ltm::validate_fact_ledger(a);
+}
+void independent_generated_facts() {
+    std::set<int> person_offsets;
+    std::set<int> correction_offsets;
+    for (std::uint64_t seed = 0; seed < 64; ++seed) {
+        const auto ledger = ltm::generate_development_ledger(seed);
+        const int original = ledger.events[0].score;
+        const int other_person = ledger.events[1].score;
+        const int corrected = ledger.events[2].score;
+        person_offsets.insert((other_person - original + 101) % 101);
+        correction_offsets.insert((corrected - original + 101) % 101);
+        require(corrected != original, "A generated correction changes the recorded value");
+    }
+    require(person_offsets.size() > 1, "Another person's value is independently drawn, not a fixed offset");
+    require(correction_offsets.size() > 1, "Corrections are independently drawn, not a fixed offset");
 }
 void changed_values() {
     const auto original = school();
@@ -99,7 +115,7 @@ int main() {
     int failures = 0;
     for (const auto& test : std::vector<std::pair<const char*, std::function<void()>>>{
         {"corrections", corrections}, {"historical", historical}, {"identities", identities},
-        {"generation", generation}, {"changed values", changed_values}, {"evidence removal", evidence_removal},
+        {"generation", generation}, {"independent generated facts", independent_generated_facts}, {"changed values", changed_values}, {"evidence removal", evidence_removal},
         {"candidate boundary", candidate_boundary}, {"correction chain", correction_chain}, {"invalid ledgers", invalid_ledgers}}) {
         try { test.second(); std::cout << "PASS " << test.first << '\n'; }
         catch (const std::exception& e) { ++failures; std::cerr << "FAIL " << test.first << ": " << e.what() << '\n'; }
