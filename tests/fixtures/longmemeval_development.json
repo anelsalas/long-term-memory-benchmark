@@ -1,0 +1,33 @@
+[
+  {
+    "question_id": "fictional-school-01",
+    "question_type": "knowledge-update",
+    "question": "What is Lina's corrected astronomy project score?",
+    "question_date": "2026/03/13 (Fri) 09:00",
+    "answer": "91",
+    "haystack_session_ids": ["answer_school_01", "answer_school_02"],
+    "haystack_dates": ["2026/03/03 (Tue) 10:00", "2026/03/12 (Thu) 10:00"],
+    "haystack_sessions": [
+      [
+        {"role": "user", "content": "Lina's astronomy project score is 83.", "has_answer": true},
+        {"role": "assistant", "content": "I recorded Lina's score."}
+      ],
+      [
+        {"role": "user", "content": "The teacher corrected Lina's astronomy project score to 91.", "has_answer": true},
+        {"role": "assistant", "content": "The updated score is recorded.", "annotation": "EVALUATOR_ONLY_MARKER"}
+      ]
+    ],
+    "answer_session_ids": ["answer_school_01", "answer_school_02"]
+  },
+  {
+    "question_id": "fictional-school-02_abs",
+    "question_type": "single-session-user",
+    "question": "What is Lina's chemistry score?",
+    "question_date": "2026/03/13 (Fri) 09:00",
+    "answer": "The chemistry score was not provided.",
+    "haystack_session_ids": ["background_school"],
+    "haystack_dates": ["2026/03/03 (Tue) 10:00"],
+    "haystack_sessions": [[{"role": "user", "content": "Lina has an astronomy project."}]],
+    "answer_session_ids": []
+  }
+]

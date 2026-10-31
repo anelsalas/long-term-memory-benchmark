@@ -1,24 +1,25 @@
 # Current progress
 
-Updated October 31, 2026. [Pending tasks and completion criteria](TASKS.md).
+Updated October 31, 2026. [Task board](TASKS.md).
 
-## Working now
+## Verified
 
-- Native C++17 Windows ARM64 memory interface and lexical retrieval reference.
-- Synthetic development fixture with source, person and historical-date checks.
-- JSON output with retrieval coverage, timing and local-process CPU/RAM measurements.
-- 19 native checks passed; the application consumer suite passes 20 including those 19.
-- GitHub CI passed on Linux and Windows ARM64 at source revision `0db858b`.
-- Published research protocol, citations and application integration guide.
+- Native C++17 ARM64 core, lexical reference, source/date/person filters and CPU/RAM reports.
+- P01: versioned manifests, canonical configuration SHA-256, case lifecycle records and complete coverage summaries.
+- P02: provenance-checked LongMemEval selected-case loading, opaque runtime IDs and separate evaluator gold/mappings.
+- Independent Release ARM64 verification: 22/22 CTest checks passed.
+- Extracted public-schema case validated: 53 sessions and 550 messages; dialogue stays in ignored runtime storage.
+- Research protocol, paper citations, integration guide and model-independent [research brief](research/RESEARCH-OWNER.md).
 
-Current runnable milestone: offline synthetic retrieval and resource instrumentation.
+The current runnable scope is offline retrieval, dataset preparation and experiment
+accounting. Model-backed comparisons use the next provider/scoring adapters.
 
 ## Next
 
-P01 experiment/result schema and P02 published dataset adapter can start in parallel.
-Provider/scorer adapters and fresh-fact generation lead to P06: one published
-question and one fresh-fact case in a controlled model-backed comparison.
+P03 bounded provider lifecycle and P04 official scoring are ready in parallel.
+P05 fresh-fact generation prepares the contamination-control cases. G01 selects
+model access and a pilot budget before live inference. P06 then compares one
+published question and one fresh case under fixed conditions.
 
-The [task board](TASKS.md) lists dependencies and the model-access/budget gate.
-Research ownership: [research/RESEARCH-OWNER.md](research/RESEARCH-OWNER.md).
-Measurement scope: [docs/RESOURCES.md](docs/RESOURCES.md).
+[Resource definitions](docs/RESOURCES.md) · [Schema](docs/EXPERIMENT.md) ·
+[Dataset adapter](docs/LONGMEMEVAL.md)

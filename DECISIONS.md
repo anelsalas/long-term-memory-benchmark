@@ -52,3 +52,17 @@ work progresses independently.
 
 Name the reusable assignment research/RESEARCH-OWNER.md. Instructions describe
 the research role and evidence requirements independently of a model vendor.
+
+## Experiment and dataset boundary
+
+Use strict versioned JSON and canonical SHA-256 identity for declared experiment
+configuration. Account for expected, missing, failed and ungraded cases explicitly.
+Keep candidate history separate from evaluator answers/annotations; replace
+original hint-bearing IDs with opaque source IDs and retain evaluator mappings.
+Validate exact-byte dataset provenance and bounded selected-case inputs.
+
+## Parser dependency
+
+Vendor JSON for Modern C++ 3.11.3 with its MIT license and official release
+checksum. Keep JSON types within implementation files and expose standard C++17
+types. Verify the vendored header hash at CMake configuration.

@@ -24,6 +24,9 @@ On Windows ARM64, configure with `-G "Visual Studio 17 2022" -A ARM64`.
 Run `build/Release/long-term-memory-benchmark --offline-demo` on Visual Studio builds,
 or `build/long-term-memory-benchmark --offline-demo` on single-configuration builds.
 
+Library modules provide [experiment manifests and results](docs/EXPERIMENT.md)
+and a [LongMemEval dataset adapter](docs/LONGMEMEVAL.md).
+
 ## Research foundation
 
 - [LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://arxiv.org/abs/2410.10813): memory evaluation and retrieval design.
