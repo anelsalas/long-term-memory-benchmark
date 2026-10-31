@@ -20,5 +20,5 @@ Provider/scorer adapters and fresh-fact generation lead to P06: one published
 question and one fresh-fact case in a controlled model-backed comparison.
 
 The [task board](TASKS.md) lists dependencies and the model-access/budget gate.
-Research ownership: [research/CLAUDE.md](research/CLAUDE.md).
+Research ownership: [research/RESEARCH-OWNER.md](research/RESEARCH-OWNER.md).
 Measurement scope: [docs/RESOURCES.md](docs/RESOURCES.md).

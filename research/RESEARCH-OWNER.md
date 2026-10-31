@@ -1,4 +1,4 @@
-# Research owner instructions for Claude or Codex
+# Research owner instructions
 
 Own the methodological review for a public benchmark of reliable long-term memory.
 Read [PROJECT.md](../PROJECT.md), [STATUS.md](../STATUS.md),

@@ -35,7 +35,7 @@ or `build/long-term-memory-benchmark --offline-demo` on single-configuration bui
 Use [the objective](PROJECT.md), [research protocol](research/PROTOCOL.md),
 [source attribution](research/SOURCES.md), [Application integration](docs/INTEGRATION.md),
 and [current progress](STATUS.md). Research ownership instructions are in
-[research/CLAUDE.md](research/CLAUDE.md).
+[research/RESEARCH-OWNER.md](research/RESEARCH-OWNER.md).
 
 Fast component tests run on code changes. Selected integration tests exercise
 memory adapters. Full model experiments use explicit configurations and budgets.

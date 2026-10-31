@@ -47,3 +47,8 @@ Maintain TASKS.md as the ordered implementation queue, with dependencies, owner
 roles and acceptance evidence. Keep verified capabilities and next actions in
 STATUS.md. Model-access/budget setup gates live inference; offline implementation
 work progresses independently.
+
+## Role based research brief
+
+Name the reusable assignment research/RESEARCH-OWNER.md. Instructions describe
+the research role and evidence requirements independently of a model vendor.
