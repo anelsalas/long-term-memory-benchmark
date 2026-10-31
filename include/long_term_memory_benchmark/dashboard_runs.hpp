@@ -36,6 +36,7 @@ class RunControl {
     RunControl(Launcher& launcher, std::filesystem::path runs_dir, std::vector<std::string> command);
     std::string start(const Settings& settings);
     void stop(const std::string& id);
+    std::filesystem::path output_file(const std::string& id) const;
     std::vector<RunInfo> runs();
   private:
     Launcher& launcher_;

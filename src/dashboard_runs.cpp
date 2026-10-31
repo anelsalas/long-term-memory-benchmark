@@ -66,6 +66,11 @@ void RunControl::stop(const std::string& id) {
     run->stop_requested = true;
     run->process->stop();
 }
+std::filesystem::path RunControl::output_file(const std::string& id) const {
+    const auto known = std::any_of(runs_.begin(), runs_.end(), [&](const Run& r) { return r.id == id; });
+    if (!known) throw std::invalid_argument("Unknown run: " + id);
+    return runs_dir_ / id / "output.txt";
+}
 std::vector<RunInfo> RunControl::runs() {
     std::vector<RunInfo> result;
     for (auto& run : runs_) result.push_back(observe(run));
