@@ -124,13 +124,15 @@ FactLedger generate_development_ledger(std::uint64_t seed,
             "Lina-" + std::to_string(i + 1), "astronomy", "2026-03-03T10:00:00Z", score, ""});
     }
     for (std::size_t i = 0; i < fact_families; ++i) {
+        const int other_score = static_cast<int>(development_next(seed) % 101);
         ledger.events.push_back({numbered_id("ledger-", ledger.events.size()),
-            "Robin-" + std::to_string(i + 1), "astronomy", "2026-03-04T10:00:00Z", (scores[i] + 37) % 101, ""});
+            "Robin-" + std::to_string(i + 1), "astronomy", "2026-03-04T10:00:00Z", other_score, ""});
     }
     for (std::size_t i = 0; i < fact_families; ++i) {
         const auto prior_id = ledger.events[i].source_id;
+        const int correction_offset = 1 + static_cast<int>(development_next(seed) % 100);
         ledger.events.push_back({numbered_id("ledger-", ledger.events.size()),
-            "Lina-" + std::to_string(i + 1), "astronomy", "2026-03-12T10:00:00Z", (scores[i] + 9) % 101, prior_id});
+            "Lina-" + std::to_string(i + 1), "astronomy", "2026-03-12T10:00:00Z", (scores[i] + correction_offset) % 101, prior_id});
     }
     for (std::size_t i = 0; i < distractors; ++i) {
         ledger.events.push_back({numbered_id("ledger-", ledger.events.size()),

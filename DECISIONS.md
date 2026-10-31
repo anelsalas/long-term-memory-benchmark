@@ -87,3 +87,11 @@ correction chains. Combined native ARM64 Release verification passed 25/25.
 October 31, 2026. User has started Claude on dashboard continuation. Keep
 coordinator work focused on core benchmark review, model access and pilot results.
 Dashboard branch and API contract provide the integration boundary.
+
+## Evidence-dependent fictional values
+
+October 31, 2026. Sample other-person values independently and vary correction
+values rather than preserving fixed offsets. A failing-to-passing regression
+exposed a shortcut that weakened evidence-dependence tests. Keep source revision
+with seeds because the draw sequence changed. Coordinator reviewed source paths,
+observed3/3 scoped suites and independently matched12 upstream grading prompts.

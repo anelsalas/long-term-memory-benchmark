@@ -20,8 +20,9 @@ Agent reports record observed behavioral TDD and scoped parity checks.
 
 ## Next
 
-P03-P05 source and handoff are published on codex/memory-review at ebc0105;
-core review and main integration are pending. The user has started Claude on
+P03-P05 review is accepted with a fixed generator shortcut regression.
+Coordinator observed 3/3 reviewer suites passing and independently checked
+12 grader prompts against the pinned upstream function. The user has started Claude on
 the separate codex/dashboard workstream. Coordinator focus is core review,
 model-selection/access and the first measured comparison. G01 selects
 model access and a pilot budget before live inference. P06 then compares one
@@ -29,3 +30,6 @@ published question and one fresh case under fixed conditions.
 
 [Resource definitions](docs/RESOURCES.md) Â· [Schema](docs/EXPERIMENT.md) Â·
 [Dataset adapter](docs/LONGMEMEVAL.md)
+
+The comparison CLI and Windows HTTPS transport are under active implementation.
+The previous integrated suite passed25/25; a new full run follows CLI integration.
