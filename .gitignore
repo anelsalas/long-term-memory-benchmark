@@ -1,0 +1,11 @@
+/build*/
+/out/
+/runtime/
+/private/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+__pycache__/
+.vs/
