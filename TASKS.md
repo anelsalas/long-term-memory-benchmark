@@ -1,6 +1,6 @@
 # Task board
 
-Updated October 31, 2026. Status: P01 and P02 complete; provider and scoring adapters next.
+Updated October 31, 2026. Status: P01-P05 implemented; integrated suite passes 25/25. Review/publication pending.
 Owner names below describe roles. Agents are activated for bounded assignments.
 
 ## Completed
@@ -9,7 +9,7 @@ Owner names below describe roles. Agents are activated for bounded assignments.
 - [x] Native C++17 ARM64 library, memory interface and lexical retrieval reference.
 - [x] Source identity, person/date filtering, correction-record preservation and JSON output.
 - [x] CPU time, resident/private-commit samples and process-lifetime peak memory.
-- [x] 22 native CTest checks, including the dataset-to-manifest integration.
+- [x] 25 native CTest checks, including the dataset-to-manifest integration.
 - [x] Windows ARM64 CI; pinned application dependency integration.
 - [x] Research protocol, contamination-control design and research-owner instructions.
 
@@ -28,9 +28,9 @@ evidence, official grades, timing, resources, token usage and cost.
 | --- | --- | --- | --- | --- | --- |
 | P01 | Versioned experiment manifest and per-case result schema | Complete | Runner | Foundation | Round-trip configuration hashes; expected cases and failed/missing outputs accounted for |
 | P02 | Pinned LongMemEval-S dataset adapter | Complete | Data/evaluation | Foundation | Read question/history; isolate gold and annotations; preserve source/date mapping |
-| P03 | Provider interface and bounded request lifecycle | Ready | Runner | P01 | Stubbed failures/retries/cancellation; request/token/spend caps; usage and request IDs recorded |
-| P04 | Official QA and retrieval scorer adapters | Ready | Data/evaluation | P01, P02 | Parity fixtures against upstream rules, including abstention and source-mapping exclusions |
-| P05 | Fresh event-ledger generator and independent gold | Ready | Data/evaluation | P01 | Consistent updates/dates/identities; changed-fact pairs; isolated hidden stories |
+| P03 | Provider interface and bounded request lifecycle | Verified locally | Runner | P01 | Stubbed failures/retries/cancellation; request/token/spend caps; usage and request IDs recorded |
+| P04 | Official QA and retrieval scorer adapters | Verified locally | Data/evaluation | P01, P02 | Parity fixtures against upstream rules, including abstention and source-mapping exclusions |
+| P05 | Fresh event-ledger generator and independent gold | Verified locally | Data/evaluation | P01 | Consistent updates/dates/identities; changed-fact pairs; isolated hidden stories |
 | P06 | First live two-case comparison | Waiting | Integrator | P02â€“P05, G01 | Published and fresh case complete in both conditions; auditable result report |
 | P07 | Resumable fixed development subset | Waiting | Integrator | P06 | Interrupted run resumes; matched comparison; failures and contamination controls reported |
 | P08 | Complete 500-question LongMemEval-S comparison | Waiting | Integrator/research | P07 | Frozen configuration; category results, uncertainty, human audit and reviewed artifacts |
@@ -57,3 +57,9 @@ source/data/model versions, measured outcomes and remaining dependencies explici
 
 Accepted evidence: [P01](reports/p01-experiment.md), [P02](reports/p02-dataset.md),
 and [coordinator integration](reports/p01-p02-integration.md).
+
+## Dashboard
+
+D01 active: lightweight responsive Control, Setup, Results and Credits UI for Surface and cellphone.
+D02 pending: authenticated native service, setup validation and benchmark control endpoints.
+Coordinator owns model-selection review and publication of P03-P05.

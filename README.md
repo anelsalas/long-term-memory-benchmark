@@ -31,6 +31,9 @@ and a [LongMemEval dataset adapter](docs/LONGMEMEVAL.md).
 - [Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory](https://arxiv.org/abs/2504.19413): fact extraction, updates and efficiency.
 - [Zep: A Temporal Knowledge Graph Architecture for Agent Memory](https://arxiv.org/abs/2501.13956): temporal relationships and evidence.
 
+[Review and continuation guide](REVIEW-START-HERE.md) summarizes implementation,
+verified tests, limitations and resume steps for another model.
+
 ## Develop and evaluate
 
 Use [the objective](PROJECT.md), [research protocol](research/PROTOCOL.md),

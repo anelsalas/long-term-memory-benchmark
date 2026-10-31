@@ -72,3 +72,12 @@ types. Verify the vendored header hash at CMake configuration.
 Use native Windows ARM64 with MSVC, CMake and CTest for implementation and CI.
 The resource collector uses Windows process APIs. Concentrate validation effort
 on the Surface execution target selected by the user.
+
+## Mobile dashboard and deterministic development histories
+
+October 31, 2026. Serve a lightweight responsive dashboard from the Surface,
+with Control, Setup, Results and Credits. Use same-origin authenticated API
+controls and server-side credential storage. UI work is delegated; backend
+integration follows. Generate fresh development histories in C++17 from seeded
+structured ledgers with independently resolved expected answers and explicit
+correction chains. Combined native ARM64 Release verification passed 25/25.
