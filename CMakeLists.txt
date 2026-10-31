@@ -7,9 +7,12 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 endif()
 option(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS "Build memory component tests" ${ltm_top_level})
 
-add_library(long_term_memory_benchmark STATIC src/memory.cpp src/report.cpp)
+add_library(long_term_memory_benchmark STATIC src/memory.cpp src/report.cpp src/resources.cpp)
 add_library(LongTermMemoryBenchmark::core ALIAS long_term_memory_benchmark)
 target_compile_features(long_term_memory_benchmark PUBLIC cxx_std_17)
+if(WIN32)
+  target_link_libraries(long_term_memory_benchmark PRIVATE psapi)
+endif()
 target_include_directories(long_term_memory_benchmark PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 if(MSVC)
@@ -27,7 +30,8 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_link_libraries(ltm_component_tests PRIVATE LongTermMemoryBenchmark::core)
   foreach(case IN ITEMS exact_source correction_order person_filter unknown_query
       top_k as_of duplicate_id empty_record punctuation score_tie invalid_timestamp
-      report_escape report_fraction report_invalid_time)
+      report_escape report_fraction report_invalid_time resource_delta resource_unavailable
+      resource_json resource_process)
     add_test(NAME ltm.unit.${case} COMMAND ltm_component_tests ${case})
     set_tests_properties(ltm.unit.${case} PROPERTIES LABELS "memory;component;unit;offline")
   endforeach()

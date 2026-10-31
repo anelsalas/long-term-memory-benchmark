@@ -58,7 +58,7 @@ requested workload. Preserve the original responses for audit.
 | Answer correctness | Official score, category, requested/valid/error counts |
 | Evidence retrieval | Source IDs/ranks, official any/all-source recall and denominator |
 | Speed | Ingestion, retrieval and answer durations; median/p95; cold/warm conditions |
-| Resources | Peak memory, index/storage growth and background-ingestion load |
+| Resources | Stage CPU time, sampled/lifetime peak memory, index/storage growth and background load; collector scope |
 | Tokens and cost | Extraction, embedding, answering, grading and retry usage |
 
 Preserve official turn/session mapping and retrieval exclusions. Record unavailable

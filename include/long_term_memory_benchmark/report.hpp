@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "memory.hpp"
+#include "resources.hpp"
 
 namespace ltm {
 
@@ -13,6 +14,7 @@ struct RetrievalCheck {
     double retrieval_ms;
 };
 
-std::string offline_report(const std::vector<RetrievalCheck>& checks);
+std::string offline_report(const std::vector<RetrievalCheck>& checks,
+    const std::vector<ResourceMeasurement>& resources = {});
 
 } // namespace ltm

@@ -32,3 +32,11 @@ October 31, 2026. User requested independent branding. Use Long-Term Memory
 Benchmark, repository `long-term-memory-benchmark`, CMake namespace
 `LongTermMemoryBenchmark`, C++ namespace `ltm` and neutral executable/header names.
 Historical reports retain the identifiers used by their recorded revisions.
+
+## Process resource accounting
+
+Measure wall time, cumulative CPU deltas, resident samples, Windows private commit
+and process-lifetime peak resident memory through native OS APIs. Keep snapshots,
+intervals and lifetime peaks distinct; include local-runner scope in every report.
+Use null for unavailable collectors. Treat the tiny development run as an
+instrumentation check; use frozen larger workloads for efficiency comparisons.

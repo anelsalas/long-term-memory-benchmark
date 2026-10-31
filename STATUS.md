@@ -1,5 +1,11 @@
 # Current progress
 
+October 31 resource update: native ARM64 Release CTest 19/19 passed under
+independent coordinator verification. CLI JSON reports local-process CPU deltas,
+sampled resident/private-commit bytes and lifetime peak resident bytes for
+run work, ingestion and retrieval. Windows and Linux collectors have explicit
+scope and unavailable counters. [Measurement definitions](docs/RESOURCES.md).
+
 Project name: Long-Term Memory Benchmark.
 Repository: https://github.com/anelsalas/long-term-memory-benchmark
 October 31 rename validation: native ARM64 Release CTest 15/15 passed.

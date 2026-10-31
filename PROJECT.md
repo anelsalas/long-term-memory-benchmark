@@ -5,7 +5,8 @@ Build a public, reproducible benchmark for trustworthy, affordable personal memo
 1. Reproduce declared experiments from LongMemEval, Mem0 and Zep.
 2. Document adaptations and compare methods under matched conditions.
 3. Test new fictional facts, corrections, dates, identities and missing information.
-4. Measure correctness, supporting evidence, speed, tokens and total inference cost.
+4. Measure correctness, supporting evidence, speed, CPU, memory, storage, tokens
+   and total inference cost with explicit measurement scopes.
 5. Integrate fast component tests and selected experiments into applications through a
    versioned CMake dependency and a small memory adapter.
 

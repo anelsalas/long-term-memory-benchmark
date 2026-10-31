@@ -26,9 +26,29 @@ std::string json_string(const std::string& value) {
     }
     return result + "\"";
 }
+void optional_number(std::ostream& out, const std::optional<double>& value) {
+    if (value && std::isfinite(*value) && *value >= 0) out << *value;
+    else out << "null";
+}
+void optional_bytes(std::ostream& out, const std::optional<std::uint64_t>& value) {
+    if (value) out << *value;
+    else out << "null";
+}
+void process_sample(std::ostream& out, const ProcessResources& value) {
+    out << "{\"cpu_total_ms\":";
+    optional_number(out, value.cpu_total_ms);
+    out << ",\"resident_bytes\":";
+    optional_bytes(out, value.resident_bytes);
+    out << ",\"private_committed_bytes\":";
+    optional_bytes(out, value.private_committed_bytes);
+    out << ",\"process_lifetime_peak_resident_bytes\":";
+    optional_bytes(out, value.process_lifetime_peak_resident_bytes);
+    out << '}';
+}
 }
 
-std::string offline_report(const std::vector<RetrievalCheck>& checks) {
+std::string offline_report(const std::vector<RetrievalCheck>& checks,
+    const std::vector<ResourceMeasurement>& resources) {
     std::ostringstream out;
     out.imbue(std::locale::classic());
     out << std::setprecision(17);
@@ -67,7 +87,25 @@ std::string offline_report(const std::vector<RetrievalCheck>& checks) {
         }
         out << "]}";
     }
-    out << "]}";
+    out << "],\"resources\":{\"scope\":\"local_runner_process\","
+        << "\"child_processes\":null,\"remote_workers\":null,\"gpu_memory_bytes\":null,"
+        << "\"energy_joules\":null,\"persisted_artifact_bytes\":null,\"stages\":[";
+    bool first_resource = true;
+    for (const auto& interval : resources) {
+        if (!std::isfinite(interval.wall_ms) || interval.wall_ms < 0)
+            throw std::invalid_argument("Resource wall time must be finite and nonnegative");
+        if (!first_resource) out << ',';
+        first_resource = false;
+        out << "{\"stage\":" << json_string(interval.stage) << ",\"wall_ms\":" << interval.wall_ms
+            << ",\"cpu_delta_ms\":";
+        optional_number(out, interval.cpu_delta_ms);
+        out << ",\"before\":";
+        process_sample(out, interval.before);
+        out << ",\"after\":";
+        process_sample(out, interval.after);
+        out << '}';
+    }
+    out << "]}}";
     return out.str();
 }
 } // namespace ltm

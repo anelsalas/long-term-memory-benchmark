@@ -18,3 +18,13 @@ The report identifies `offline_component` and `public_synthetic_development`.
 expected set produces a null metric. This fixture uses two expected IDs, both
 retrieved. Model answer accuracy and model tokens are null; model calls are zero.
 The observed duration covers only this reference search on the supplied records.
+
+The `resources` section samples the local runner process around `ingestion`,
+`retrieval` and `run_work`. Each stage reports steady-clock wall milliseconds,
+process CPU milliseconds consumed between samples, resident-memory samples,
+private committed bytes where available, and the process-lifetime resident peak.
+`run_work` covers fixture creation/search and instrumentation before JSON output.
+Memory samples describe the process, not individual allocation ownership. Tiny
+stages may consume less CPU than the operating system counter can resolve.
+Remote/child worker use, GPU memory, energy and persisted-artifact size are null
+in this offline in-memory example.

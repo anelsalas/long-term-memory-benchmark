@@ -118,6 +118,58 @@ void report_invalid_time() {
         require(threw, "Invalid timing cannot produce misleading JSON");
     }
 }
+void resource_delta() {
+    ltm::ProcessResources before, after;
+    before.cpu_total_ms = 12.5;
+    after.cpu_total_ms = 18.0;
+    before.resident_bytes = 100;
+    after.resident_bytes = 80;
+    after.process_lifetime_peak_resident_bytes = 200;
+    const auto measurement = ltm::resource_interval("retrieval", before, after, 9.0);
+    require(measurement.cpu_delta_ms && *measurement.cpu_delta_ms == 5.5, "CPU interval uses cumulative difference");
+    require(measurement.before.resident_bytes == 100 && measurement.after.resident_bytes == 80,
+        "Memory samples preserved separately from interval and lifetime peak");
+    bool threw = false;
+    try { (void)ltm::resource_interval("bad", {}, {}, -1); }
+    catch (const std::invalid_argument&) { threw = true; }
+    require(threw, "Reject invalid wall duration");
+}
+void resource_unavailable() {
+    ltm::ProcessResources before, after;
+    after.cpu_total_ms = 1;
+    require(!ltm::resource_interval("missing", before, after, 1).cpu_delta_ms, "Missing CPU samples yield unavailable delta");
+    before.cpu_total_ms = 2;
+    require(!ltm::resource_interval("reset", before, after, 1).cpu_delta_ms, "Decreasing counter yields unavailable delta");
+    before.cpu_total_ms = std::numeric_limits<double>::quiet_NaN();
+    require(!ltm::resource_interval("invalid", before, after, 1).cpu_delta_ms, "Nonfinite sample yields unavailable delta");
+}
+void resource_json() {
+    ltm::ProcessResources before, after;
+    before.cpu_total_ms = std::numeric_limits<double>::quiet_NaN();
+    after.resident_bytes = 64;
+    const auto json = ltm::offline_report({}, {ltm::resource_interval("test", before, after, 1)});
+    require(json.find("\"scope\":\"local_runner_process\"") != std::string::npos, "Resource scope explicit");
+    require(json.find("\"cpu_delta_ms\":null") != std::string::npos, "Unavailable CPU serialized null");
+    require(json.find("\"resident_bytes\":64") != std::string::npos, "Observed memory serialized");
+    require(json.find("\"gpu_memory_bytes\":null") != std::string::npos, "GPU use unmeasured");
+    require(json.find("\"cpu_total_ms\":null") != std::string::npos, "Invalid floating sample becomes null");
+}
+void resource_process() {
+    const auto before = ltm::sample_process_resources();
+    volatile std::uint64_t sink = 0;
+    for (std::uint64_t i = 0; i < 100000; ++i) sink = sink + i;
+    (void)sink;
+    const auto after = ltm::sample_process_resources();
+#if defined(_WIN32) || defined(__linux__)
+    require(before.cpu_total_ms && after.cpu_total_ms, "Supported process CPU collection succeeds");
+    require(after.resident_bytes && *after.resident_bytes > 0, "Supported process memory collection succeeds");
+#endif
+    if (before.cpu_total_ms && after.cpu_total_ms)
+        require(*after.cpu_total_ms >= *before.cpu_total_ms, "CPU cumulative counters are monotonic");
+    if (before.process_lifetime_peak_resident_bytes && after.process_lifetime_peak_resident_bytes)
+        require(*after.process_lifetime_peak_resident_bytes >= *before.process_lifetime_peak_resident_bytes,
+            "Lifetime resident high-water mark is monotonic");
+}
 }
 
 int main(int argc, char** argv) {
@@ -128,7 +180,9 @@ int main(int argc, char** argv) {
         {"empty_record", empty_record}, {"punctuation", punctuation},
         {"score_tie", score_tie}, {"invalid_timestamp", invalid_timestamp},
         {"report_escape", report_escape}, {"report_fraction", report_fraction},
-        {"report_invalid_time", report_invalid_time}};
+        {"report_invalid_time", report_invalid_time}, {"resource_delta", resource_delta},
+        {"resource_unavailable", resource_unavailable}, {"resource_json", resource_json},
+        {"resource_process", resource_process}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

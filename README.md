@@ -9,7 +9,8 @@ CMake targets and automated tests that applications can consume as a pinned depe
 ## Run
 
 The current executable runs synthetic lexical-retrieval component checks and
-prints source coverage and timing as JSON. Model-backed evaluations are the next milestone.
+prints source coverage, timing, CPU time and process-memory samples as JSON.
+Model-backed evaluations are the next milestone.
 
 ```sh
 cmake -S . -B build
@@ -37,5 +38,8 @@ and [current progress](STATUS.md). Research ownership instructions are in
 Fast component tests run on code changes. Selected integration tests exercise
 memory adapters. Full model experiments use explicit configurations and budgets.
 Public results identify dataset, model, method, scorer and execution versions.
+
+[Resource measurements](docs/RESOURCES.md) define CPU time, sampled memory,
+process-lifetime peak memory and stage timing for fair efficiency comparisons.
 
 License: [Apache-2.0](LICENSE).
