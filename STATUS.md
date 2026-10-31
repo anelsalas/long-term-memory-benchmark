@@ -4,6 +4,8 @@ Updated October 31, 2026. [Task board](TASKS.md).
 
 ## Verified
 
+Target platform: native Windows ARM64 with MSVC and CMake/CTest.
+
 - Native C++17 ARM64 core, lexical reference, source/date/person filters and CPU/RAM reports.
 - P01: versioned manifests, canonical configuration SHA-256, case lifecycle records and complete coverage summaries.
 - P02: provenance-checked LongMemEval selected-case loading, opaque runtime IDs and separate evaluator gold/mappings.
@@ -21,5 +23,5 @@ P05 fresh-fact generation prepares the contamination-control cases. G01 selects
 model access and a pilot budget before live inference. P06 then compares one
 published question and one fresh case under fixed conditions.
 
-[Resource definitions](docs/RESOURCES.md) · [Schema](docs/EXPERIMENT.md) ·
+[Resource definitions](docs/RESOURCES.md) Â· [Schema](docs/EXPERIMENT.md) Â·
 [Dataset adapter](docs/LONGMEMEVAL.md)

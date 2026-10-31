@@ -160,7 +160,7 @@ void resource_process() {
     for (std::uint64_t i = 0; i < 100000; ++i) sink = sink + i;
     (void)sink;
     const auto after = ltm::sample_process_resources();
-#if defined(_WIN32) || defined(__linux__)
+#if defined(_WIN32)
     require(before.cpu_total_ms && after.cpu_total_ms, "Supported process CPU collection succeeds");
     require(after.resident_bytes && *after.resident_bytes > 0, "Supported process memory collection succeeds");
 #endif

@@ -7,7 +7,7 @@ state. Capture ingestion and retrieval separately, alongside answer quality.
 | --- | --- |
 | Wall time, milliseconds | Elapsed stage duration measured with a steady clock |
 | CPU time, milliseconds | Change in process user-plus-kernel CPU time across the interval |
-| Resident memory, bytes | Sampled process working set/RSS before and after the stage |
+| Resident memory, bytes | Sampled process working set before and after the stage |
 | Private committed memory, bytes | Windows process private commit at each sample |
 | Lifetime peak resident memory, bytes | Highest resident value reported for this process through the sample |
 
@@ -33,9 +33,7 @@ interval includes ingestion and retrieval; report these nested stages separately
 - Windows: [GetProcessTimes](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocesstimes),
   [GetProcessMemoryInfo](https://learn.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-getprocessmemoryinfo),
   [PROCESS_MEMORY_COUNTERS_EX](https://learn.microsoft.com/en-us/windows/win32/api/psapi/ns-psapi-process_memory_counters_ex).
-- Linux: `getrusage(RUSAGE_SELF)` for CPU and lifetime peak RSS; sampled RSS from
-  `/proc/self/statm`. Values are normalized to bytes/milliseconds.
-  [Kernel process accounting documentation](https://docs.kernel.org/filesystems/proc.html).
+
 
 Persisted index size, model-worker GPU usage, network traffic and energy require
 their own collectors. Record those fields when the corresponding adapter can

@@ -66,3 +66,9 @@ Validate exact-byte dataset provenance and bounded selected-case inputs.
 Vendor JSON for Modern C++ 3.11.3 with its MIT license and official release
 checksum. Keep JSON types within implementation files and expose standard C++17
 types. Verify the vendored header hash at CMake configuration.
+
+## Surface platform focus
+
+Use native Windows ARM64 with MSVC, CMake and CTest for implementation and CI.
+The resource collector uses Windows process APIs. Concentrate validation effort
+on the Surface execution target selected by the user.

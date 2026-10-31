@@ -1,7 +1,6 @@
 #include "long_term_memory_benchmark/resources.hpp"
 
 #include <cmath>
-#include <limits>
 #include <stdexcept>
 #include <utility>
 #if defined(_WIN32)
@@ -10,10 +9,6 @@
 #endif
 #include <windows.h>
 #include <psapi.h>
-#elif defined(__linux__)
-#include <fstream>
-#include <sys/resource.h>
-#include <unistd.h>
 #endif
 
 namespace ltm {
@@ -34,23 +29,6 @@ ProcessResources sample_process_resources() {
         sample.private_committed_bytes = memory.PrivateUsage;
         sample.process_lifetime_peak_resident_bytes = memory.PeakWorkingSetSize;
     }
-#elif defined(__linux__)
-    rusage usage{};
-    if (getrusage(RUSAGE_SELF, &usage) == 0) {
-        sample.cpu_total_ms = static_cast<double>(usage.ru_utime.tv_sec) * 1000.0 +
-            static_cast<double>(usage.ru_utime.tv_usec) / 1000.0 +
-            static_cast<double>(usage.ru_stime.tv_sec) * 1000.0 +
-            static_cast<double>(usage.ru_stime.tv_usec) / 1000.0;
-        if (usage.ru_maxrss >= 0 && static_cast<std::uint64_t>(usage.ru_maxrss) <=
-            std::numeric_limits<std::uint64_t>::max() / 1024)
-            sample.process_lifetime_peak_resident_bytes = static_cast<std::uint64_t>(usage.ru_maxrss) * 1024;
-    }
-    std::ifstream statm("/proc/self/statm");
-    std::uint64_t total_pages = 0, resident_pages = 0;
-    const long page_size = sysconf(_SC_PAGESIZE);
-    if ((statm >> total_pages >> resident_pages) && page_size > 0 && resident_pages <=
-        std::numeric_limits<std::uint64_t>::max() / static_cast<std::uint64_t>(page_size))
-        sample.resident_bytes = resident_pages * static_cast<std::uint64_t>(page_size);
 #endif
     return sample;
 }

@@ -1,6 +1,6 @@
 # Project instructions
 
-Build a portable C++17 benchmark for reliable long-term memory access. Target
+Build a C++17 benchmark for reliable long-term memory access. Target
 native Windows ARM64 and use CMake/CTest, behavioral unit tests and TDD.
 Read README.md, PROJECT.md, STATUS.md, DECISIONS.md and the latest handoff before
 changes. Keep objectives and documentation concise, affirmative and specific.

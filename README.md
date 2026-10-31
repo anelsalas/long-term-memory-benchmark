@@ -2,10 +2,10 @@
 
 Measure and improve reliable long-term memory access on everyday computers.
 
-[Pending tasks](TASKS.md) · [Current status](STATUS.md) · [Research protocol](research/PROTOCOL.md)
+[Pending tasks](TASKS.md) Â· [Current status](STATUS.md) Â· [Research protocol](research/PROTOCOL.md)
 
 Compare memory methods by answer accuracy, evidence retrieval, latency, token
-usage and cost. Build native C++17 components for Windows ARM64, with portable
+usage and cost. Build native C++17 components for Windows ARM64, with
 CMake targets and automated tests that applications can consume as a pinned dependency.
 
 ## Run
@@ -14,15 +14,13 @@ The current executable runs synthetic lexical-retrieval component checks and
 prints source coverage, timing, CPU time and process-memory samples as JSON.
 Model-backed evaluations are the next milestone.
 
-```sh
-cmake -S . -B build
+```powershell
+cmake -S . -B build -G "Visual Studio 17 2022" -A ARM64
 cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-On Windows ARM64, configure with `-G "Visual Studio 17 2022" -A ARM64`.
-Run `build/Release/long-term-memory-benchmark --offline-demo` on Visual Studio builds,
-or `build/long-term-memory-benchmark --offline-demo` on single-configuration builds.
+Run `build/Release/long-term-memory-benchmark --offline-demo`.
 
 Library modules provide [experiment manifests and results](docs/EXPERIMENT.md)
 and a [LongMemEval dataset adapter](docs/LONGMEMEVAL.md).
