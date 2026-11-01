@@ -1,6 +1,17 @@
 # Current progress
 
-Updated October 31, 2026. [Task board](TASKS.md).
+Updated November 1, 2026. [Task board](TASKS.md).
+
+## Latest measured run
+
+Local Qwen3-0.6B completed two requests through the native command with APIcost0.
+Full history answered82 correctly. Lexical top1 retrieved the original record,
+answered23 and missed the correction. One fresh question/two conditions:1/2correct.
+[Measured report](reports/2026-11-01-local-qwen-smoke.md) records scope and timings.
+
+Coordinator reran Claude's dashboard checkout:56/56 native tests passed, webhelper
+checks passed, and the browser SaveSetup/Start/Output flow completed exit0.
+Dashboard local-execute control is being integrated in an isolated checkout.
 
 ## Verified
 
@@ -40,4 +51,4 @@ The current comparison is an adapted lexical reference. Public-case official
 retrieval metrics remain unavailable until its complete-user-ranking adapter is
 connected; evidence IDs remain recorded. Live API execution and returned model/
 usage acceptance follow G01. The configured transport has offline injected tests;
-paid calls remain zero.
+paid calls remain zero. Local loopback Qwen execution is now observed; cloud access is optional.

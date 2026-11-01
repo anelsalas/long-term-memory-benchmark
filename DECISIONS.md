@@ -109,3 +109,16 @@ Public retrieval metrics require a full user-only ranking. Keep their value
 unavailable with a reason until that adapter is connected. Record source IDs now.
 The new transport and CLI have offline verification27/27; live provider acceptance
 and approved pilot spending remain G01. Claude retains dashboard ownership.
+
+## Local zero-cost execution and first measured retrieval failure
+
+November1,2026. User selected the existing local Qwen service and authorized
+execution. Enable explicit numeric-loopback local mode with zero prices/cost,
+no credential lookup and positive workload caps. Preserve external HTTPS mode.
+The live service caps context512bytes/output32tokens; declare compact_local_smoke,
+zero distractors, seed42 and top1 selection. First actual responses: full82
+correct, retrieved23 incorrect because the old record outranked the correction.
+Preserve that result rather than tuning it away. Unmatched cold/warm timings are
+reported as observations. Completiontokens are reported; inputtokens unknown and
+retained reservations remain separate. Modelworker resources are outside runner
+sampling. Claude dashboard source stays preserved; integration uses a new branch.

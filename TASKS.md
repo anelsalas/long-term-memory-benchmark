@@ -74,3 +74,15 @@ Core P03-P05 published main454b486; command publication follows verified27/27.
 - [ ] G01: accessible account/key, exact returned version/token bounds and approved cap.
 - [ ] P06: actual responses, grades, usage and audited comparison.
 - [ ] Complete user-only corpus ranking connection for official retrieval metrics.
+
+## November1 measured local checkpoint
+
+- [x] Execute local Qwen3-0.6B through explicit no-key/zero-cost loopback profile.
+- [x] Record full-history82 correct and top1-retrieval23 incorrect against gold82.
+- [x] Observe56/56 original dashboard/core tests and actual browser dry-run completion.
+- [ ] Integrate dashboard explicit local-run mode and verify it in the browser.
+- [ ] Expand frozen local correction cases; separate reference failure from method changes.
+- [ ] Choose a larger-context execution profile for published-history comparisons.
+
+The tiny local smoke is one fresh case in two conditions. P06's published plus
+fresh workload and P08's full benchmark remain distinct pending experiments.
