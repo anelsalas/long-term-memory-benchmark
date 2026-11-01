@@ -1,0 +1,32 @@
+{
+  "case": 42,
+  "method": "Mem0 OSS",
+  "package": "mem0ai@3.3.1",
+  "extraction_model": "gpt-6.1-sol",
+  "extraction_instruction": "compact-json-facts-v1",
+  "embedding": "sha256-token-feature-hashing-128",
+  "store": "in-memory",
+  "question": "As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+  "stored": [
+    {
+      "memory": "On 2026-03-03 at 10:00:00 UTC, the user recorded Lina-1's astronomy score as 23. On 2026-03-12 at 10:00:00 UTC, the user corrected that score from 23 to 82."
+    },
+    {
+      "memory": "On 2026-03-04 at 10:00:00 UTC, the user recorded Robin-1's astronomy score as 63."
+    }
+  ],
+  "retrieved": [
+    {
+      "memory": "On 2026-03-03 at 10:00:00 UTC, the user recorded Lina-1's astronomy score as 23. On 2026-03-12 at 10:00:00 UTC, the user corrected that score from 23 to 82.",
+      "score": 0.4382952155513869
+    },
+    {
+      "memory": "On 2026-03-04 at 10:00:00 UTC, the user recorded Robin-1's astronomy score as 63.",
+      "score": 0.36130953630563234
+    }
+  ],
+  "answer_model": "gpt-6.1-sol",
+  "answer": "82",
+  "answer_prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nOn 2026-03-03 at 10:00:00 UTC, the user recorded Lina-1's astronomy score as 23. On 2026-03-12 at 10:00:00 UTC, the user corrected that score from 23 to 82.\nOn 2026-03-04 at 10:00:00 UTC, the user recorded Robin-1's astronomy score as 63.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+  "expected": "82"
+}

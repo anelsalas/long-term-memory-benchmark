@@ -155,3 +155,7 @@ Use the same frozen user messages and the Qwen content-reading rule. Record retu
 ## GPT Sol pilot
 
 Compare the four identical prompt hashes and selected evidence from seed 42. Record the requested catalog model and distinguish that identity from a provider-reported model snapshot.
+
+## Mem0 pilot
+
+Document the compact extraction instruction, deterministic token-feature representation, in-memory storage and top-five retrieval. Compare matched settings before interpreting differences.
