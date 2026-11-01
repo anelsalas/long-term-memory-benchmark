@@ -3,6 +3,7 @@
 #include "retrieval.hpp"
 #include "scoring.hpp"
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,5 +20,12 @@ struct MethodResult {
 // query_prefix + question. Evidence rounds are user messages labelled has_answer.
 std::vector<MethodResult> evaluate_case(const LoadedLongMemEvalCase& data, Embedder* embedder,
     const std::string& query_prefix, const std::vector<std::size_t>& budgets);
+
+struct CoverageSummary {
+    std::size_t questions = 0;                // questions with at least one evidence round
+    std::optional<double> mean_fraction;      // mean share of each question's evidence packed
+    std::optional<double> all_included_rate;  // share of questions with all evidence packed
+};
+CoverageSummary summarize_coverage(const std::vector<EvidenceCoverage>& coverage);
 
 } // namespace ltm::retrieval

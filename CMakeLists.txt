@@ -129,6 +129,12 @@ if(ltm_boost_beast_dir)
   if(MSVC)
     target_compile_options(ltm_retrieval_http PRIVATE /W4 /permissive- /bigobj)
   endif()
+  add_executable(ltm-retrieval-eval src/retrieval_eval_main.cpp)
+  target_link_libraries(ltm-retrieval-eval PRIVATE LongTermMemoryBenchmark::retrieval_http)
+  target_include_directories(ltm-retrieval-eval SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  if(MSVC)
+    target_compile_options(ltm-retrieval-eval PRIVATE /W4 /permissive- /bigobj)
+  endif()
 endif()
 if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   enable_testing()
@@ -195,7 +201,8 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_link_libraries(ltm_retrieval_eval_tests PRIVATE LongTermMemoryBenchmark::retrieval)
   target_compile_definitions(ltm_retrieval_eval_tests PRIVATE
     LTM_FIXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
-  foreach(case IN ITEMS lexical_methods_score_evidence dense_and_hybrid_use_the_embedder abstention_is_excluded)
+  foreach(case IN ITEMS lexical_methods_score_evidence dense_and_hybrid_use_the_embedder abstention_is_excluded
+      coverage_summary)
     add_test(NAME ltm.retrieval.eval.${case} COMMAND ltm_retrieval_eval_tests ${case})
     set_tests_properties(ltm.retrieval.eval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()
@@ -285,4 +292,17 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_retrieval_http)
     add_test(NAME ltm.retrieval.http.${case} COMMAND ltm_embeddings_http_tests ${case})
     set_tests_properties(ltm.retrieval.http.${case} PROPERTIES LABELS "retrieval;integration;offline" TIMEOUT 30)
   endforeach()
+  # Smoke run of the evaluation tool on the checked-in fixture (BM25 and recency only).
+  set(ltm_fixture "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
+  file(SHA256 "${ltm_fixture}" ltm_fixture_sha256)
+  file(SIZE "${ltm_fixture}" ltm_fixture_bytes)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
+    "{\"name\":\"longmemeval_development.json\",\"bytes\":${ltm_fixture_bytes},\"sha256\":\"${ltm_fixture_sha256}\",\"revision\":\"fixture\",\"source\":\"tests/fixtures\"}")
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json" "[\"fictional-school-01\",\"fictional-school-02_abs\"]")
+  add_test(NAME ltm.retrieval.eval_tool COMMAND ltm-retrieval-eval --dataset "${ltm_fixture}"
+    --provenance "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
+    --questions "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json"
+    --out "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/results.json" --budgets 10,1000)
+  set_tests_properties(ltm.retrieval.eval_tool PROPERTIES LABELS "retrieval;integration;offline"
+    PASS_REGULAR_EXPRESSION "\\| bm25 \\| 100\\.0% \\| 100\\.0% \\|.*scored for retrieval: 1")
 endif()

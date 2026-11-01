@@ -1,5 +1,6 @@
 #include "long_term_memory_benchmark/hash.hpp"
 #include "long_term_memory_benchmark/retrieval_eval.hpp"
+#include <cmath>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -59,13 +60,20 @@ void abstention_is_excluded() {
         "Abstention questions have no retrieval metrics");
     require(results[1].budgets[0].evidence == 0, "Abstention questions have no evidence rounds");
 }
+void coverage_summary() {
+    const auto summary = summarize_coverage({{2, 2}, {4, 1}, {0, 0}, {1, 0}});
+    require(summary.questions == 3, "Questions without evidence are excluded");
+    require(summary.mean_fraction && std::abs(*summary.mean_fraction - 1.25 / 3) < 1e-12, "Mean of 1, 0.25 and 0");
+    require(summary.all_included_rate && std::abs(*summary.all_included_rate - 1.0 / 3) < 1e-12, "One of three fully covered");
+    require(!summarize_coverage({{0, 0}}).mean_fraction, "No eligible questions, no mean");
+}
 }
 
 int main(int argc, char** argv) {
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"lexical_methods_score_evidence", lexical_methods_score_evidence},
         {"dense_and_hybrid_use_the_embedder", dense_and_hybrid_use_the_embedder},
-        {"abstention_is_excluded", abstention_is_excluded}};
+        {"abstention_is_excluded", abstention_is_excluded}, {"coverage_summary", coverage_summary}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

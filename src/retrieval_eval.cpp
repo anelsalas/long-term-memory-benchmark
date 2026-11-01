@@ -47,4 +47,19 @@ std::vector<MethodResult> evaluate_case(const LoadedLongMemEvalCase& data, Embed
     return results;
 }
 
+CoverageSummary summarize_coverage(const std::vector<EvidenceCoverage>& coverage) {
+    CoverageSummary summary;
+    double fraction = 0, complete = 0;
+    for (const auto& item : coverage) {
+        if (item.evidence == 0) continue;
+        ++summary.questions;
+        fraction += static_cast<double>(item.included) / static_cast<double>(item.evidence);
+        complete += item.included == item.evidence ? 1 : 0;
+    }
+    if (summary.questions == 0) return summary;
+    summary.mean_fraction = fraction / static_cast<double>(summary.questions);
+    summary.all_included_rate = complete / static_cast<double>(summary.questions);
+    return summary;
+}
+
 } // namespace ltm::retrieval
