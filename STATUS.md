@@ -84,3 +84,7 @@ retrieval metrics remain unavailable until its complete-user-ranking adapter is
 connected; evidence IDs remain recorded. Live API execution and returned model/
 usage acceptance follow G01. The configured transport has offline injected tests;
 paid calls remain zero. Local loopback Qwen execution is now observed; cloud access is optional.
+
+## Retrieval baseline preparation — November 1, 2026
+
+Pinned LongMemEval-S data and a 60-question stratified development selection are ready. A Windows ARM64 CPU embedding endpoint produced four normalized 1,024-dimensional vectors; the warm short-text sample ran at 2.34 texts/s. Retrieval comparison and answer evaluation are next. Details and selection: [preparation report](reports/2026-11-01-retrieval-preparation.md).
