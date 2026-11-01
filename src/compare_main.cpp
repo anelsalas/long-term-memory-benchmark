@@ -171,6 +171,15 @@ const std::string answer_instruction =
     "Answer the question from the supplied timestamped history. Use the latest applicable facts. "
     "If the information is absent, say that you do not know. Give the shortest complete "
     "answer.\n\n";
+std::string compact_local_prompt(const ltm::CandidateCase& candidate) {
+    std::string prompt = "Use the latest recorded score. Reply only with its integer.\n";
+    for (const auto& session : candidate.sessions) {
+        for (const auto& message : session.messages) {
+            prompt += session.date + " " + message.content + "\n";
+        }
+    }
+    return prompt + candidate.question;
+}
 Json usage_json(const std::optional<ltm::ProviderUsage>& usage) {
     if (!usage) {
         return nullptr;
@@ -300,6 +309,9 @@ int main(int argc, char** argv) {
                               "source_revision",
                               "endpoint_url",
                               "api_key_env",
+                              "execution_mode",
+                              "prompt_profile",
+                              "fresh_distractors",
                               "reader",
                               "judge",
                               "provider_policy",
@@ -321,6 +333,30 @@ int main(int argc, char** argv) {
             throw std::invalid_argument("Unsupported runtime configuration version");
         }
         const auto policy = policy_from(config.at("provider_policy"));
+        const auto execution_mode = config.value("execution_mode", std::string("https"));
+        if (execution_mode != "https" && execution_mode != "local") {
+            throw std::invalid_argument("Unknown execution mode");
+        }
+        const bool local_mode = execution_mode == "local";
+        const auto prompt_profile = config.value("prompt_profile", std::string("standard"));
+        const bool compact_local = prompt_profile == "compact_local_smoke";
+        if ((prompt_profile != "standard" && !compact_local) || (compact_local && !local_mode)) {
+            throw std::invalid_argument("Unsupported prompt profile for this execution mode");
+        }
+        const auto distractors =
+            config.contains("fresh_distractors") ? integer(config.at("fresh_distractors")) : 8;
+        if (distractors > 10000 || (config.contains("fresh_distractors") && !compact_local)) {
+            throw std::invalid_argument("Fresh distractor override requires compact local profile");
+        }
+        if (compact_local && config.contains("public_case") &&
+            !config.at("public_case").is_null()) {
+            throw std::invalid_argument("Compact local smoke requires only the generated fixture");
+        }
+        if (local_mode && (policy.max_cost_nanos || policy.input_token_price_nanos ||
+                           policy.output_token_price_nanos || policy.request_price_nanos ||
+                           (config.contains("api_key_env") && config.at("api_key_env") != ""))) {
+            throw std::invalid_argument("Local mode requires zero prices and no credential name");
+        }
         const auto input_bound = integer(config.at("input_token_upper_bound"));
         const auto framing = config.contains("chat_framing_token_allowance")
                                  ? integer(config.at("chat_framing_token_allowance"))
@@ -332,7 +368,8 @@ int main(int argc, char** argv) {
             throw std::invalid_argument("Candidate answer byte cap exceeds response cap");
         }
         stage = "execute_budget_gate";
-        if (execute && (!policy.max_requests || !policy.max_tokens || !policy.max_cost_nanos ||
+        if (execute && (!policy.max_requests || !policy.max_tokens ||
+                        (!local_mode && !policy.max_cost_nanos) ||
                         !config.value("tokenizer_bound_verified", false))) {
             throw std::invalid_argument(
                 "Execute requires positive explicit budgets and a verified tokenizer bound");
@@ -340,6 +377,7 @@ int main(int argc, char** argv) {
         stage = "transport_configuration";
         ltm::ChatCompletionsOptions http_options;
         http_options.endpoint_url = config.at("endpoint_url").get<std::string>();
+        http_options.local_mode = local_mode;
         http_options.output_token_parameter =
             config.at("output_token_parameter").get<std::string>();
         const auto timeout = integer(config.at("timeout_ms"));
@@ -350,14 +388,15 @@ int main(int argc, char** argv) {
         if (config.contains("temperature") && !config.at("temperature").is_null()) {
             http_options.temperature = config.at("temperature").get<double>();
         }
-        ltm::validate_https_endpoint(http_options.endpoint_url);
+        ltm::validate_chat_endpoint(http_options.endpoint_url, local_mode);
         const auto seed = integer(config.at("seed"));
         const auto top_k = integer(config.at("top_k"));
         if (!top_k || top_k > 1000) {
             throw std::invalid_argument("top_k must be 1 to 1000");
         }
         stage = "dataset_preparation";
-        const auto ledger = ltm::generate_development_ledger(seed, 1, 8);
+        const auto ledger =
+            ltm::generate_development_ledger(seed, 1, static_cast<std::size_t>(distractors));
         const auto fresh =
             ltm::render_fresh_fact_case(ledger, {"Lina-1", "astronomy", "2026-03-13T10:00:00Z"});
         WorkCase fresh_work;
@@ -410,6 +449,12 @@ int main(int argc, char** argv) {
         manifest.run_parameters = {
             {"seed", std::to_string(seed)},
             {"endpoint", http_options.endpoint_url},
+            {"execution_mode", execution_mode},
+            {"prompt_profile", prompt_profile},
+            {"fresh_distractors", std::to_string(distractors)},
+            {"local_finish_reason_limit",
+             local_mode ? "service-reported stop is not a verified completion boundary"
+                        : "not-applicable"},
             {"judge_temperature", "0"},
             {"transport_revision", "winhttp-chat-v1"},
             {"public_dataset_sha256", public_checksum},
@@ -458,7 +503,13 @@ int main(int argc, char** argv) {
                     select_evidence(item.data.candidate, static_cast<std::size_t>(top_k),
                                     std::string(condition) == "full_history", sources);
                 auto prompt = answer_instruction + ltm::candidate_input_json(candidate);
-                if (item.name == "fresh") {
+                if (compact_local) {
+                    prompt = compact_local_prompt(candidate);
+                    if (prompt.size() + std::string("user").size() + 4 > 512) {
+                        throw std::invalid_argument(
+                            "Compact local prompt exceeds service context byte cap");
+                    }
+                } else if (item.name == "fresh") {
                     prompt += "\nFor this score question, respond with only the integer score.";
                 }
                 check_prompt_bound(prompt, input_bound, framing);
@@ -521,7 +572,8 @@ int main(int argc, char** argv) {
         }
         stage = "credential_setup";
         const auto secret =
-            credential_from_environment(config.at("api_key_env").get<std::string>());
+            local_mode ? std::string{}
+                       : credential_from_environment(config.at("api_key_env").get<std::string>());
         ltm::WinHttpTransport transport;
         ltm::ChatCompletionsProvider reader(http_options, secret, transport);
         auto judge_options = http_options;

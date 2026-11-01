@@ -29,8 +29,9 @@ std::wstring wide(const std::string& text) {
 struct Endpoint {
     std::wstring host, path;
     INTERNET_PORT port;
+    bool secure;
 };
-Endpoint split_endpoint(const std::string& endpoint) {
+Endpoint split_endpoint(const std::string& endpoint, bool local_mode = false) {
     if (endpoint.empty() || endpoint.size() > 4096 ||
         std::any_of(endpoint.begin(), endpoint.end(),
                     [](unsigned char c) { return c <= 32 || c >= 127; }) ||
@@ -47,16 +48,23 @@ Endpoint split_endpoint(const std::string& endpoint) {
     parts.dwUserNameLength = static_cast<DWORD>(-1);
     parts.dwPasswordLength = static_cast<DWORD>(-1);
     if (!WinHttpCrackUrl(url.c_str(), static_cast<DWORD>(url.size()), 0, &parts) ||
-        parts.nScheme != INTERNET_SCHEME_HTTPS || !parts.dwHostNameLength || !parts.nPort ||
-        parts.dwUserNameLength || parts.dwPasswordLength) {
+        !parts.dwHostNameLength || !parts.nPort || parts.dwUserNameLength ||
+        parts.dwPasswordLength) {
         throw std::invalid_argument("A valid HTTPS endpoint is required");
     }
-    return {{parts.lpszHostName, parts.dwHostNameLength},
+    const std::wstring host(parts.lpszHostName, parts.dwHostNameLength);
+    const bool secure = parts.nScheme == INTERNET_SCHEME_HTTPS;
+    const bool loopback = host == L"127.0.0.1" || host == L"[::1]" || host == L"::1";
+    if ((!local_mode && !secure) ||
+        (local_mode && (!loopback || (!secure && parts.nScheme != INTERNET_SCHEME_HTTP)))) {
+        throw std::invalid_argument("Local mode requires a numeric loopback endpoint");
+    }
+    return {host,
             parts.dwUrlPathLength ? std::wstring(parts.lpszUrlPath, parts.dwUrlPathLength) : L"/",
-            parts.nPort};
+            parts.nPort, secure};
 }
 void validate_options(const ChatCompletionsOptions& options) {
-    validate_https_endpoint(options.endpoint_url);
+    validate_chat_endpoint(options.endpoint_url, options.local_mode);
     if (options.output_token_parameter != "max_tokens" &&
         options.output_token_parameter != "max_completion_tokens") {
         throw std::invalid_argument("Select a supported output token parameter");
@@ -119,6 +127,9 @@ std::string request_header(HINTERNET handle) {
 void validate_https_endpoint(const std::string& endpoint) {
     (void)split_endpoint(endpoint);
 }
+void validate_chat_endpoint(const std::string& endpoint, bool local_mode) {
+    (void)split_endpoint(endpoint, local_mode);
+}
 
 std::string chat_completion_body(const ProviderRequest& request,
                                  const ChatCompletionsOptions& options) {
@@ -132,6 +143,9 @@ std::string chat_completion_body(const ProviderRequest& request,
                  {"stream", false},
                  {"n", 1},
                  {options.output_token_parameter, request.output_token_limit}};
+    if (options.local_mode) {
+        body.erase("n");
+    }
     if (options.temperature) {
         body["temperature"] = *options.temperature;
     }
@@ -141,13 +155,13 @@ std::string chat_completion_body(const ProviderRequest& request,
 HttpResponse WinHttpTransport::post(const HttpRequest& request, const RequestControl& control) {
     HttpResponse response;
     response.failure = HttpFailure::before_send;
-    const auto endpoint = split_endpoint(request.endpoint_url);
+    const auto endpoint = split_endpoint(request.endpoint_url, request.local_mode);
     if (!request.timeout_ms ||
         request.timeout_ms > static_cast<unsigned>(std::numeric_limits<int>::max()) ||
         !request.max_response_bytes || request.body.size() > std::numeric_limits<DWORD>::max()) {
         return response;
     }
-    if (request.bearer_token.empty() ||
+    if ((!request.local_mode && request.bearer_token.empty()) ||
         std::any_of(request.bearer_token.begin(), request.bearer_token.end(),
                     [](unsigned char c) { return c <= 32 || c > 126; })) {
         return response;
@@ -169,8 +183,9 @@ HttpResponse WinHttpTransport::post(const HttpRequest& request, const RequestCon
             std::max<std::int64_t>(0, std::min<std::int64_t>(time_left, request.timeout_ms)));
     };
     InternetHandle session(WinHttpOpen(L"LongTermMemoryBenchmark/0.1",
-                                       WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, WINHTTP_NO_PROXY_NAME,
-                                       WINHTTP_NO_PROXY_BYPASS, 0));
+                                       request.local_mode ? WINHTTP_ACCESS_TYPE_NO_PROXY
+                                                          : WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY,
+                                       WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
     if (!session || !remaining()) {
         return response;
     }
@@ -184,9 +199,9 @@ HttpResponse WinHttpTransport::post(const HttpRequest& request, const RequestCon
     if (!connection) {
         return response;
     }
-    InternetHandle handle(WinHttpOpenRequest(connection.get(), L"POST", endpoint.path.c_str(),
-                                             nullptr, WINHTTP_NO_REFERER,
-                                             WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE));
+    InternetHandle handle(WinHttpOpenRequest(
+        connection.get(), L"POST", endpoint.path.c_str(), nullptr, WINHTTP_NO_REFERER,
+        WINHTTP_DEFAULT_ACCEPT_TYPES, endpoint.secure ? WINHTTP_FLAG_SECURE : 0));
     if (!handle) {
         return response;
     }
@@ -202,8 +217,11 @@ HttpResponse WinHttpTransport::post(const HttpRequest& request, const RequestCon
     if (!set_timeouts()) {
         return response;
     }
-    const auto headers = wide("Content-Type: application/json\r\nAuthorization: Bearer " +
-                              request.bearer_token + "\r\n");
+    std::string header_text = "Content-Type: application/json\r\n";
+    if (!request.bearer_token.empty()) {
+        header_text += "Authorization: Bearer " + request.bearer_token + "\r\n";
+    }
+    const auto headers = wide(header_text);
     response.failure = HttpFailure::possibly_sent;
     if (!WinHttpSendRequest(handle.get(), headers.c_str(), static_cast<DWORD>(headers.size()),
                             const_cast<char*>(request.body.data()),
@@ -251,8 +269,9 @@ ChatCompletionsProvider::ChatCompletionsProvider(ChatCompletionsOptions options,
                                                  HttpTransport& transport)
     : options_(std::move(options)), bearer_token_(std::move(bearer)), transport_(transport) {
     validate_options(options_);
-    if (bearer_token_.empty() || std::any_of(bearer_token_.begin(), bearer_token_.end(),
-                                             [](unsigned char c) { return c <= 32 || c > 126; })) {
+    if ((!options_.local_mode && bearer_token_.empty()) ||
+        std::any_of(bearer_token_.begin(), bearer_token_.end(),
+                    [](unsigned char c) { return c <= 32 || c > 126; })) {
         throw std::invalid_argument("A valid environment credential is required");
     }
 }
@@ -264,9 +283,10 @@ ProviderReply ChatCompletionsProvider::generate(const ProviderRequest& request,
         return {ProviderStatus::cancelled, "", "", "Cancelled before HTTP transport", {}};
     }
     const auto body = chat_completion_body(request, options_);
-    const auto response = transport_.post({options_.endpoint_url, bearer_token_, body,
-                                           options_.timeout_ms, request.response_byte_limit},
-                                          control);
+    const auto response =
+        transport_.post({options_.endpoint_url, bearer_token_, body, options_.timeout_ms,
+                         request.response_byte_limit, options_.local_mode},
+                        control);
     ProviderReply reply;
     reply.request_id = response.request_id;
     if (response.failure != HttpFailure::none) {
@@ -309,8 +329,18 @@ ProviderReply ChatCompletionsProvider::generate(const ProviderRequest& request,
         }
         if (parsed.contains("usage") && !parsed.at("usage").is_null()) {
             const auto& usage = parsed.at("usage");
-            reply.usage = ProviderUsage{token_count(usage.at("prompt_tokens")),
-                                        token_count(usage.at("completion_tokens"))};
+            if (usage.contains("prompt_tokens") && usage.contains("completion_tokens")) {
+                reply.usage = ProviderUsage{token_count(usage.at("prompt_tokens")),
+                                            token_count(usage.at("completion_tokens"))};
+            } else if (!options_.local_mode) {
+                throw std::invalid_argument("Incomplete response usage");
+            } else {
+                for (const auto* field : {"prompt_tokens", "completion_tokens"}) {
+                    if (usage.contains(field)) {
+                        (void)token_count(usage.at(field));
+                    }
+                }
+            }
         }
         if (parsed.at("model").get<std::string>() != request.model.version) {
             reply.status = ProviderStatus::configuration_error;

@@ -33,6 +33,21 @@ const std::string plan_template = R"({"schema_version":1,"source_revision":"abc1
   "seed":"1","top_k":3,"output_directory":"../runtime/pilot"})";
 
 void fills_settings() {
+    auto local_json = Json::parse(ltm::dashboard::settings_to_json(settings()));
+    local_json["run_mode"] = "local";
+    local_json["endpoint_url"] = "http://127.0.0.1:8766/v1/chat/completions";
+    local_json["max_cost_nanos"] = "0";
+    const auto local = ltm::dashboard::settings_from_json(local_json.dump());
+    auto local_template = Json::parse(plan_template);
+    local_template["prompt_profile"] = "compact_local_smoke";
+    local_template["tokenizer_bound_verified"] = true;
+    const auto local_plan = Json::parse(ltm::dashboard::compare_config(local_template.dump(), local));
+    require(local_plan.at("execution_mode") == "local" && !local_plan.contains("api_key_env"), "Local plans execute without credentials");
+    require(local_plan.at("provider_policy").at("input_token_price_nanos") == "0", "Local prices are zero");
+    require(local_plan.at("provider_policy").at("output_token_price_nanos") == "0" && local_plan.at("provider_policy").at("request_price_nanos") == "0", "Every local price is zero");
+    bool refused = false;
+    try { ltm::dashboard::compare_config(plan_template, local); } catch (const std::invalid_argument&) { refused = true; }
+    require(refused, "Local execution needs trusted compact template");
     const auto plan = Json::parse(ltm::dashboard::compare_config(plan_template, settings()));
     require(plan.at("endpoint_url") == "https://provider.example/v1/chat/completions", "Endpoint comes from settings");
     require(plan.at("reader") == Json{{"id", "reader-model"}, {"version", "reader-2026-10"}}, "Reader id and version");
@@ -67,6 +82,15 @@ void prepares_dry_run() {
     std::error_code ignored; std::filesystem::remove_all(folder, ignored);
     require(arguments == std::vector<std::string>{"--config", config.string(), "--dry-run"}, "Runs a dry run of the config");
     require(Json::parse(written).at("seed") == "42", "The run's configuration is written to its folder");
+    std::filesystem::create_directories(folder);
+    auto local = settings(); local.run_mode = "local"; local.max_cost_nanos = 0;
+    local.endpoint_url = "http://127.0.0.1:8766/v1/chat/completions";
+    auto local_template = Json::parse(plan_template);
+    local_template["prompt_profile"] = "compact_local_smoke";
+    local_template["tokenizer_bound_verified"] = true;
+    const auto execute_arguments = ltm::dashboard::compare_dry_run(local_template.dump())(local, folder);
+    require(execute_arguments == std::vector<std::string>{"--config", config.string(), "--execute"}, "Explicit saved local mode dispatches real run");
+    std::filesystem::remove_all(folder, ignored);
 }
 }
 

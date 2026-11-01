@@ -112,3 +112,31 @@ Sources: [Chat Completions create](https://developers.openai.com/api/reference/r
 [Gemini compatibility](https://ai.google.dev/gemini-api/docs/openai/),
 [WinHTTP response reads](https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpreaddata),
 [WinHTTP redirect policy](https://learn.microsoft.com/en-us/windows/win32/winhttp/option-flags).
+
+## Local loopback profile
+
+Set `execution_mode: "local"` for a numeric `127.0.0.1` or `[::1]` endpoint.
+This explicit profile supports HTTP on the Surface, bypasses proxies, and omits
+the bearer header when the credential is empty. Omit `api_key_env` or set it to
+an empty string. Declare zero input/output/request prices and zero
+`max_cost_nanos`; positive request/token caps and the verified token-bound
+declaration still apply to execution. The manifest records the execution mode.
+The default `https` profile retains external TLS, credential and spending gates.
+
+The local payload contains `model`, `messages`, `stream`, the selected output cap,
+and temperature only when configured. Set temperature to null for the existing
+Qwen service, which accepts `max_tokens` up to32. Its model identifier is
+`qwen3-0.6b-q8_0`; returned model identity must match exactly. Partial local token
+usage remains in response metadata; combined input/output usage stays unavailable
+and the request reservation remains accounted when input usage is absent.
+
+Set `prompt_profile: "compact_local_smoke"` and `fresh_distractors: 0` for a tiny
+generated correction fixture. This local-only profile renders dated source text
+and the question directly, preserving selected evidence. It checks the service's
+512 serialized context-byte limit including the user role framing before
+dispatch. Both output limits should be32, input upper bound512, framing32 and
+context limit1024. The manifest records this profile and distractor count.
+This is a plumbing comparison with a tiny fixture. The generic fresh benchmark
+retains its original history and prompt format. The local service reports
+`finish_reason: stop` unconditionally; the manifest records that compatibility
+limit so it supplies no evidence that generation finished naturally.

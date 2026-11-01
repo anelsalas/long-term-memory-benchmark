@@ -3,6 +3,16 @@ import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("app.js", import.meta.url), "utf8");
 const app = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
+assert.equal(app.runPresentation().label, "Start dry run");
+assert.equal(app.runPresentation("local").label, "Start local run");
+assert.match(app.runPresentation("local").help, /for real.*\$0/);
+assert.equal(app.setupCost("local", "0.000000000"), "0");
+assert.throws(() => app.setupCost("local", "0.000000001"), /\$0/);
+assert.throws(() => app.setupCost("execute", "0"), /supported/);
+assert.equal(app.setupCost("dry_run", "1.25"), "1250000000");
+const html = await readFile(new URL("index.html", import.meta.url), "utf8");
+assert.match(html, /id="run-mode"/);
+assert.match(html, /value="local"/);
 
 assert.equal(app.integerValue("18446744073709551615"), "18446744073709551615");
 assert.throws(() => app.integerValue("18446744073709551616"));

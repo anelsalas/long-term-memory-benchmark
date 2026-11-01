@@ -215,6 +215,10 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_dashboard_server)
   endif()
   add_test(NAME ltm.dashboard.help COMMAND long-term-memory-dashboard --help)
   set_tests_properties(ltm.dashboard.help PROPERTIES LABELS "dashboard;offline" PASS_REGULAR_EXPRESSION "--dry-run")
+  add_test(NAME ltm.dashboard.plan.startup_check COMMAND long-term-memory-dashboard
+    --plan "${CMAKE_CURRENT_SOURCE_DIR}/configs/local-qwen-smoke.example.json" --check-plan)
+  set_tests_properties(ltm.dashboard.plan.startup_check PROPERTIES LABELS "dashboard;integration;offline"
+    PASS_REGULAR_EXPRESSION "Plan validated")
   foreach(case IN ITEMS round_trip foreign_host_refused)
     add_test(NAME ltm.dashboard.server.${case} COMMAND ltm_dashboard_server_tests ${case})
     set_tests_properties(ltm.dashboard.server.${case} PROPERTIES LABELS "dashboard;integration;offline" TIMEOUT 30)

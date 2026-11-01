@@ -1,5 +1,18 @@
 const U64_MAX = 18446744073709551615n;
 
+export function runPresentation(mode = "dry_run") {
+  return mode === "local"
+    ? { label: "Start local run", help: "Runs the saved local model comparison for real. Cost: $0. One run at a time." }
+    : { label: "Start dry run", help: "Saves a comparison plan with zero model calls. One run at a time." };
+}
+
+export function setupCost(mode, dollars) {
+  if (mode !== "dry_run" && mode !== "local") throw new Error("Select a supported run mode.");
+  const nanos = dollarsToNanos(dollars);
+  if (mode === "local" && nanos !== "0") throw new Error("Local runs require a $0 cost limit.");
+  return nanos;
+}
+
 export function integerValue(value) {
   if (typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Use decimal text for large integers.");
   if (!/^\d+$/.test(String(value))) throw new Error("Enter a whole nonnegative number.");
@@ -65,6 +78,9 @@ if (typeof document !== "undefined") {
     byId("connection-state").classList.toggle("connected", state.connected);
     byId("save-setup").disabled = !state.connected || state.busy;
     byId("start-run").disabled = !state.connected || state.busy || !state.settings || active;
+    const presentation = runPresentation(state.settings?.run_mode);
+    byId("start-run").textContent = presentation.label;
+    byId("run-help").textContent = presentation.help;
     byId("stop-run").disabled = !state.connected || state.busy || run?.status !== "running";
     byId("setup-state").textContent = state.settings ? "Saved setup" : "Setup unavailable";
     byId("summary-reader").textContent = modelText(state.settings?.reader);
@@ -98,12 +114,20 @@ if (typeof document !== "undefined") {
 
   function fillSetup(settings) {
     const fields = {
+      "run-mode": settings?.run_mode || "dry_run",
       endpoint: settings?.endpoint_url, "reader-provider": settings?.reader.provider, "reader-id": settings?.reader.id,
       "reader-version": settings?.reader.version, "judge-provider": settings?.judge.provider, "judge-id": settings?.judge.id,
       "judge-version": settings?.judge.version, "max-requests": settings?.max_requests, "max-tokens": settings?.max_tokens,
       "max-cost": settings ? nanosToDollars(settings.max_cost_nanos) : "", seed: settings?.seed,
     };
     for (const [id, value] of Object.entries(fields)) byId(id).value = value ?? "";
+    modeChanged();
+  }
+
+  function modeChanged() {
+    const local = byId("run-mode").value === "local";
+    byId("max-cost").readOnly = local;
+    if (local) byId("max-cost").value = "0";
   }
 
   async function loadOutput() {
@@ -168,15 +192,16 @@ if (typeof document !== "undefined") {
     act(async () => {
       const text = (id) => byId(id).value.trim();
       const data = await api("/api/settings", { method: "PUT", body: {
-        schema_version: 1, endpoint_url: text("endpoint"),
+        schema_version: 1, run_mode: text("run-mode"), endpoint_url: text("endpoint"),
         reader: { provider: text("reader-provider"), id: text("reader-id"), version: text("reader-version") },
         judge: { provider: text("judge-provider"), id: text("judge-id"), version: text("judge-version") },
         max_requests: integerValue(text("max-requests")), max_tokens: integerValue(text("max-tokens")),
-        max_cost_nanos: dollarsToNanos(text("max-cost")), seed: integerValue(text("seed")),
+        max_cost_nanos: setupCost(text("run-mode"), text("max-cost")), seed: integerValue(text("seed")),
       } });
       fillSetup(data.settings);
     }, "Setup saved.");
   });
+  byId("run-mode").addEventListener("change", modeChanged);
   byId("start-run").addEventListener("click", () => act(async () => {
     const data = await api("/api/runs", { method: "POST", body: {} });
     state.selected = data.run.id;

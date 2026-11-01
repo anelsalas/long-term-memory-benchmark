@@ -54,18 +54,24 @@ bool starts(const std::string& s, const char* prefix) { return s.rfind(prefix, 0
 bool digits(const std::string& s) {
     return !s.empty() && s.size() <= 5 && std::all_of(s.begin(), s.end(), [](char c) { return c >= '0' && c <= '9'; });
 }
-// The comparison command sends requests over HTTPS only.
-void check_endpoint(const std::string& url) {
+// Local execution uses numeric loopback HTTP; standard planning uses HTTPS.
+void check_endpoint(const std::string& url, bool local) {
     if (std::any_of(url.begin(), url.end(), [](unsigned char c) { return c <= 32 || c == '?' || c == '#' || c == '@'; }))
         invalid("Endpoint must not contain spaces, credentials, query or fragment");
-    if (!starts(url, "https://")) invalid("Endpoint must use https");
-    const auto rest = url.substr(8);
+    if (!starts(url, local ? "http://" : "https://")) invalid(local ? "Local endpoint must use http" : "Dry-run endpoint must use https");
+    const auto rest = url.substr(local ? 7 : 8);
     const auto authority = rest.substr(0, rest.find('/'));
     const auto host_end = starts(authority, "[") ? authority.find(']') + 1 : authority.find(':');
     const auto host = authority.substr(0, host_end);
     const auto port = host_end < authority.size() ? authority.substr(host_end) : std::string();
     if (host.empty() || host == "[" || (!port.empty() && (port[0] != ':' || !digits(port.substr(1)))))
         invalid("Endpoint requires a host and optional numeric port");
+    if (local && host != "127.0.0.1" && host != "[::1]")
+        invalid("Local endpoint requires numeric loopback 127.0.0.1 or [::1]");
+    if (local && !port.empty()) {
+        const auto number = std::stoul(port.substr(1));
+        if (!number || number > 65535) invalid("Local endpoint port must be 1..65535");
+    }
 }
 
 Json model_json(const ModelIdentity& m) { return {{"provider", m.provider}, {"id", m.id}, {"version", m.version}}; }
@@ -76,21 +82,26 @@ ModelIdentity model_from(const Json& j) {
 }
 
 std::string settings_to_json(const Settings& s) {
-    return Json{{"schema_version", 1}, {"endpoint_url", s.endpoint_url},
+    return Json{{"schema_version", 1}, {"run_mode", s.run_mode}, {"endpoint_url", s.endpoint_url},
         {"reader", model_json(s.reader)}, {"judge", model_json(s.judge)},
         {"max_requests", std::to_string(s.max_requests)}, {"max_tokens", std::to_string(s.max_tokens)},
         {"max_cost_nanos", std::to_string(s.max_cost_nanos)}, {"seed", std::to_string(s.seed)}}.dump();
 }
 Settings settings_from_json(const std::string& input) {
-    const auto j = parse(input);
-    fields(j, {"schema_version", "endpoint_url", "reader", "judge", "max_requests", "max_tokens", "max_cost_nanos", "seed"});
+    auto j = parse(input);
+    if (j.is_object() && !j.contains("run_mode")) j["run_mode"] = "dry_run";
+    fields(j, {"schema_version", "run_mode", "endpoint_url", "reader", "judge", "max_requests", "max_tokens", "max_cost_nanos", "seed"});
     if (j.at("schema_version") != 1) invalid("Unsupported settings schema version");
     Settings s;
+    s.run_mode = text(j, "run_mode");
+    if (s.run_mode != "dry_run" && s.run_mode != "local") invalid("Run mode must be dry_run or local");
     s.endpoint_url = text(j, "endpoint_url");
-    check_endpoint(s.endpoint_url);
+    check_endpoint(s.endpoint_url, s.run_mode == "local");
     s.reader = model_from(j.at("reader")); s.judge = model_from(j.at("judge"));
     s.max_requests = decimal(j, "max_requests"); s.max_tokens = decimal(j, "max_tokens");
     s.max_cost_nanos = decimal(j, "max_cost_nanos"); s.seed = decimal(j, "seed");
+    if (s.run_mode == "local" && (s.max_cost_nanos || !s.max_requests || !s.max_tokens))
+        invalid("Local runs require zero cost and positive request/token limits");
     return s;
 }
 std::optional<Settings> load_settings(const std::filesystem::path& file) {

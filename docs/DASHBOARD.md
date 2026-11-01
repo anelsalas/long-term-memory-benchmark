@@ -2,7 +2,7 @@
 
 A thin local control panel for benchmark runs: save the model setup and limits,
 start and stop runs, and read their output. [ltm-compare](COMPARE.md) does the
-work; the dashboard prepares its configuration and launches it as a dry run.
+work; the saved mode selects a dry plan or a real local-model comparison.
 
 ## Build and run
 
@@ -28,11 +28,17 @@ Open http://127.0.0.1:18080/. Options (`--help` lists them):
 Each run copies the plan, fills in the saved endpoint, reader and judge
 (`id`, `version`), request/token/cost limits and seed, sets `output_directory` to
 `artifacts`, writes it to the run folder as `config.json` and starts
-`COMMAND --config <run folder>/config.json --dry-run`. Every other plan field
-(source revision, credential variable name, prices, token limits, top-k,
-timeouts, public case) stays as reviewed in the plan file. A dry run makes zero
-provider calls and reads no credentials. The dashboard has no execute option;
-live runs need G01's model access and an approved budget.
+`COMMAND --config <run folder>/config.json --dry-run` by default. Saved
+`run_mode:"local"` selects `--execute`, the numeric loopback endpoint and zero
+prices. It requires a reviewed `compact_local_smoke` plan with verified token
+bounds. Launch with `--plan configs/local-qwen-smoke.example.json` for that
+profile. Local configuration omits the API-key variable and retains reviewed
+context/output bounds, rendering, timeouts and retrieval settings.
+
+In Setup, select **Local · run model for real · $0**, enter the local model and
+endpoint, set positive request/token limits, then save. Control shows
+**Start local run**. Its output contains actual paired results and failures.
+The dry-run mode shows **Start dry run** and produces a plan with zero calls.
 Ctrl+C stops the dashboard and ends any active run.
 
 ## Runs
@@ -50,13 +56,20 @@ it started. The run inherits only its output file.
 
 Saved settings are validated in C++ before they are written:
 
-- `endpoint_url`: the full https chat-completions URL; no credentials, query or fragment.
+- `run_mode`: `dry_run` (default, including older saved settings) or `local`.
+- `endpoint_url`: full https chat-completions URL for dry runs; local execution
+  accepts http with numeric `127.0.0.1` or `[::1]` only. Credentials, query and
+  fragment are rejected.
 - `reader` and `judge`: nonblank `provider`, `id` and `version`. The plan receives
   `id` and `version` (the exact model sent on the wire); `provider` is recorded with the run.
 - `max_requests`, `max_tokens`, `max_cost_nanos` (USD × 10^9) and `seed`: uint64
   decimal strings.
+- Local mode requires positive request/token limits and zero cost. C++ enforces
+  these conditions, clears credential configuration and sets all model prices
+  to zero. The browser displays a read-only zero cost field in local mode.
 
-Model credentials are never entered in the dashboard.
+Local calls use the existing loopback service without a key. External endpoints
+remain available for dry planning. Each run stores its saved mode with settings.
 
 ## HTTP API
 
@@ -86,3 +99,11 @@ Responses are `no-store`, `nosniff`, with a same-origin Content Security Policy.
 `ctest -L dashboard` covers settings, plan preparation, run control, the API, the
 Windows launcher (real processes, including an ltm-compare dry run) and the HTTP server. `node web/tests.mjs` checks the page helpers.
 Browser checks are recorded in [reports/dashboard-service.md](../reports/dashboard-service.md).
+
+## Startup check
+
+`long-term-memory-dashboard --plan <reviewed-plan.json> --check-plan` validates
+the template and exits before opening a listening socket. The selected saved
+settings are validated separately when preparing a run. The default dry-run
+configuration uses the standard plan; localmode uses the reviewed compact local
+plan and an explicit saved localmode selection.

@@ -36,6 +36,11 @@ void roundtrip() {
     require(same(s.reader, expected.reader) && same(s.judge, expected.judge), "Models survive round trip");
     require(s.max_requests == 20 && s.max_tokens == u64_max, "Request and token caps survive round trip");
     require(s.max_cost_nanos == 2500000000 && s.seed == u64_max, "Cost cap and seed survive round trip");
+    require(s.run_mode == "dry_run", "Default mode plans only");
+    auto legacy = ltm::dashboard::settings_to_json(expected);
+    const auto mode = legacy.find("\"run_mode\":\"dry_run\",");
+    legacy.erase(mode, std::string("\"run_mode\":\"dry_run\",").size());
+    require(ltm::dashboard::settings_from_json(legacy).run_mode == "dry_run", "Legacy setup stays dry-run");
 }
 void rejected(const std::string& text, const std::string& why) {
     try { ltm::dashboard::settings_from_json(text); }
@@ -65,6 +70,27 @@ void rejects_bad_decimals() {
 }
 std::string endpoint(const std::string& url) { return with("\"https://provider.example/v1\"", "\"" + url + "\""); }
 void endpoint_rules() {
+    auto local = endpoint("http://127.0.0.1:8766/v1/chat/completions");
+    local.replace(local.find("\"run_mode\":\"dry_run\""), std::string("\"run_mode\":\"dry_run\"").size(), "\"run_mode\":\"local\"");
+    const auto cost = local.find("\"max_cost_nanos\":\"2500000000\"");
+    local.replace(cost, std::string("\"max_cost_nanos\":\"2500000000\"").size(), "\"max_cost_nanos\":\"0\"");
+    require(ltm::dashboard::settings_from_json(local).endpoint_url == "http://127.0.0.1:8766/v1/chat/completions", "Explicit local execution accepts numeric loopback");
+    const auto saved_local = ltm::dashboard::settings_from_json(local);
+    require(ltm::dashboard::settings_from_json(ltm::dashboard::settings_to_json(saved_local)).run_mode == "local", "Local selection persists");
+    for (const std::string bad : {"http://localhost:8766/v1", "http://127.0.0.1.evil:8766/v1", "http://192.168.1.2/v1", "https://127.0.0.1/v1", "http://127.0.0.1:65536/v1", "http://127.0.0.1:0/v1", "http://2130706433/v1"}) {
+        auto candidate = saved_local; candidate.endpoint_url = bad;
+        rejected(ltm::dashboard::settings_to_json(candidate), "Non-numeric-loopback local endpoint");
+    }
+    auto invalid_local = saved_local; invalid_local.max_cost_nanos = 1;
+    rejected(ltm::dashboard::settings_to_json(invalid_local), "Paid local configuration");
+    invalid_local = saved_local; invalid_local.max_requests = 0;
+    rejected(ltm::dashboard::settings_to_json(invalid_local), "Unbounded local request configuration");
+    invalid_local = saved_local; invalid_local.max_tokens = 0;
+    rejected(ltm::dashboard::settings_to_json(invalid_local), "Missing local token budget");
+    invalid_local = saved_local; invalid_local.run_mode = "execute";
+    rejected(ltm::dashboard::settings_to_json(invalid_local), "External execution mode");
+    auto ipv6 = saved_local; ipv6.endpoint_url = "http://[::1]:8766/v1";
+    require(ltm::dashboard::settings_from_json(ltm::dashboard::settings_to_json(ipv6)).endpoint_url == ipv6.endpoint_url, "Numeric IPv6 loopback accepted");
     for (const std::string ok : {"https://provider.example/v1", "https://provider.example:8443",
             "https://localhost:8443/v1"})
         require(ltm::dashboard::settings_from_json(endpoint(ok)).endpoint_url == ok, "Accept endpoint " + ok);

@@ -15,6 +15,7 @@ struct Settings {
     std::uint64_t max_tokens = 0;
     std::uint64_t max_cost_nanos = 0;
     std::uint64_t seed = 0;
+    std::string run_mode = "dry_run";
 };
 
 std::string settings_to_json(const Settings& settings);

@@ -82,6 +82,47 @@ void successful_response() {
     expect(provider.response_metadata_json().find("fixture-token") == std::string::npos,
            "Credentials absent from metadata");
 }
+void explicit_local_endpoint() {
+    StubTransport transport;
+    transport.response = {200, successful_body().dump(), "", ltm::HttpFailure::none};
+    auto local = options();
+    local.endpoint_url = "http://127.0.0.1:8080/v1/chat/completions";
+    local.local_mode = true;
+    ltm::ChatCompletionsProvider provider(local, "", transport);
+    expect(provider.generate(request(), {}).status == ltm::ProviderStatus::success,
+           "Explicit local execution accepts a credential-free loopback response");
+    expect(transport.observed.local_mode && transport.observed.bearer_token.empty(),
+           "Local transport receives explicit authorization scope without credential");
+    expect(!Json::parse(transport.observed.body).contains("n"),
+           "Local profile sends the minimal one-answer-compatible payload");
+    auto partial = successful_body();
+    partial["usage"] = {{"completion_tokens", 3}};
+    transport.response.body = partial.dump();
+    const auto partial_result = provider.generate(request(), {});
+    expect(partial_result.status == ltm::ProviderStatus::success && !partial_result.usage,
+           "Partial local usage preserves success without inventing input usage");
+    expect(Json::parse(provider.response_metadata_json()).at("usage").at("completion_tokens") == 3,
+           "Partial usage remains recorded as reported metadata");
+    ltm::validate_chat_endpoint("http://[::1]:8080/v1/chat/completions", true);
+    for (const auto* endpoint :
+         {"http://localhost:8080/v1", "http://127.0.0.1.example/v1", "http://127.1/v1",
+          "https://provider.example/v1", "http://192.168.1.2/v1"}) {
+        bool rejected = false;
+        try {
+            ltm::validate_chat_endpoint(endpoint, true);
+        } catch (const std::invalid_argument&) {
+            rejected = true;
+        }
+        expect(rejected, "Local mode rejects every nonnumeric-loopback endpoint");
+    }
+    bool rejected = false;
+    try {
+        ltm::ChatCompletionsProvider external(options(), "", transport);
+    } catch (const std::invalid_argument&) {
+        rejected = true;
+    }
+    expect(rejected, "External HTTPS still requires credential");
+}
 void conservative_failures() {
     for (unsigned status : {301, 429, 500, 503}) {
         StubTransport transport;
@@ -136,6 +177,7 @@ int main() {
         {"payload", payload},
         {"endpoint_validation", endpoint_validation},
         {"successful_response", successful_response},
+        {"explicit_local_endpoint", explicit_local_endpoint},
         {"conservative_failures", conservative_failures},
         {"malformed_or_wrong_model", malformed_or_wrong_model},
         {"cancellation_and_transport", cancellation_and_transport}};

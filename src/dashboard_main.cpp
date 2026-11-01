@@ -14,7 +14,7 @@
 namespace {
 const char* usage =
     "Usage: long-term-memory-dashboard [--bind ADDRESS] [--port PORT] [--data DIR] [--web DIR] [--plan FILE]\n"
-    "                                  [-- COMMAND...]\n"
+    "                                  [--check-plan] [-- COMMAND...]\n"
     "  --bind  listen address (default 127.0.0.1; use a LAN address to allow other devices)\n"
     "  --port  listen port (default 18080)\n"
     "  --data  folder for settings.json and runs/ (default runtime/dashboard)\n"
@@ -22,7 +22,8 @@ const char* usage =
     "  --plan  reviewed ltm-compare plan; each run fills in the saved setup (default:\n"
     "          configs/pilot-fresh-plan.example.json)\n"
     "  COMMAND comparison program (default: ltm-compare next to this program). Each run adds\n"
-    "          --config <run folder>/config.json --dry-run, so no provider calls are made.\n";
+    "          --config <run folder>/config.json --dry-run by default; saved local mode uses --execute.\n"
+    "  --check-plan validate the reviewed plan and exit before starting the server.\n";
 
 ltm::dashboard::Server* active_server = nullptr;
 BOOL WINAPI on_console_close(DWORD) {
@@ -44,10 +45,12 @@ int main(int argc, char** argv) {
     std::filesystem::path web = LTM_DASHBOARD_WEB_DIR;
     std::filesystem::path plan = LTM_DASHBOARD_PLAN;
     std::vector<std::string> command;
+    bool check_plan = false;
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
         const bool has_value = i + 1 < argc;
         if (arg == "--help") { std::cout << usage; return 0; }
+        if (arg == "--check-plan") { check_plan = true; continue; }
         if (arg == "--") { command.assign(argv + i + 1, argv + argc); break; }
         if (arg == "--bind" && has_value) bind = argv[++i];
         else if (arg == "--port" && has_value) port = std::strtoul(argv[++i], nullptr, 10);
@@ -63,7 +66,8 @@ int main(int argc, char** argv) {
         std::ifstream plan_file(plan, std::ios::binary);
         if (!plan_file) throw std::runtime_error("Cannot read plan " + plan.string());
         const std::string plan_template((std::istreambuf_iterator<char>(plan_file)), {});
-        ltm::dashboard::compare_config(plan_template, {});  // reject a malformed plan at startup
+        ltm::dashboard::validate_compare_plan_template(plan_template);
+        if (check_plan) { std::cout << "Plan validated\n"; return 0; }
         std::filesystem::create_directories(data / "runs");
         ltm::dashboard::WindowsLauncher launcher;
         ltm::dashboard::RunControl runs(launcher, data / "runs", command, ltm::dashboard::compare_dry_run(plan_template));
