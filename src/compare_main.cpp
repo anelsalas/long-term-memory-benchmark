@@ -332,7 +332,8 @@ int main(int argc, char** argv) {
                               "chat_framing_token_allowance",
                               "tokenizer_bound_verified",
                               "max_candidate_answer_bytes",
-                              "context_budget_tokens"});
+                              "context_budget_tokens",
+                              "include_fresh"});
         if (integer(config.at("schema_version")) != 1) {
             throw std::invalid_argument("Unsupported runtime configuration version");
         }
@@ -406,9 +407,13 @@ int main(int argc, char** argv) {
             }
         }
         if (conditions.empty()) throw std::invalid_argument("Conditions required");
-        if (unique_conditions.count("known_evidence") && config.contains("public_case") &&
-            !config.at("public_case").is_null()) {
-            throw std::invalid_argument("Known evidence currently requires fresh fixtures");
+        const bool has_public = config.contains("public_case") && !config.at("public_case").is_null();
+        if (config.contains("include_fresh") && !config.at("include_fresh").is_boolean()) {
+            throw std::invalid_argument("include_fresh must be a boolean");
+        }
+        const bool include_fresh = config.value("include_fresh", true);
+        if (!include_fresh && !has_public) {
+            throw std::invalid_argument("include_fresh false requires a public case");
         }
         const auto top_k = integer(config.at("top_k"));
         if (!top_k || top_k > 1000) {
@@ -433,7 +438,8 @@ int main(int argc, char** argv) {
         fresh_work.data.evaluator.question_id = fresh.candidate.case_id;
         fresh_work.data.evaluator.question_type = "knowledge-update";
         fresh_work.data.evaluator.answer_json = Json(std::to_string(*fresh.expected.score)).dump();
-        std::vector<WorkCase> work = {std::move(fresh_work)};
+        std::vector<WorkCase> work;
+        if (include_fresh) work.push_back(std::move(fresh_work));
         std::string public_checksum;
         if (config.contains("public_case") && !config.at("public_case").is_null()) {
             const auto& selected = config.at("public_case");
@@ -447,7 +453,11 @@ int main(int argc, char** argv) {
             auto loaded = ltm::load_longmemeval_case(
                 bytes, selected.at("question_id").get<std::string>(), provenance);
             public_checksum = loaded.actual_sha256;
-            work.push_back({"public", std::move(loaded), {}});
+            // Known evidence for a published question: its labelled evidence messages.
+            std::vector<std::string> evidence;
+            for (const auto& message : loaded.evaluator.messages)
+                if (message.has_answer.value_or(false)) evidence.push_back(message.source_id);
+            work.push_back({"public", std::move(loaded), {}, std::move(evidence)});
         }
         ltm::ExperimentManifest manifest;
         manifest.source_revision = config.at("source_revision").get<std::string>();

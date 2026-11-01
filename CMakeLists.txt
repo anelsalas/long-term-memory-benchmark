@@ -220,6 +220,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   set_tests_properties(ltm.integration.compare_cli PROPERTIES LABELS "memory;integration;offline")
   add_test(NAME ltm.integration.compare_bm25_budget COMMAND ${CMAKE_COMMAND}
     "-DLTM_COMPARE_EXE=$<TARGET_FILE:ltm-compare>" "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
+    "-DLTM_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/compare_budget_checks.cmake")
   set_tests_properties(ltm.integration.compare_bm25_budget PROPERTIES LABELS "retrieval;memory;integration;offline")
   add_executable(ltm_dashboard_settings_tests tests/dashboard_settings_tests.cpp)
