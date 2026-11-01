@@ -132,15 +132,13 @@ LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,
         ids.empty() || ids.size() != dates.size() || ids.size() != sessions.size())
         invalid("History session/date/ID arrays have invalid types or lengths");
     std::set<std::string> source_ids;
-    std::optional<std::array<int, 6>> previous_date;
     for (std::size_t i = 0; i < sessions.size(); ++i) {
         const auto original_id = text(ids[i]);
-        if (!source_ids.insert(original_id).second) invalid("Duplicate history session ID");
+        source_ids.insert(original_id);
         CandidateSession session{opaque_id("session-", i), text(dates[i]), {}};
         const auto date = date_key(session.date);
-        if ((previous_date && date < *previous_date) || date > question_date)
-            invalid("History is not chronological at question time");
-        previous_date = date;
+        if (date > question_date)
+            invalid("History session occurs after question time");
         if (!sessions[i].is_array() || sessions[i].empty()) invalid("History session must contain messages");
         evaluator.sessions.push_back({session.source_id, original_id});
         for (std::size_t m = 0; m < sessions[i].size(); ++m) {
@@ -161,6 +159,8 @@ LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,
         }
         candidate.sessions.push_back(std::move(session));
     }
+    std::stable_sort(candidate.sessions.begin(), candidate.sessions.end(),
+        [](const CandidateSession& a, const CandidateSession& b) { return date_key(a.date) < date_key(b.date); });
     std::set<std::string> seen_gold;
     for (const auto& value : gold_sessions) {
         const auto id = text(value);

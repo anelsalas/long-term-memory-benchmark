@@ -31,7 +31,7 @@ candidate struct or its serialization. Gold annotations remain evaluator inputs.
 History dates and question dates are preserved exactly. The adapter accepts the
 published `YYYY/MM/DD (Day) HH:MM` format and UTC `YYYY-MM-DDTHH:MM:SSZ`, validates
 calendar/time ranges and recognized weekday labels, and compares chronological
-date components. The weekday label remains source text rather than a recomputed
+date components. The loader stably sorts sessions by date while preserving source occurrence IDs and original session mappings. Repeated original IDs remain separate occurrences. Sessions dated after the question are rejected and counted as an explicit evaluation adaptation. The weekday label remains source text rather than a recomputed
 calendar constraint. Session timestamps describe recorded chat sessions; event
 validity dates embedded in conversation text remain distinct.
 
@@ -39,7 +39,7 @@ validity dates embedded in conversation text remain distinct.
 
 The root is a nonempty JSON array with unique question IDs. Full schema checks
 apply to the selected case: required arrays/fields/types, matching session/date/ID
-lengths, unique source IDs, chronological histories through question time, valid
+lengths, unique opaque occurrence IDs, history dates through question time, valid
 user/assistant roles, Boolean answer annotations and known gold source references.
 Gold answers preserve any non-null JSON value. Missing/unknown selections, duplicate
 JSON keys, malformed dates and mismatched checksums raise `std::invalid_argument`.

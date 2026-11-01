@@ -167,3 +167,7 @@ Pin the cleaned LongMemEval-S revision and select ten cases per question type us
 ## Embedding thread setting
 
 Use twelve CPU threads for the current retrieval preparation run; record competing workloads when comparing timings. The original two-thread smoke measurement remains in the preparation report.
+
+## Dataset chronology and repeated IDs
+
+Stable-sort dated sessions and retain repeated source IDs as distinct opaque occurrences. Keep excluding post-question sessions under the existing chronological policy and report excluded cases; compare a full-corpus policy separately. Verify repeated-ID scorer parity against upstream before publication claims.

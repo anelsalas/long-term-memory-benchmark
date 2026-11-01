@@ -92,3 +92,7 @@ Pinned LongMemEval-S data and a 60-question stratified development selection are
 ## Embedding throughput check — November 1, 2026
 
 A 32-short-text batch returned all vectors in 7.874 s with two CPU threads and 2.106 s with twelve in separate runs. Long input throughput and concurrent workload effects require measurement.
+
+## Dataset loader correction — November 1, 2026
+
+The loader sorts sessions chronologically and retains repeated original session IDs as distinct opaque occurrences. The scorer accepts those mappings. New behavioral tests and validation of three affected published cases passed. Sessions dated after a question remain excluded pending a declared policy; official metric parity for repeated IDs needs further verification.
