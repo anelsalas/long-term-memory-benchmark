@@ -130,4 +130,24 @@ std::vector<std::size_t> pack(const std::vector<Unit>& units, const std::vector<
     return selected;
 }
 
+std::vector<std::string> ranked_ids(const std::vector<Unit>& units, const std::vector<Ranked>& ranking) {
+    std::vector<std::string> ids;
+    for (const auto& ranked : ranking) ids.push_back(units.at(ranked.unit).id);
+    return ids;
+}
+
+std::vector<Ranked> recency_rank(std::size_t count) {
+    std::vector<Ranked> ranked;
+    for (std::size_t unit = count; unit-- > 0;) ranked.push_back({unit, static_cast<double>(unit)});
+    return ranked;
+}
+
+EvidenceCoverage evidence_in_budget(const std::vector<Unit>& units, const std::vector<Ranked>& ranking,
+    const std::set<std::string>& evidence_ids, std::size_t budget_tokens) {
+    EvidenceCoverage coverage;
+    for (const auto& unit : units) coverage.evidence += evidence_ids.count(unit.id);
+    for (const auto index : pack(units, ranking, budget_tokens)) coverage.included += evidence_ids.count(units[index].id);
+    return coverage;
+}
+
 } // namespace ltm::retrieval

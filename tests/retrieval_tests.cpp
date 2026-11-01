@@ -99,6 +99,16 @@ void pack_fills_budget_in_rank_order() {
     require(pack(units, ranking, 1000) == std::vector<std::size_t>{0, 1, 2, 3}, "A large budget takes every round");
     require(pack(units, ranking, 0).empty(), "A zero budget selects nothing");
 }
+void evaluation_helpers() {
+    auto units = corpus({"a", "b", "c"});
+    for (auto& unit : units) unit.round_bytes = 40;  // 10 tokens each
+    const std::vector<Ranked> ranking{{2, 3}, {0, 2}, {1, 1}};
+    require(ranked_ids(units, ranking) == Ids{"u2", "u0", "u1"}, "IDs follow the ranking");
+    require(order(recency_rank(3)) == std::vector<std::size_t>{2, 1, 0}, "Recency ranks the newest round first");
+    const auto coverage = evidence_in_budget(units, ranking, {"u0", "u1", "missing"}, 20);
+    require(coverage.evidence == 2 && coverage.included == 1, "Counts evidence rounds present and packed");
+    require(evidence_in_budget(units, ranking, {}, 20).evidence == 0, "No evidence, nothing to cover");
+}
 }
 
 int main(int argc, char** argv) {
@@ -108,7 +118,8 @@ int main(int argc, char** argv) {
         {"terms_fold_case_and_split", terms_fold_case_and_split}, {"bm25_matches_okapi", bm25_matches_okapi},
         {"bm25_ties_keep_input_order", bm25_ties_keep_input_order},
         {"cosine_orders_by_similarity", cosine_orders_by_similarity}, {"rrf_fuses_rankings", rrf_fuses_rankings},
-        {"pack_fills_budget_in_rank_order", pack_fills_budget_in_rank_order}};
+        {"pack_fills_budget_in_rank_order", pack_fills_budget_in_rank_order},
+        {"evaluation_helpers", evaluation_helpers}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

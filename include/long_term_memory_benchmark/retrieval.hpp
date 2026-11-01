@@ -3,6 +3,7 @@
 #include "longmemeval.hpp"
 #include <cstddef>
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -68,5 +69,19 @@ std::size_t estimated_tokens(std::size_t bytes);
 // as unit indices in chronological order. Stops at the first round that does not fit.
 std::vector<std::size_t> pack(const std::vector<Unit>& units, const std::vector<Ranked>& ranking,
     std::size_t budget_tokens);
+
+// Unit IDs in ranking order (the input the official LongMemEval scorer expects).
+std::vector<std::string> ranked_ids(const std::vector<Unit>& units, const std::vector<Ranked>& ranking);
+
+// Baseline: newest round first.
+std::vector<Ranked> recency_rank(std::size_t count);
+
+struct EvidenceCoverage {
+    std::size_t evidence = 0;  // evidence rounds in the history
+    std::size_t included = 0;  // of those, packed within the budget
+};
+// How many rounds whose ID is in evidence_ids fit in the budget.
+EvidenceCoverage evidence_in_budget(const std::vector<Unit>& units, const std::vector<Ranked>& ranking,
+    const std::set<std::string>& evidence_ids, std::size_t budget_tokens);
 
 } // namespace ltm::retrieval

@@ -162,7 +162,8 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_link_libraries(ltm_retrieval_tests PRIVATE LongTermMemoryBenchmark::retrieval)
   foreach(case IN ITEMS rounds_group_user_with_replies rounds_score_user_text_only
       terms_fold_case_and_split bm25_matches_okapi bm25_ties_keep_input_order
-      cosine_orders_by_similarity rrf_fuses_rankings pack_fills_budget_in_rank_order)
+      cosine_orders_by_similarity rrf_fuses_rankings pack_fills_budget_in_rank_order
+      evaluation_helpers)
     add_test(NAME ltm.retrieval.${case} COMMAND ltm_retrieval_tests ${case})
     set_tests_properties(ltm.retrieval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()
