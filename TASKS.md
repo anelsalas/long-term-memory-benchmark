@@ -92,3 +92,13 @@ fresh workload and P08's full benchmark remain distinct pending experiments.
 57/57 combined native ARM64 tests passed. Browser completed dryrun and localrun;
 full-history answer82 correct, retrieved23 incorrect. Preserve the reference result.
 Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending.
+
+## Four-condition next actions — November 1, 2026
+
+- [x] Run20 correction histories in four conditions with local Qwen:80 requests.
+- [x] Publish per-answer evidence, accuracy, timing, tokens and runner resources in dashboard Results.
+- [ ] Validate known-evidence answers: compare explicit integer-only/abstention prompts and output allowance.
+- [ ] Add recall, dates, identity and absent-fact cases to the fixed suite.
+- [ ] Integrate semantic retrieval, Mem0 and Graphiti through the same conditions and scorer.
+- [ ] Measure model-worker resources and ingestion/storage cost separately.
+- [ ] Run published and held-out workloads with declared adaptations.

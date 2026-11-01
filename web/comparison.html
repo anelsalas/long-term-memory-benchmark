@@ -1,0 +1,270 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Qwen comparison results</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="app-header"><div class="identity"><strong>Memory Benchmark · measured results</strong></div><a href="/">Dashboard controls</a></header>
+<main><div class="page-heading"><div><p class="eyebrow">November 1, 2026 · native ARM64</p><h1>Qwen: four memory conditions</h1><p>20 correction histories · 80 real requests · API cost $0</p></div></div>
+<article class="card"><h2>What this checks</h2><p>The same Qwen3-0.6B model answers the same 20 questions using four evidence conditions. Known evidence supplies the actual correction record. Seeds 42–61 vary scores in one fixed story template; condition order rotates evenly.</p><p>Accuracy is strict agreement with the ledger's integer answer. For question-only requests, gold agreement is a guessing diagnostic; an UNKNOWN response is the requested abstention. Each request starts a new conversation.</p></article>
+<article class="card table-scroll"><table><thead><tr><th>Evidence condition</th><th>Correct</th><th>Supporting evidence</th><th>Median reader ms</th><th>Mean prompt bytes</th><th>Output tokens</th><th>At 32-token cap</th></tr></thead><tbody><tr><th>no_memory</th><td>0/20</td><td>0/20</td><td>2579.1</td><td>153</td><td>640</td><td>20/20</td></tr>
+<tr><th>full_history</th><td>0/20</td><td>20/20</td><td>5152.8</td><td>368.6</td><td>640</td><td>20/20</td></tr>
+<tr><th>retrieved_evidence</th><td>0/20</td><td>0/20</td><td>2960</td><td>216.9</td><td>640</td><td>20/20</td></tr>
+<tr><th>known_evidence</th><td>0/20</td><td>20/20</td><td>3022.6</td><td>239.8</td><td>640</td><td>20/20</td></tr></tbody></table></article>
+<article class="card"><h2>Next experiment</h2><p>Check Qwen's answer format and output allowance with known evidence first. Once it reliably answers those controls, compare memory methods on the same frozen cases. Preserve each prompt revision as a separate experiment.</p></article>
+<article class="card"><h2>Interpretation and scope</h2><p>Inspect the recorded answers below to separate evidence selection from answer formatting and output limits. The prompt requests an integer or UNKNOWN. This prompt differs from the earlier two-request smoke, which requested only an integer.</p><p>Timing includes local model response and transport; the first request includes loading. Order is balanced; timings are descriptive. Input token usage is unavailable from this service. CPU and RAM samples in the downloadable repository report cover the runner process. Model-worker resources and energy remain separate measurements.</p><p>These compact development cases test correction handling. Broader task coverage and held-out evaluation follow before ranking memory systems.</p><a href="https://github.com/anelsalas/long-term-memory-benchmark/blob/main/reports/2026-11-01-qwen-controls.json">Machine-readable observations</a></article>
+<h2>Every answer and its supplied evidence</h2><details class="card"><summary>Seed 42 · no_memory · Gold mismatch</summary><p>Expected: <strong>82</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 4345.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 42 · full_history · Gold mismatch</summary><p>Expected: <strong>82</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5453.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 23.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 63.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 23 has been corrected to 82.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 42 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>82</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **no score** was recorded for L</p><p>Reader: 2979.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 23.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 42 · known_evidence · Gold mismatch</summary><p>Expected: <strong>82</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 2814.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 23 has been corrected to 82.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 43 · full_history · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 4747.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 80.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 9.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 80 has been corrected to 88.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 43 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 2863.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 80.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 43 · known_evidence · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3009 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 80 has been corrected to 88.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 43 · no_memory · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2484.5 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 44 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>8</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 3014.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 71.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 44 · known_evidence · Gold mismatch</summary><p>Expected: <strong>8</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 4328.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 71 has been corrected to 8.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 44 · no_memory · Gold mismatch</summary><p>Expected: <strong>8</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2580.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 44 · full_history · Gold mismatch</summary><p>Expected: <strong>8</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 4746.9 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 71.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 92.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 71 has been corrected to 8.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 45 · known_evidence · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3032.5 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 65 has been corrected to 87.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 45 · no_memory · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2583.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 45 · full_history · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5377.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 65.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 50.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 65 has been corrected to 87.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 45 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 2899.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 65.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 46 · no_memory · Gold mismatch</summary><p>Expected: <strong>70</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2655.8 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 46 · full_history · Gold mismatch</summary><p>Expected: <strong>70</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5165.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 95.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 59.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 95 has been corrected to 70.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 46 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>70</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 3043.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 95.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 46 · known_evidence · Gold mismatch</summary><p>Expected: <strong>70</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2971.3 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 95 has been corrected to 70.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 47 · full_history · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5046.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 2.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 49.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 2 has been corrected to 87.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 47 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 4079.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 2.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 47 · known_evidence · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 4295.8 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 2 has been corrected to 87.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 47 · no_memory · Gold mismatch</summary><p>Expected: <strong>87</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2561.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 48 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>81</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 3019.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 76.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 48 · known_evidence · Gold mismatch</summary><p>Expected: <strong>81</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 2978.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 76 has been corrected to 81.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 48 · no_memory · Gold mismatch</summary><p>Expected: <strong>81</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2579.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 48 · full_history · Gold mismatch</summary><p>Expected: <strong>81</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5247.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 76.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 73.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 76 has been corrected to 81.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 49 · known_evidence · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3603.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 15 has been corrected to 29.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 49 · no_memory · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2561.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 49 · full_history · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5349.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 15.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 25.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 15 has been corrected to 29.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 49 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2828 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 15.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 50 · no_memory · Gold mismatch</summary><p>Expected: <strong>86</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2483.5 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 50 · full_history · Gold mismatch</summary><p>Expected: <strong>86</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5230.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 82.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 56.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 82 has been corrected to 86.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 50 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>86</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 2960.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 82.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 50 · known_evidence · Gold mismatch</summary><p>Expected: <strong>86</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3451.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 82 has been corrected to 86.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 51 · full_history · Gold mismatch</summary><p>Expected: <strong>58</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 4726.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 48.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 8.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 48 has been corrected to 58.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 51 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>58</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 2920.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 48.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 51 · known_evidence · Gold mismatch</summary><p>Expected: <strong>58</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3049.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 48 has been corrected to 58.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 51 · no_memory · Gold mismatch</summary><p>Expected: <strong>58</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2578.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 52 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 3000.9 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 73.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 52 · known_evidence · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 3076.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 73 has been corrected to 88.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 52 · no_memory · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2634 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 52 · full_history · Gold mismatch</summary><p>Expected: <strong>88</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5194.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 73.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 22.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 73 has been corrected to 88.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 53 · known_evidence · Gold mismatch</summary><p>Expected: <strong>12</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 4288.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 1 has been corrected to 12.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 53 · no_memory · Gold mismatch</summary><p>Expected: <strong>12</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2550.9 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 53 · full_history · Gold mismatch</summary><p>Expected: <strong>12</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5093 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 1.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 20.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 1 has been corrected to 12.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 53 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>12</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 4011.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 1.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 54 · no_memory · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2519.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 54 · full_history · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5230.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 30.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 91.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 30 has been corrected to 29.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 54 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2963.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 30.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 54 · known_evidence · Gold mismatch</summary><p>Expected: <strong>29</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2928.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 30 has been corrected to 29.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 55 · full_history · Gold mismatch</summary><p>Expected: <strong>19</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5140.5 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 37.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 41.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 37 has been corrected to 19.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 55 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>19</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2749.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 37.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 55 · known_evidence · Gold mismatch</summary><p>Expected: <strong>19</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2840.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 37 has been corrected to 19.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 55 · no_memory · Gold mismatch</summary><p>Expected: <strong>19</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2590.2 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 56 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>84</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 2913.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 28.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 56 · known_evidence · Gold mismatch</summary><p>Expected: <strong>84</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 2981.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 28 has been corrected to 84.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 56 · no_memory · Gold mismatch</summary><p>Expected: <strong>84</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2580 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 56 · full_history · Gold mismatch</summary><p>Expected: <strong>84</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5184 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 28.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 42.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 28 has been corrected to 84.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 57 · known_evidence · Gold mismatch</summary><p>Expected: <strong>0</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 4280.9 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 76 has been corrected to 0.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 57 · no_memory · Gold mismatch</summary><p>Expected: <strong>0</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2439.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 57 · full_history · Gold mismatch</summary><p>Expected: <strong>0</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 4615.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 76.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 22.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 76 has been corrected to 0.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 57 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>0</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **Lina-1&#39;s astronomy score</p><p>Reader: 2927.4 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 76.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 58 · no_memory · Gold mismatch</summary><p>Expected: <strong>18</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2518.7 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 58 · full_history · Gold mismatch</summary><p>Expected: <strong>18</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5085.8 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 26.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 52.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 26 has been corrected to 18.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 58 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>18</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 3020.3 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 26.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 58 · known_evidence · Gold mismatch</summary><p>Expected: <strong>18</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3012.8 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 26 has been corrected to 18.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 59 · full_history · Gold mismatch</summary><p>Expected: <strong>95</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 5225.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 25.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 90.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 25 has been corrected to 95.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 59 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>95</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, **no score** was recorded for L</p><p>Reader: 2928.6 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 25.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 59 · known_evidence · Gold mismatch</summary><p>Expected: <strong>95</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 2961 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 25 has been corrected to 95.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 59 · no_memory · Gold mismatch</summary><p>Expected: <strong>95</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2595.8 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 60 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>90</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2959.3 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 26.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 60 · known_evidence · Gold mismatch</summary><p>Expected: <strong>90</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 3877.8 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 26 has been corrected to 90.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 60 · no_memory · Gold mismatch</summary><p>Expected: <strong>90</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 2346.1 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 60 · full_history · Gold mismatch</summary><p>Expected: <strong>90</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 5099.9 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 26.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 21.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 26 has been corrected to 90.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 61 · known_evidence · Gold mismatch</summary><p>Expected: <strong>51</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for Lina-1 in</p><p>Reader: 2967.5 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 39 has been corrected to 51.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 61 · no_memory · Gold mismatch</summary><p>Expected: <strong>51</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, no score was recorded for Lina-</p><p>Reader: 3053 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 61 · full_history · Gold mismatch</summary><p>Expected: <strong>51</strong></p><p>Answer: As of **2026-03-13T10:00:00Z**, the score for **Lina-1</p><p>Reader: 4718.3 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 39.
+2026-03-04T10:00:00Z I recorded Robin-1&#39;s astronomy score as 7.
+2026-03-12T10:00:00Z Lina-1&#39;s previous astronomy score of 39 has been corrected to 51.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details>
+<details class="card"><summary>Seed 61 · retrieved_evidence · Gold mismatch</summary><p>Expected: <strong>51</strong></p><p>Answer: As of 2026-03-13T10:00:00Z, the score for Lina-1 in</p><p>Reader: 2873.9 ms · output tokens: 32</p><pre class="output">Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.
+2026-03-03T10:00:00Z I recorded Lina-1&#39;s astronomy score as 39.
+As of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?</pre></details></main></body></html>

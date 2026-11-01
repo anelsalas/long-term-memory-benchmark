@@ -140,3 +140,24 @@ This is a plumbing comparison with a tiny fixture. The generic fresh benchmark
 retains its original history and prompt format. The local service reports
 `finish_reason: stop` unconditionally; the manifest records that compatibility
 limit so it supplies no evidence that generation finished naturally.
+
+## Four evidence conditions
+
+Set `conditions` to `no_memory`, `full_history`, `retrieved_evidence`, and
+`known_evidence` in the desired order. Each receives the same answer instruction.
+Known evidence uses the fresh ledger's supporting source IDs. Its role is to
+measure answering with ideal evidence. The keyword method selects its own sources.
+The default remains the two-condition full/retrieved comparison.
+
+Run `scripts/run-qwen-controls.ps1` from the repository root after building
+`build-vs2026/Release/ltm-compare.exe`. It freezes 20 correction histories
+(seeds 42–61), rotates condition order, preflights every prompt, and executes
+80 local requests. Each seed permits four requests, 4096 reserved tokens and $0.
+Use a fresh output directory for each experiment. Then run
+`scripts/report-qwen-controls.ps1 -RunDirectory <directory>` to produce the
+reviewable JSON observations and dashboard Results page.
+
+The compact service profile fits 512 context bytes and 32 output tokens.
+Gold agreement for no-memory requests is a guessing diagnostic. Exact UNKNOWN
+responses are recorded separately. Output-at-cap counts expose possible truncation.
+Seed variations share one correction template; broader question types follow.

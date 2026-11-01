@@ -118,6 +118,7 @@ struct WorkCase {
     std::string name;
     ltm::LoadedLongMemEvalCase data;
     std::optional<int> fresh_score;
+    std::vector<std::string> known_sources;
 };
 std::string timestamp(const std::string& date) {
     if (date.size() == 20 && date[10] == 'T') {
@@ -172,7 +173,7 @@ const std::string answer_instruction =
     "If the information is absent, say that you do not know. Give the shortest complete "
     "answer.\n\n";
 std::string compact_local_prompt(const ltm::CandidateCase& candidate) {
-    std::string prompt = "Use the latest recorded score. Reply only with its integer.\n";
+    std::string prompt = "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n";
     for (const auto& session : candidate.sessions) {
         for (const auto& message : session.messages) {
             prompt += session.date + " " + message.content + "\n";
@@ -312,6 +313,7 @@ int main(int argc, char** argv) {
                               "execution_mode",
                               "prompt_profile",
                               "fresh_distractors",
+                              "conditions",
                               "reader",
                               "judge",
                               "provider_policy",
@@ -390,6 +392,21 @@ int main(int argc, char** argv) {
         }
         ltm::validate_chat_endpoint(http_options.endpoint_url, local_mode);
         const auto seed = integer(config.at("seed"));
+        const auto conditions = config.value("conditions", std::vector<std::string>{
+            "full_history", "retrieved_evidence"});
+        std::set<std::string> unique_conditions;
+        for (const auto& condition : conditions) {
+            if ((condition != "full_history" && condition != "retrieved_evidence" &&
+                 condition != "no_memory" && condition != "known_evidence") ||
+                !unique_conditions.insert(condition).second) {
+                throw std::invalid_argument("Invalid or repeated condition");
+            }
+        }
+        if (conditions.empty()) throw std::invalid_argument("Conditions required");
+        if (unique_conditions.count("known_evidence") && config.contains("public_case") &&
+            !config.at("public_case").is_null()) {
+            throw std::invalid_argument("Known evidence currently requires fresh fixtures");
+        }
         const auto top_k = integer(config.at("top_k"));
         if (!top_k || top_k > 1000) {
             throw std::invalid_argument("top_k must be 1 to 1000");
@@ -403,6 +420,7 @@ int main(int argc, char** argv) {
         fresh_work.name = "fresh";
         fresh_work.data.candidate = fresh.candidate;
         fresh_work.fresh_score = fresh.expected.score;
+        fresh_work.known_sources = fresh.expected.source_ids;
         fresh_work.data.evaluator.question_id = fresh.candidate.case_id;
         fresh_work.data.evaluator.question_type = "knowledge-update";
         fresh_work.data.evaluator.answer_json = Json(std::to_string(*fresh.expected.score)).dump();
@@ -428,11 +446,11 @@ int main(int argc, char** argv) {
             "fresh-development-plus-optional-LongMemEval", "command-v1",
             ltm::sha256(ltm::candidate_input_json(fresh.candidate) + ":" + public_checksum)};
         for (const auto& item : work) {
-            for (const auto* condition : {"full_history", "retrieved_evidence"}) {
+            for (const auto& condition : conditions) {
                 manifest.case_ids.push_back(item.name + ":" + condition);
             }
         }
-        manifest.method = "paired-full-vs-ascii-lexical-both-roles";
+        manifest.method = "declared-memory-controls-ascii-lexical-both-roles";
         manifest.method_revision = "v1";
         manifest.method_parameters = {{"top_k_messages", std::to_string(top_k)}};
         for (const auto* role : {"reader", "judge"}) {
@@ -496,12 +514,28 @@ int main(int argc, char** argv) {
         Json plans = Json::array();
         std::size_t planned_judges = 0;
         for (const auto& item : work) {
-            for (const auto* condition : {"full_history", "retrieved_evidence"}) {
+            for (const auto& condition : conditions) {
                 const auto preparation_start = ltm::ProviderClock::now();
                 std::vector<std::string> sources;
                 auto candidate =
                     select_evidence(item.data.candidate, static_cast<std::size_t>(top_k),
                                     std::string(condition) == "full_history", sources);
+                if (condition == "no_memory" || condition == "known_evidence") {
+                    candidate = item.data.candidate;
+                    sources.clear();
+                    for (auto& session : candidate.sessions) {
+                        session.messages.erase(std::remove_if(session.messages.begin(), session.messages.end(),
+                            [&](const auto& message) {
+                                const bool keep = condition == "known_evidence" &&
+                                    std::find(item.known_sources.begin(), item.known_sources.end(),
+                                              message.source_id) != item.known_sources.end();
+                                if (keep) sources.push_back(message.source_id);
+                                return !keep;
+                            }), session.messages.end());
+                    }
+                    candidate.sessions.erase(std::remove_if(candidate.sessions.begin(), candidate.sessions.end(),
+                        [](const auto& session) { return session.messages.empty(); }), candidate.sessions.end());
+                }
                 auto prompt = answer_instruction + ltm::candidate_input_json(candidate);
                 if (compact_local) {
                     prompt = compact_local_prompt(candidate);

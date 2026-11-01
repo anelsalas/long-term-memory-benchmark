@@ -132,3 +132,11 @@ and accuracy0.5. Separate plan-template validation from savedsettings to permit
 startup without a configured model. RuntimeRED endpoint_url failure led to a
 startup-check regression; finalcombined57/57 passed. Integrate originalClaude
 branch and testedcore through a separateworktree, preserving its checkout.
+
+## Four-condition measured control run — November 1, 2026
+
+Use fresh ledger source IDs for known-evidence controls, empty sessions for
+question-only controls, and identical prompts across conditions. Rotate order
+across20 seeds. Record integer gold agreement, abstention, supporting evidence,
+output cap and timing separately. Preserve the all-zero answer result and the
+prompt change; validate the reader before using these cases to rank memory systems.

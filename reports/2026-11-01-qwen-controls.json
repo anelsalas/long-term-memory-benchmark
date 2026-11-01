@@ -1,0 +1,2227 @@
+{
+  "schema_version": 1,
+  "model": "qwen3-0.6b-q8_0",
+  "seeds": "42..61",
+  "api_cost_usd": 0,
+  "source_revision": "cf4f21f+four-controls-sha256:41aed00cca0ee9ace49d51a9e3696730400bf1b9372af3248e0de1b238da8f52",
+  "output_limit": 32,
+  "context_service_bytes": 512,
+  "grading": "strict integer gold agreement; UNKNOWN abstention recorded separately",
+  "requests": 80,
+  "conditions": [
+    {
+      "condition": "no_memory",
+      "correct": 0,
+      "total": 20,
+      "exact_abstentions": 0,
+      "supporting_evidence_cases": 0,
+      "median_reader_ms": 2579.1358499999997,
+      "mean_prompt_bytes": 153.0,
+      "output_tokens": 640.0,
+      "at_output_cap": 20,
+      "mean_runner_cpu_ms": 14.0625,
+      "max_runner_resident_bytes": 12083200.0
+    },
+    {
+      "condition": "full_history",
+      "correct": 0,
+      "total": 20,
+      "exact_abstentions": 0,
+      "supporting_evidence_cases": 20,
+      "median_reader_ms": 5152.7574,
+      "mean_prompt_bytes": 368.55,
+      "output_tokens": 640.0,
+      "at_output_cap": 20,
+      "mean_runner_cpu_ms": 9.375,
+      "max_runner_resident_bytes": 12079104.0
+    },
+    {
+      "condition": "retrieved_evidence",
+      "correct": 0,
+      "total": 20,
+      "exact_abstentions": 0,
+      "supporting_evidence_cases": 0,
+      "median_reader_ms": 2960.0197,
+      "mean_prompt_bytes": 216.9,
+      "output_tokens": 640.0,
+      "at_output_cap": 20,
+      "mean_runner_cpu_ms": 10.15625,
+      "max_runner_resident_bytes": 12070912.0
+    },
+    {
+      "condition": "known_evidence",
+      "correct": 0,
+      "total": 20,
+      "exact_abstentions": 0,
+      "supporting_evidence_cases": 20,
+      "median_reader_ms": 3022.6441999999997,
+      "mean_prompt_bytes": 239.8,
+      "output_tokens": 640.0,
+      "at_output_cap": 20,
+      "mean_runner_cpu_ms": 10.15625,
+      "max_runner_resident_bytes": 12091392.0
+    }
+  ],
+  "observations": [
+    {
+      "seed": 42,
+      "condition": "no_memory",
+      "gold": "82",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 4345.1478,
+      "preparation_ms": 0.0502,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "dd277ccca4f518013c60d5c8bdfe5e026ce1453a0a12b011b6e3d6c2ba19da8e",
+      "resources": {
+        "cpu_delta_ms": 62.5,
+        "private_committed_after_bytes": 1961984,
+        "process_lifetime_peak_resident_bytes": 11870208,
+        "resident_after_bytes": 11870208,
+        "resident_before_bytes": 7172096,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 42,
+      "condition": "full_history",
+      "gold": "82",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5453.5844,
+      "preparation_ms": 0.034,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 23.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 63.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 23 has been corrected to 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "58dece49d904bb2ea1bd8acfc27b41015b4be3121d8017fd599a0ab4f65507ca",
+      "configuration_hash": "dd277ccca4f518013c60d5c8bdfe5e026ce1453a0a12b011b6e3d6c2ba19da8e",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2080768,
+        "process_lifetime_peak_resident_bytes": 11993088,
+        "resident_after_bytes": 11984896,
+        "resident_before_bytes": 11882496,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 42,
+      "condition": "retrieved_evidence",
+      "gold": "82",
+      "answer": "As of 2026-03-13T10:00:00Z, **no score** was recorded for L",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2979.0838,
+      "preparation_ms": 0.0281,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 23.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "fbf68d1495ae5ef504f751d7362ed71cbfd56bd8a41c6dc6c2b3c3c0cdaa231f",
+      "configuration_hash": "dd277ccca4f518013c60d5c8bdfe5e026ce1453a0a12b011b6e3d6c2ba19da8e",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2101248,
+        "process_lifetime_peak_resident_bytes": 12017664,
+        "resident_after_bytes": 12005376,
+        "resident_before_bytes": 11988992,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 42,
+      "condition": "known_evidence",
+      "gold": "82",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2814.616,
+      "preparation_ms": 0.0306,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 23 has been corrected to 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "dabef79ddb37fc5c1d29d64da09a45075815dbf4cc3e39fee3208db90294d167",
+      "configuration_hash": "dd277ccca4f518013c60d5c8bdfe5e026ce1453a0a12b011b6e3d6c2ba19da8e",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2101248,
+        "process_lifetime_peak_resident_bytes": 12046336,
+        "resident_after_bytes": 12005376,
+        "resident_before_bytes": 12005376,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 43,
+      "condition": "full_history",
+      "gold": "88",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4747.2405,
+      "preparation_ms": 0.049,
+      "completion_tokens": 32,
+      "prompt_bytes": 368,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 80.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 9.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 80 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "d5e42b3a725fb6acbd8389457fff0306394a408c5c009696485334dc82caeb84",
+      "configuration_hash": "f878d8f99a23b8345ff86cbba523d4d0a15e08697df21d2b08bd0c623907adf3",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1937408,
+        "process_lifetime_peak_resident_bytes": 11841536,
+        "resident_after_bytes": 11841536,
+        "resident_before_bytes": 7163904,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 43,
+      "condition": "retrieved_evidence",
+      "gold": "88",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2863.0737,
+      "preparation_ms": 0.0441,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 80.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "6df6a18cbb73c83064bdedc53f90c79669bc1ef70a64d4fd752dc692be2ae0d1",
+      "configuration_hash": "f878d8f99a23b8345ff86cbba523d4d0a15e08697df21d2b08bd0c623907adf3",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2019328,
+        "process_lifetime_peak_resident_bytes": 11927552,
+        "resident_after_bytes": 11919360,
+        "resident_before_bytes": 11853824,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 43,
+      "condition": "known_evidence",
+      "gold": "88",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3009.0054,
+      "preparation_ms": 0.0331,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 80 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e4e5364876beb69c04f0169bbccd9bc4a7d83f0bb9a43fee1bc4a76a1c8f08d1",
+      "configuration_hash": "f878d8f99a23b8345ff86cbba523d4d0a15e08697df21d2b08bd0c623907adf3",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2084864,
+        "process_lifetime_peak_resident_bytes": 11988992,
+        "resident_after_bytes": 11984896,
+        "resident_before_bytes": 11923456,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 43,
+      "condition": "no_memory",
+      "gold": "88",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2484.4657,
+      "preparation_ms": 0.0209,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "f878d8f99a23b8345ff86cbba523d4d0a15e08697df21d2b08bd0c623907adf3",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2162688,
+        "process_lifetime_peak_resident_bytes": 12083200,
+        "resident_after_bytes": 12062720,
+        "resident_before_bytes": 11984896,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 44,
+      "condition": "retrieved_evidence",
+      "gold": "8",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 3014.6823,
+      "preparation_ms": 0.0548,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 71.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "6f31710a7917097a1b5381d02f1ccec142d24ff35a85fc1833f8a30afe3d77a2",
+      "configuration_hash": "b66cb8536334334707f3a8a2677f3f15b361405338aec72a2c8dbbf19c27145b",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1953792,
+        "process_lifetime_peak_resident_bytes": 11857920,
+        "resident_after_bytes": 11857920,
+        "resident_before_bytes": 7168000,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 44,
+      "condition": "known_evidence",
+      "gold": "8",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4328.3663,
+      "preparation_ms": 0.0332,
+      "completion_tokens": 32,
+      "prompt_bytes": 239,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 71 has been corrected to 8.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "aa5c25ad17306c8a5fef3e55d386d60b3927f3b8b998ae5ea12aae48d78208cd",
+      "configuration_hash": "b66cb8536334334707f3a8a2677f3f15b361405338aec72a2c8dbbf19c27145b",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2052096,
+        "process_lifetime_peak_resident_bytes": 11960320,
+        "resident_after_bytes": 11952128,
+        "resident_before_bytes": 11870208,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 44,
+      "condition": "no_memory",
+      "gold": "8",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2580.7036,
+      "preparation_ms": 0.0246,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "b66cb8536334334707f3a8a2677f3f15b361405338aec72a2c8dbbf19c27145b",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2080768,
+        "process_lifetime_peak_resident_bytes": 11988992,
+        "resident_after_bytes": 11980800,
+        "resident_before_bytes": 11956224,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 44,
+      "condition": "full_history",
+      "gold": "8",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4746.9113,
+      "preparation_ms": 0.0381,
+      "completion_tokens": 32,
+      "prompt_bytes": 368,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 71.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 92.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 71 has been corrected to 8.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "a1a48f08d05bd2b69415d4bf0037ca643bd02a3a91e527d28eef6df2a5a2976f",
+      "configuration_hash": "b66cb8536334334707f3a8a2677f3f15b361405338aec72a2c8dbbf19c27145b",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2093056,
+        "process_lifetime_peak_resident_bytes": 11997184,
+        "resident_after_bytes": 11993088,
+        "resident_before_bytes": 11980800,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 45,
+      "condition": "known_evidence",
+      "gold": "87",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3032.5186,
+      "preparation_ms": 0.0409,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 65 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "3d15f4f0ff2245f717759be61d071303da9e17940bc0d25eeccb7743deae2caa",
+      "configuration_hash": "29dc656e1c928adb8b2b182ae0a4bab12f5205c86b78bc5774a000c9e0734250",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1925120,
+        "process_lifetime_peak_resident_bytes": 11829248,
+        "resident_after_bytes": 11829248,
+        "resident_before_bytes": 7163904,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 45,
+      "condition": "no_memory",
+      "gold": "87",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2583.6781,
+      "preparation_ms": 0.02,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "29dc656e1c928adb8b2b182ae0a4bab12f5205c86b78bc5774a000c9e0734250",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2019328,
+        "process_lifetime_peak_resident_bytes": 11943936,
+        "resident_after_bytes": 11931648,
+        "resident_before_bytes": 11845632,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 45,
+      "condition": "full_history",
+      "gold": "87",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5377.6528,
+      "preparation_ms": 0.0297,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 65.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 50.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 65 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "454c4d734c153dc75aa0db1b2ecf8a1534644c5f3a27d702d6383fe0636c32de",
+      "configuration_hash": "29dc656e1c928adb8b2b182ae0a4bab12f5205c86b78bc5774a000c9e0734250",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 2105344,
+        "process_lifetime_peak_resident_bytes": 12013568,
+        "resident_after_bytes": 12005376,
+        "resident_before_bytes": 11960320,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 45,
+      "condition": "retrieved_evidence",
+      "gold": "87",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2899.1136,
+      "preparation_ms": 0.0253,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 65.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "dd2c7773ffaae2814e3717c983dfbc2b5e0c087452831d7977f16c7ffe1b032e",
+      "configuration_hash": "29dc656e1c928adb8b2b182ae0a4bab12f5205c86b78bc5774a000c9e0734250",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2146304,
+        "process_lifetime_peak_resident_bytes": 12054528,
+        "resident_after_bytes": 12046336,
+        "resident_before_bytes": 12005376,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 46,
+      "condition": "no_memory",
+      "gold": "70",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2655.7666,
+      "preparation_ms": 0.0715,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "3a601b0bbdced2f45c34aecb33ea0f6b2b402df723ee6c6c7e420b1f0209fd83",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1925120,
+        "process_lifetime_peak_resident_bytes": 11829248,
+        "resident_after_bytes": 11829248,
+        "resident_before_bytes": 7168000,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 46,
+      "condition": "full_history",
+      "gold": "70",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5165.0617,
+      "preparation_ms": 0.0555,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 95.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 59.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 95 has been corrected to 70.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "3d28dd4155098ffca270b577bac7420ef67365b9c7baf59606079ff8b6e229f9",
+      "configuration_hash": "3a601b0bbdced2f45c34aecb33ea0f6b2b402df723ee6c6c7e420b1f0209fd83",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2027520,
+        "process_lifetime_peak_resident_bytes": 11935744,
+        "resident_after_bytes": 11927552,
+        "resident_before_bytes": 11841536,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 46,
+      "condition": "retrieved_evidence",
+      "gold": "70",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 3043.1164,
+      "preparation_ms": 0.0479,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 95.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "4c6969065336a18ba9ad065c0c4b88595639a338bc45c03b8b01f5f747bd2395",
+      "configuration_hash": "3a601b0bbdced2f45c34aecb33ea0f6b2b402df723ee6c6c7e420b1f0209fd83",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2101248,
+        "process_lifetime_peak_resident_bytes": 12005376,
+        "resident_after_bytes": 12001280,
+        "resident_before_bytes": 11931648,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 46,
+      "condition": "known_evidence",
+      "gold": "70",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2971.2984,
+      "preparation_ms": 0.0525,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 95 has been corrected to 70.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "36b8d769f051cd924abfe5ae5ebfb9d926bcc215c1c8fde517dc5eac3d136040",
+      "configuration_hash": "3a601b0bbdced2f45c34aecb33ea0f6b2b402df723ee6c6c7e420b1f0209fd83",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 2187264,
+        "process_lifetime_peak_resident_bytes": 12095488,
+        "resident_after_bytes": 12087296,
+        "resident_before_bytes": 12001280,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 47,
+      "condition": "full_history",
+      "gold": "87",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5046.1564,
+      "preparation_ms": 0.0326,
+      "completion_tokens": 32,
+      "prompt_bytes": 367,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 2.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 49.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 2 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "ac0f8ad2caaba214211827b5953549c0efba5645b10cf25696cfd03540a45b7e",
+      "configuration_hash": "9fa80317a023b886164078bfe4e98c43b2337deb3cce9b10a623ac18093dd2eb",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1945600,
+        "process_lifetime_peak_resident_bytes": 11857920,
+        "resident_after_bytes": 11857920,
+        "resident_before_bytes": 7163904,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 47,
+      "condition": "retrieved_evidence",
+      "gold": "87",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 4079.6218,
+      "preparation_ms": 0.0313,
+      "completion_tokens": 32,
+      "prompt_bytes": 216,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 2.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "6b2444f1d3512be13cddb6846f1191c1320978946eec840ef5bb2fba1f41dfdd",
+      "configuration_hash": "9fa80317a023b886164078bfe4e98c43b2337deb3cce9b10a623ac18093dd2eb",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2072576,
+        "process_lifetime_peak_resident_bytes": 11988992,
+        "resident_after_bytes": 11980800,
+        "resident_before_bytes": 11870208,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 47,
+      "condition": "known_evidence",
+      "gold": "87",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4295.7695,
+      "preparation_ms": 0.0292,
+      "completion_tokens": 32,
+      "prompt_bytes": 239,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 2 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "fac9451dda375f27d493e02baf4575854351b6c8a1792506b65665f4ff96b175",
+      "configuration_hash": "9fa80317a023b886164078bfe4e98c43b2337deb3cce9b10a623ac18093dd2eb",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2093056,
+        "process_lifetime_peak_resident_bytes": 12009472,
+        "resident_after_bytes": 12001280,
+        "resident_before_bytes": 11984896,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 47,
+      "condition": "no_memory",
+      "gold": "87",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2561.4294,
+      "preparation_ms": 0.0192,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "9fa80317a023b886164078bfe4e98c43b2337deb3cce9b10a623ac18093dd2eb",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2158592,
+        "process_lifetime_peak_resident_bytes": 12075008,
+        "resident_after_bytes": 12066816,
+        "resident_before_bytes": 12001280,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 48,
+      "condition": "retrieved_evidence",
+      "gold": "81",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 3019.6082,
+      "preparation_ms": 0.0408,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "d8cd9b965bb9563bab521084bc83a3fe5a706433fc716faf7504c64683d8e478",
+      "configuration_hash": "83dbce48daf18911a1d7d8044785e1f8a06b34b2f8da9e53061ac4764ca63286",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1945600,
+        "process_lifetime_peak_resident_bytes": 11857920,
+        "resident_after_bytes": 11857920,
+        "resident_before_bytes": 7168000,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 48,
+      "condition": "known_evidence",
+      "gold": "81",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2978.0961,
+      "preparation_ms": 0.0276,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 81.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "ee3ea3d8ea77b89f12b9baeeaa34884e1e227710ed3e4e8f0368c85ecc946d60",
+      "configuration_hash": "83dbce48daf18911a1d7d8044785e1f8a06b34b2f8da9e53061ac4764ca63286",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2002944,
+        "process_lifetime_peak_resident_bytes": 11923456,
+        "resident_after_bytes": 11923456,
+        "resident_before_bytes": 11870208,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 48,
+      "condition": "no_memory",
+      "gold": "81",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2579.6441,
+      "preparation_ms": 0.019,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "83dbce48daf18911a1d7d8044785e1f8a06b34b2f8da9e53061ac4764ca63286",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 2113536,
+        "process_lifetime_peak_resident_bytes": 12038144,
+        "resident_after_bytes": 12021760,
+        "resident_before_bytes": 11927552,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 48,
+      "condition": "full_history",
+      "gold": "81",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5247.215,
+      "preparation_ms": 0.0368,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 73.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 81.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "c3b5d3750c347a056bd554aee22e702e6a150a0f389913b731124eee8242daa0",
+      "configuration_hash": "83dbce48daf18911a1d7d8044785e1f8a06b34b2f8da9e53061ac4764ca63286",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2158592,
+        "process_lifetime_peak_resident_bytes": 12115968,
+        "resident_after_bytes": 12066816,
+        "resident_before_bytes": 12021760,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 49,
+      "condition": "known_evidence",
+      "gold": "29",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3603.1411,
+      "preparation_ms": 0.0792,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 15 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "4e403f0b7f54250570eb1ac5a42b725454822f6df89b22907cca0cfe1b6ff364",
+      "configuration_hash": "13d9da0489effe35ef2e6820bb3e7359492f33ea2f2c3bf408245b157b460160",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1941504,
+        "process_lifetime_peak_resident_bytes": 11849728,
+        "resident_after_bytes": 11849728,
+        "resident_before_bytes": 7159808,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 49,
+      "condition": "no_memory",
+      "gold": "29",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2561.6616,
+      "preparation_ms": 0.035,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "13d9da0489effe35ef2e6820bb3e7359492f33ea2f2c3bf408245b157b460160",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2035712,
+        "process_lifetime_peak_resident_bytes": 11952128,
+        "resident_after_bytes": 11935744,
+        "resident_before_bytes": 11862016,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 49,
+      "condition": "full_history",
+      "gold": "29",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5349.4215,
+      "preparation_ms": 0.0529,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 15.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 25.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 15 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e2484bf896ed4413a5aee07a930e5b8db21da5608f14cf70e0a1e902cbb62d2f",
+      "configuration_hash": "13d9da0489effe35ef2e6820bb3e7359492f33ea2f2c3bf408245b157b460160",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2060288,
+        "process_lifetime_peak_resident_bytes": 11972608,
+        "resident_after_bytes": 11960320,
+        "resident_before_bytes": 11939840,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 49,
+      "condition": "retrieved_evidence",
+      "gold": "29",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2828.029,
+      "preparation_ms": 0.0363,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 15.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "8936f9f729cc01e7c9d34e7458b0d8e0ee55e991c9e788d930361cacc03f4405",
+      "configuration_hash": "13d9da0489effe35ef2e6820bb3e7359492f33ea2f2c3bf408245b157b460160",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2105344,
+        "process_lifetime_peak_resident_bytes": 12013568,
+        "resident_after_bytes": 12005376,
+        "resident_before_bytes": 11960320,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 50,
+      "condition": "no_memory",
+      "gold": "86",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2483.4923,
+      "preparation_ms": 0.0397,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "ecfaa0a942540950b124466642f6fd60b49b52e0f037a43c00ea968070bb0882",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1945600,
+        "process_lifetime_peak_resident_bytes": 11853824,
+        "resident_after_bytes": 11853824,
+        "resident_before_bytes": 7172096,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 50,
+      "condition": "full_history",
+      "gold": "86",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5230.6379,
+      "preparation_ms": 0.036,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 82.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 56.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 82 has been corrected to 86.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "74deaca9af6ae38963ebcf35c30ebfc355c772a5ea09885e88fc69c8ee212308",
+      "configuration_hash": "ecfaa0a942540950b124466642f6fd60b49b52e0f037a43c00ea968070bb0882",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2060288,
+        "process_lifetime_peak_resident_bytes": 11988992,
+        "resident_after_bytes": 11964416,
+        "resident_before_bytes": 11866112,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 50,
+      "condition": "retrieved_evidence",
+      "gold": "86",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2960.7343,
+      "preparation_ms": 0.0255,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "46f15f50f364ab61f91f6a8d941b3acbe475e94fd56695c00c300dc0176584b6",
+      "configuration_hash": "ecfaa0a942540950b124466642f6fd60b49b52e0f037a43c00ea968070bb0882",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2080768,
+        "process_lifetime_peak_resident_bytes": 11997184,
+        "resident_after_bytes": 11984896,
+        "resident_before_bytes": 11968512,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 50,
+      "condition": "known_evidence",
+      "gold": "86",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3451.1307,
+      "preparation_ms": 0.0301,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 82 has been corrected to 86.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e2a8bdc9592a463a47fa367195bf68f40e266137ee178326515f432f1f03aa4f",
+      "configuration_hash": "ecfaa0a942540950b124466642f6fd60b49b52e0f037a43c00ea968070bb0882",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2088960,
+        "process_lifetime_peak_resident_bytes": 12001280,
+        "resident_after_bytes": 11993088,
+        "resident_before_bytes": 11984896,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 51,
+      "condition": "full_history",
+      "gold": "58",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4726.6006,
+      "preparation_ms": 0.0331,
+      "completion_tokens": 32,
+      "prompt_bytes": 368,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 48.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 8.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 48 has been corrected to 58.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "9cf56b82c467a7f0c213e49185ae507638dfe4f14a47aaa60a98885dc90a2e09",
+      "configuration_hash": "06dc1f723026d95f9a407bd72e90052eb2314401475b7c66fe525e5932dc618b",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1957888,
+        "process_lifetime_peak_resident_bytes": 11862016,
+        "resident_after_bytes": 11862016,
+        "resident_before_bytes": 7163904,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 51,
+      "condition": "retrieved_evidence",
+      "gold": "58",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2920.2337,
+      "preparation_ms": 0.0316,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 48.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "a227851c8660bdfe551ca07bcb849b712ab784837c1e2a7b6199a9d4acb083b3",
+      "configuration_hash": "06dc1f723026d95f9a407bd72e90052eb2314401475b7c66fe525e5932dc618b",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2093056,
+        "process_lifetime_peak_resident_bytes": 12001280,
+        "resident_after_bytes": 11993088,
+        "resident_before_bytes": 11874304,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 51,
+      "condition": "known_evidence",
+      "gold": "58",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3049.1055,
+      "preparation_ms": 0.0271,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 48 has been corrected to 58.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "7bf27bbcbc9074058d580b8782af4dce8076aa2f4644e9a9e5e4995e4902d82b",
+      "configuration_hash": "06dc1f723026d95f9a407bd72e90052eb2314401475b7c66fe525e5932dc618b",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2109440,
+        "process_lifetime_peak_resident_bytes": 12017664,
+        "resident_after_bytes": 12009472,
+        "resident_before_bytes": 11997184,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 51,
+      "condition": "no_memory",
+      "gold": "58",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2578.6276,
+      "preparation_ms": 0.0194,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "06dc1f723026d95f9a407bd72e90052eb2314401475b7c66fe525e5932dc618b",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 2150400,
+        "process_lifetime_peak_resident_bytes": 12062720,
+        "resident_after_bytes": 12050432,
+        "resident_before_bytes": 12013568,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 52,
+      "condition": "retrieved_evidence",
+      "gold": "88",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 3000.8503,
+      "preparation_ms": 0.0612,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 73.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "a288f1734aaab4fff9ae8e1a3b0af5e7c26709d1d179ea59d09b8adae59750d4",
+      "configuration_hash": "8f4f99d0f0b829deecfc8b4c5d855ccd4f997df4a2d79e37a5c716c1ddf168eb",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1961984,
+        "process_lifetime_peak_resident_bytes": 11866112,
+        "resident_after_bytes": 11866112,
+        "resident_before_bytes": 7168000,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 52,
+      "condition": "known_evidence",
+      "gold": "88",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3076.747,
+      "preparation_ms": 0.0456,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 73 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e8ba336109c29dee540ac0efdaa3954a6d1e70d560057a1a5300313fc83ec903",
+      "configuration_hash": "8f4f99d0f0b829deecfc8b4c5d855ccd4f997df4a2d79e37a5c716c1ddf168eb",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2007040,
+        "process_lifetime_peak_resident_bytes": 11927552,
+        "resident_after_bytes": 11919360,
+        "resident_before_bytes": 11878400,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 52,
+      "condition": "no_memory",
+      "gold": "88",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2634.0193,
+      "preparation_ms": 0.0329,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "8f4f99d0f0b829deecfc8b4c5d855ccd4f997df4a2d79e37a5c716c1ddf168eb",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2138112,
+        "process_lifetime_peak_resident_bytes": 12046336,
+        "resident_after_bytes": 12038144,
+        "resident_before_bytes": 11923456,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 52,
+      "condition": "full_history",
+      "gold": "88",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5194.4229,
+      "preparation_ms": 0.0485,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 73.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 22.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 73 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "465e5255ea83dbe08f3ed694ff05038b5cffdb8b90fcacbfcb51e15d78841dc6",
+      "configuration_hash": "8f4f99d0f0b829deecfc8b4c5d855ccd4f997df4a2d79e37a5c716c1ddf168eb",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2179072,
+        "process_lifetime_peak_resident_bytes": 12095488,
+        "resident_after_bytes": 12079104,
+        "resident_before_bytes": 12038144,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 53,
+      "condition": "known_evidence",
+      "gold": "12",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4288.657,
+      "preparation_ms": 0.0659,
+      "completion_tokens": 32,
+      "prompt_bytes": 239,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 1 has been corrected to 12.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "d4b9062088f68d3d09ae650b159676c307cc068d324ebaced98bddab1da52ae8",
+      "configuration_hash": "e6fd8d3bdb928f169ac59b16796805331accf9720e5df3eb366de3a048f6476a",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1957888,
+        "process_lifetime_peak_resident_bytes": 11862016,
+        "resident_after_bytes": 11862016,
+        "resident_before_bytes": 7176192,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 53,
+      "condition": "no_memory",
+      "gold": "12",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2550.861,
+      "preparation_ms": 0.0337,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "e6fd8d3bdb928f169ac59b16796805331accf9720e5df3eb366de3a048f6476a",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2088960,
+        "process_lifetime_peak_resident_bytes": 12001280,
+        "resident_after_bytes": 11988992,
+        "resident_before_bytes": 11874304,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 53,
+      "condition": "full_history",
+      "gold": "12",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5092.9776,
+      "preparation_ms": 0.0501,
+      "completion_tokens": 32,
+      "prompt_bytes": 367,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 1.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 20.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 1 has been corrected to 12.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "9850a699f115dfd2c7b1880886d0b2c58d9c2313f817be4d4bb3dd4a348fdc3d",
+      "configuration_hash": "e6fd8d3bdb928f169ac59b16796805331accf9720e5df3eb366de3a048f6476a",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2146304,
+        "process_lifetime_peak_resident_bytes": 12054528,
+        "resident_after_bytes": 12046336,
+        "resident_before_bytes": 11993088,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 53,
+      "condition": "retrieved_evidence",
+      "gold": "12",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 4011.2298,
+      "preparation_ms": 0.0387,
+      "completion_tokens": 32,
+      "prompt_bytes": 216,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 1.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e9f324805849219ee5165969e8cb22b3bc161183b230b03cc4a8ba03efd34efa",
+      "configuration_hash": "e6fd8d3bdb928f169ac59b16796805331accf9720e5df3eb366de3a048f6476a",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2170880,
+        "process_lifetime_peak_resident_bytes": 12087296,
+        "resident_after_bytes": 12070912,
+        "resident_before_bytes": 12046336,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 54,
+      "condition": "no_memory",
+      "gold": "29",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2519.2499,
+      "preparation_ms": 0.0466,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "c45e616e0cd6d83075be3e014b41144a4c1aab113a7eba9216eadf7c56a53a72",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 1966080,
+        "process_lifetime_peak_resident_bytes": 11866112,
+        "resident_after_bytes": 11866112,
+        "resident_before_bytes": 7176192,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 54,
+      "condition": "full_history",
+      "gold": "29",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5230.1079,
+      "preparation_ms": 0.0343,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 30.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 91.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 30 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "808950d296e4386822bde7c97c753eb29057b0ae4bc90f72975fe32b486e8082",
+      "configuration_hash": "c45e616e0cd6d83075be3e014b41144a4c1aab113a7eba9216eadf7c56a53a72",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2027520,
+        "process_lifetime_peak_resident_bytes": 11943936,
+        "resident_after_bytes": 11935744,
+        "resident_before_bytes": 11878400,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 54,
+      "condition": "retrieved_evidence",
+      "gold": "29",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2963.4133,
+      "preparation_ms": 0.043,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 30.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "12ffe89a957f99270ec194becd05dd5a2dbc6fd7e040de939232ad698f01f78a",
+      "configuration_hash": "c45e616e0cd6d83075be3e014b41144a4c1aab113a7eba9216eadf7c56a53a72",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2117632,
+        "process_lifetime_peak_resident_bytes": 12021760,
+        "resident_after_bytes": 12013568,
+        "resident_before_bytes": 11939840,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 54,
+      "condition": "known_evidence",
+      "gold": "29",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2928.628,
+      "preparation_ms": 0.0327,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 30 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "fafe140d1d98817c01b37f8d2d406465537ac48c488c27f28e0e736e42fbda5d",
+      "configuration_hash": "c45e616e0cd6d83075be3e014b41144a4c1aab113a7eba9216eadf7c56a53a72",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2158592,
+        "process_lifetime_peak_resident_bytes": 12062720,
+        "resident_after_bytes": 12054528,
+        "resident_before_bytes": 12017664,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 55,
+      "condition": "full_history",
+      "gold": "19",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5140.4531,
+      "preparation_ms": 0.0632,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 37.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 41.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 37 has been corrected to 19.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e32090286e288ef04052e88e2f356793b46ac6724d35645f500dfeb855abfb3d",
+      "configuration_hash": "df99c92a68ca4c0c4fdf5fcd84175bdd006b0df7bb654d6ae2a3e12e98ae70e1",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1949696,
+        "process_lifetime_peak_resident_bytes": 11853824,
+        "resident_after_bytes": 11853824,
+        "resident_before_bytes": 7159808,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 55,
+      "condition": "retrieved_evidence",
+      "gold": "19",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2749.5896,
+      "preparation_ms": 0.061,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 37.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e3542e9d318c519da078d67949aed4b85cb75d4c9ba6f51611d70bc50685aff1",
+      "configuration_hash": "df99c92a68ca4c0c4fdf5fcd84175bdd006b0df7bb654d6ae2a3e12e98ae70e1",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2019328,
+        "process_lifetime_peak_resident_bytes": 11935744,
+        "resident_after_bytes": 11931648,
+        "resident_before_bytes": 11870208,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 55,
+      "condition": "known_evidence",
+      "gold": "19",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2840.0851,
+      "preparation_ms": 0.0345,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 37 has been corrected to 19.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "62824ee2df218cf72d98300d4e9eeddc6abbaa2a481d9c066b7609c7c21c6af9",
+      "configuration_hash": "df99c92a68ca4c0c4fdf5fcd84175bdd006b0df7bb654d6ae2a3e12e98ae70e1",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2093056,
+        "process_lifetime_peak_resident_bytes": 11997184,
+        "resident_after_bytes": 11993088,
+        "resident_before_bytes": 11956224,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 55,
+      "condition": "no_memory",
+      "gold": "19",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2590.1844,
+      "preparation_ms": 0.0197,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "df99c92a68ca4c0c4fdf5fcd84175bdd006b0df7bb654d6ae2a3e12e98ae70e1",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2187264,
+        "process_lifetime_peak_resident_bytes": 12083200,
+        "resident_after_bytes": 12083200,
+        "resident_before_bytes": 11993088,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 56,
+      "condition": "retrieved_evidence",
+      "gold": "84",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2913.3986,
+      "preparation_ms": 0.0466,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 28.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "99bf6dc8ada046572b09129b332664fc630aa27a847e5146d3e5608d72d80052",
+      "configuration_hash": "d6144a27feb05b581692c457c5e2d301e45eeed5f0d9c2bab67c8a2b739c30ef",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1978368,
+        "process_lifetime_peak_resident_bytes": 11878400,
+        "resident_after_bytes": 11878400,
+        "resident_before_bytes": 7168000,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 56,
+      "condition": "known_evidence",
+      "gold": "84",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2981.7112,
+      "preparation_ms": 0.0266,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 28 has been corrected to 84.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "fd18a6d51e02d1b581b7a3a15cad1c2786aacccafa6d87e04bec73f2d98bb340",
+      "configuration_hash": "d6144a27feb05b581692c457c5e2d301e45eeed5f0d9c2bab67c8a2b739c30ef",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2076672,
+        "process_lifetime_peak_resident_bytes": 11988992,
+        "resident_after_bytes": 11972608,
+        "resident_before_bytes": 11890688,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 56,
+      "condition": "no_memory",
+      "gold": "84",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2580.0353,
+      "preparation_ms": 0.018,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "d6144a27feb05b581692c457c5e2d301e45eeed5f0d9c2bab67c8a2b739c30ef",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2084864,
+        "process_lifetime_peak_resident_bytes": 12001280,
+        "resident_after_bytes": 11980800,
+        "resident_before_bytes": 11980800,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 56,
+      "condition": "full_history",
+      "gold": "84",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5184.0456,
+      "preparation_ms": 0.0391,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 28.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 42.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 28 has been corrected to 84.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "ea9c33d3ec143856c40de3aba18b28dd6684244a8544ab7faeeea226871eacb1",
+      "configuration_hash": "d6144a27feb05b581692c457c5e2d301e45eeed5f0d9c2bab67c8a2b739c30ef",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2134016,
+        "process_lifetime_peak_resident_bytes": 12050432,
+        "resident_after_bytes": 12029952,
+        "resident_before_bytes": 11980800,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 57,
+      "condition": "known_evidence",
+      "gold": "0",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4280.8883,
+      "preparation_ms": 0.0342,
+      "completion_tokens": 32,
+      "prompt_bytes": 239,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 0.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "63d4e9aff73c2236431671b7f0583d317b8e8f4b2212400afc0c36283919ab93",
+      "configuration_hash": "f5c265c6a6fc93c60038dbf2fd2754a96e6c9401ca03dd0fdb3ba30ca0ca476e",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1966080,
+        "process_lifetime_peak_resident_bytes": 11870208,
+        "resident_after_bytes": 11870208,
+        "resident_before_bytes": 7172096,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 57,
+      "condition": "no_memory",
+      "gold": "0",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2439.5564,
+      "preparation_ms": 0.0167,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "f5c265c6a6fc93c60038dbf2fd2754a96e6c9401ca03dd0fdb3ba30ca0ca476e",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2060288,
+        "process_lifetime_peak_resident_bytes": 11964416,
+        "resident_after_bytes": 11956224,
+        "resident_before_bytes": 11882496,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 57,
+      "condition": "full_history",
+      "gold": "0",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4615.3617,
+      "preparation_ms": 0.0243,
+      "completion_tokens": 32,
+      "prompt_bytes": 368,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 22.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 0.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "ef4b593021688c903164920974a14e0066d200dd515a8a232d30771e4ce154fb",
+      "configuration_hash": "f5c265c6a6fc93c60038dbf2fd2754a96e6c9401ca03dd0fdb3ba30ca0ca476e",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2097152,
+        "process_lifetime_peak_resident_bytes": 12017664,
+        "resident_after_bytes": 11993088,
+        "resident_before_bytes": 11960320,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 57,
+      "condition": "retrieved_evidence",
+      "gold": "0",
+      "answer": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2927.4086,
+      "preparation_ms": 0.0203,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "d8cd9b965bb9563bab521084bc83a3fe5a706433fc716faf7504c64683d8e478",
+      "configuration_hash": "f5c265c6a6fc93c60038dbf2fd2754a96e6c9401ca03dd0fdb3ba30ca0ca476e",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2162688,
+        "process_lifetime_peak_resident_bytes": 12062720,
+        "resident_after_bytes": 12058624,
+        "resident_before_bytes": 11993088,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 58,
+      "condition": "no_memory",
+      "gold": "18",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2518.7031,
+      "preparation_ms": 0.049,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "53afb28d41ab671b060919e85bf54e0cdc80e918727b589815a024c13b4b9e0d",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1953792,
+        "process_lifetime_peak_resident_bytes": 11862016,
+        "resident_after_bytes": 11862016,
+        "resident_before_bytes": 7168000,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 58,
+      "condition": "full_history",
+      "gold": "18",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5085.8169,
+      "preparation_ms": 0.0334,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 52.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 18.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "25f7b4053ac4ee07c9c0ae3de891a07739e3b20b64744e15f4feddcccb8595db",
+      "configuration_hash": "53afb28d41ab671b060919e85bf54e0cdc80e918727b589815a024c13b4b9e0d",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2035712,
+        "process_lifetime_peak_resident_bytes": 11960320,
+        "resident_after_bytes": 11939840,
+        "resident_before_bytes": 11874304,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 58,
+      "condition": "retrieved_evidence",
+      "gold": "18",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 3020.2817,
+      "preparation_ms": 0.0275,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "95b09f3bafad851a84133fa4e9dcba04a4d37406b6edc9764c75b0c0bc743a56",
+      "configuration_hash": "53afb28d41ab671b060919e85bf54e0cdc80e918727b589815a024c13b4b9e0d",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2142208,
+        "process_lifetime_peak_resident_bytes": 12046336,
+        "resident_after_bytes": 12046336,
+        "resident_before_bytes": 11948032,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 58,
+      "condition": "known_evidence",
+      "gold": "18",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3012.7698,
+      "preparation_ms": 0.0264,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 18.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "6998d2fa002982c13e65d9d658b2ff5fc6668eeb050ff950306c9bfad0462c63",
+      "configuration_hash": "53afb28d41ab671b060919e85bf54e0cdc80e918727b589815a024c13b4b9e0d",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2187264,
+        "process_lifetime_peak_resident_bytes": 12107776,
+        "resident_after_bytes": 12091392,
+        "resident_before_bytes": 12046336,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 59,
+      "condition": "full_history",
+      "gold": "95",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5225.0581,
+      "preparation_ms": 0.0496,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 25.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 90.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 25 has been corrected to 95.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "24b78766cb75d1098575291a876cb4a51483f3ed083657abb0dbd92a36c7e2d7",
+      "configuration_hash": "1e24e8ad304e6f52b5a3791785ed5e9f633a907b6a616b8dfcd4b1ecef954c12",
+      "resources": {
+        "cpu_delta_ms": 31.25,
+        "private_committed_after_bytes": 1957888,
+        "process_lifetime_peak_resident_bytes": 11862016,
+        "resident_after_bytes": 11862016,
+        "resident_before_bytes": 7163904,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 59,
+      "condition": "retrieved_evidence",
+      "gold": "95",
+      "answer": "As of 2026-03-13T10:00:00Z, **no score** was recorded for L",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2928.6468,
+      "preparation_ms": 0.0506,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 25.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "b04df20f10b4447c09f87656447f8aececde049c1741338942add5fcf4a96511",
+      "configuration_hash": "1e24e8ad304e6f52b5a3791785ed5e9f633a907b6a616b8dfcd4b1ecef954c12",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2023424,
+        "process_lifetime_peak_resident_bytes": 11931648,
+        "resident_after_bytes": 11923456,
+        "resident_before_bytes": 11874304,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 59,
+      "condition": "known_evidence",
+      "gold": "95",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2961.014,
+      "preparation_ms": 0.0361,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 25 has been corrected to 95.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "e211748e8dfbf587da3007c931d2c8fd20fd1c11e89abc29ad6c05471686ec03",
+      "configuration_hash": "1e24e8ad304e6f52b5a3791785ed5e9f633a907b6a616b8dfcd4b1ecef954c12",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2121728,
+        "process_lifetime_peak_resident_bytes": 12021760,
+        "resident_after_bytes": 12021760,
+        "resident_before_bytes": 11927552,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 59,
+      "condition": "no_memory",
+      "gold": "95",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2595.8019,
+      "preparation_ms": 0.0232,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "1e24e8ad304e6f52b5a3791785ed5e9f633a907b6a616b8dfcd4b1ecef954c12",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2129920,
+        "process_lifetime_peak_resident_bytes": 12054528,
+        "resident_after_bytes": 12029952,
+        "resident_before_bytes": 12021760,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 60,
+      "condition": "retrieved_evidence",
+      "gold": "90",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2959.3051,
+      "preparation_ms": 0.0374,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "95b09f3bafad851a84133fa4e9dcba04a4d37406b6edc9764c75b0c0bc743a56",
+      "configuration_hash": "35e46e1c5176ba6661c4e5f8b92a86a58a09d477ffec5e8a4228566ba17bd7d9",
+      "resources": {
+        "cpu_delta_ms": 46.875,
+        "private_committed_after_bytes": 1970176,
+        "process_lifetime_peak_resident_bytes": 11874304,
+        "resident_after_bytes": 11874304,
+        "resident_before_bytes": 7163904,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 60,
+      "condition": "known_evidence",
+      "gold": "90",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 3877.7811,
+      "preparation_ms": 0.0261,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 90.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "1a633ce8ee83c579613d5bb20cfc20864b396e51c740c04a88c1af8d481accd3",
+      "configuration_hash": "35e46e1c5176ba6661c4e5f8b92a86a58a09d477ffec5e8a4228566ba17bd7d9",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2068480,
+        "process_lifetime_peak_resident_bytes": 11976704,
+        "resident_after_bytes": 11968512,
+        "resident_before_bytes": 11886592,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 60,
+      "condition": "no_memory",
+      "gold": "90",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2346.0811,
+      "preparation_ms": 0.0188,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "35e46e1c5176ba6661c4e5f8b92a86a58a09d477ffec5e8a4228566ba17bd7d9",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2076672,
+        "process_lifetime_peak_resident_bytes": 11988992,
+        "resident_after_bytes": 11976704,
+        "resident_before_bytes": 11972608,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 60,
+      "condition": "full_history",
+      "gold": "90",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 5099.8979,
+      "preparation_ms": 0.0285,
+      "completion_tokens": 32,
+      "prompt_bytes": 369,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 21.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 90.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "298be5464880d137f804213bec984cd17d88f064bfc645cd83af18cd952df389",
+      "configuration_hash": "35e46e1c5176ba6661c4e5f8b92a86a58a09d477ffec5e8a4228566ba17bd7d9",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2076672,
+        "process_lifetime_peak_resident_bytes": 11993088,
+        "resident_after_bytes": 11976704,
+        "resident_before_bytes": 11976704,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 61,
+      "condition": "known_evidence",
+      "gold": "51",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 2967.4502,
+      "preparation_ms": 0.0486,
+      "completion_tokens": 32,
+      "prompt_bytes": 240,
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 39 has been corrected to 51.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "f2a5dc4e6b2020dae9498464329f73432507e5c1745fa74d92111f033937193b",
+      "configuration_hash": "c28545a64c4e548dd966c5cf1bb3fff139ec5ee4b48d787cdb137fa5ce0e9675",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1933312,
+        "process_lifetime_peak_resident_bytes": 11837440,
+        "resident_after_bytes": 11837440,
+        "resident_before_bytes": 7159808,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 61,
+      "condition": "no_memory",
+      "gold": "51",
+      "answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 3053.0373,
+      "preparation_ms": 0.0193,
+      "completion_tokens": 32,
+      "prompt_bytes": 153,
+      "source_ids": [],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "configuration_hash": "c28545a64c4e548dd966c5cf1bb3fff139ec5ee4b48d787cdb137fa5ce0e9675",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 1961984,
+        "process_lifetime_peak_resident_bytes": 11886592,
+        "resident_after_bytes": 11874304,
+        "resident_before_bytes": 11849728,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 61,
+      "condition": "full_history",
+      "gold": "51",
+      "answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": true,
+      "reader_ms": 4718.3355,
+      "preparation_ms": 0.0324,
+      "completion_tokens": 32,
+      "prompt_bytes": 368,
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 39.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 7.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 39 has been corrected to 51.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "598791a183e0bdddd048658e89a925dfd001e407cddfd558de4d43d576fc5efa",
+      "configuration_hash": "c28545a64c4e548dd966c5cf1bb3fff139ec5ee4b48d787cdb137fa5ce0e9675",
+      "resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2064384,
+        "process_lifetime_peak_resident_bytes": 11976704,
+        "resident_after_bytes": 11964416,
+        "resident_before_bytes": 11878400,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "seed": 61,
+      "condition": "retrieved_evidence",
+      "gold": "51",
+      "answer": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "correct": false,
+      "exact_abstention": false,
+      "support_in_context": false,
+      "reader_ms": 2873.9025,
+      "preparation_ms": 0.0292,
+      "completion_tokens": 32,
+      "prompt_bytes": 217,
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 39.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "018a58e64ba16b543105cfbcb17e698679311cd8980d73930c4cc13908256d4f",
+      "configuration_hash": "c28545a64c4e548dd966c5cf1bb3fff139ec5ee4b48d787cdb137fa5ce0e9675",
+      "resources": {
+        "cpu_delta_ms": 0.0,
+        "private_committed_after_bytes": 2117632,
+        "process_lifetime_peak_resident_bytes": 12025856,
+        "resident_after_bytes": 12017664,
+        "resident_before_bytes": 11964416,
+        "scope": "local_runner_process"
+      }
+    }
+  ]
+}

@@ -1,3 +1,12 @@
+## Qwen four-condition results — November 1, 2026
+
+Completed 80 local requests across 20 correction histories. All responses reached
+32 tokens; exact gold agreement was 0/20 in each condition. Full and known evidence
+contained support20/20; keyword top1 support0/20. See reports/2026-11-01-qwen-controls.md
+and dashboard /comparison.html. Native tests57/57 and Node checks passed.
+Next: validate known-evidence answering with a declared prompt/output profile,
+then compare semantic retrieval, Mem0 and Graphiti on frozen cases.
+Dashboard LAN access is user-confirmed; the existing service remains running.
 # Current progress
 
 Updated November 1, 2026. [Task board](TASKS.md).
