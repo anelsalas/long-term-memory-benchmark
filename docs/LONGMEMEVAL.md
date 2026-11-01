@@ -70,3 +70,16 @@ answering and official metric parity are subsequent evaluation stages.
 Format references: [LongMemEval dataset schema](https://github.com/xiaowu0162/LongMemEval/tree/9e0b455f4ef0e2ab8f2e582289761153549043fc#dataset-format)
 and [paper](https://arxiv.org/abs/2410.10813v2). Record S/M, cleaned/original data
 revision and extraction details in the experiment manifest.
+
+## Repeated-ID scorer parity
+
+The synthetic repeated-ID score matrix can be compared with the authors'
+`src/retrieval/eval_utils.py` from revision `9e0b455f4ef0e2ab8f2e582289761153549043fc`:
+
+```powershell
+python scripts/check-duplicate-parity.py PATH_TO_UPSTREAM_EVAL_UTILS build-local-ui/Release/ltm_scoring_tests.exe
+```
+
+The check calls the upstream retrieval functions with a standard-library
+replacement for NumPy DCG. It covered 162 ranking/cutoff combinations in the
+November 1 run.
