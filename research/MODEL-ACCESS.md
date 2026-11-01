@@ -3,6 +3,14 @@
 Checked October 31, 2026 against official provider documentation. Account access
 and effective project quotas are verified when configuring G01.
 
+## Current local-first execution
+
+November1: the user chose the running Qwen3-0.6B service for the first model run.
+Two actual requests completed with zero APIspending; the measured report records
+one correct full-history answer and one incorrect retrieved answer. The compact
+local smoke uses existing512-byte/32-output-token service bounds. The APIshortlist
+below remains optional for later historical/current-model comparisons.
+
 ## Two evaluation tracks
 
 Historical reproduction pins the exact reader/judge snapshot specified by the

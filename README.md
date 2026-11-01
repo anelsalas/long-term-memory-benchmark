@@ -37,6 +37,18 @@ Dry-run saves full-history/retrieved-evidence plans with zero model calls.
 configuration. [Model access](research/MODEL-ACCESS.md) records the current shortlist
 and proposed pilot envelope. Example configs have zero spending allowances.
 
+## Local model smoke
+
+With the reviewed local service running:
+
+```powershell
+build/Release/ltm-compare --config configs/local-qwen-smoke.example.json --execute
+```
+
+The explicit local profile uses numeric loopback, zero APIprices and bounded
+requests. [First measured result](reports/2026-11-01-local-qwen-smoke.md): full
+history answered correctly; lexical top1 missed the correction.
+
 ## Research foundation
 
 - [LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://arxiv.org/abs/2410.10813): memory evaluation and retrieval design.

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-01",
+  "run_kind": "measured_local_smoke",
+  "model": "qwen3-0.6b-q8_0",
+  "fixture": {
+    "seed": 42,
+    "person": "Lina-1",
+    "topic": "astronomy",
+    "expected_answer": "82",
+    "distractors": 0,
+    "retrieved_top_k": 1
+  },
+  "source_revision": "00c97e0+local-support-sha256:cd8e9c01b92fa3208a08838802a0f7fe938dfd571043ecb464afb35f894f0897",
+  "configuration_hash": "1d650b6c0e28de5f0096b6dd02d5cbeeeeb40e369434b8fa51aec4c943c0cfb1",
+  "provider_requests": 2,
+  "api_cost_nanos": 0,
+  "accounted_token_reservation": 1088,
+  "reported_completion_tokens": 4,
+  "input_tokens": null,
+  "cases": [
+    {
+      "condition": "full_history",
+      "answer": "82",
+      "correct": true,
+      "source_count": 3,
+      "reader_wall_ms": 5324.2852,
+      "retrieval_preparation_ms": 0.0683,
+      "reported_completion_tokens": 2,
+      "reported_input_tokens": null,
+      "runner_resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 1957888,
+        "process_lifetime_peak_resident_bytes": 11702272,
+        "resident_after_bytes": 9768960,
+        "resident_before_bytes": 7143424,
+        "scope": "local_runner_process"
+      }
+    },
+    {
+      "condition": "retrieved_evidence",
+      "answer": "23",
+      "correct": false,
+      "source_count": 1,
+      "reader_wall_ms": 941.6513,
+      "retrieval_preparation_ms": 0.055,
+      "reported_completion_tokens": 2,
+      "reported_input_tokens": null,
+      "runner_resources": {
+        "cpu_delta_ms": 15.625,
+        "private_committed_after_bytes": 2093056,
+        "process_lifetime_peak_resident_bytes": 11702272,
+        "resident_after_bytes": 9895936,
+        "resident_before_bytes": 9781248,
+        "scope": "local_runner_process"
+      }
+    }
+  ],
+  "grade_fraction": 0.5,
+  "scope": "one question in two conditions; local plumbing smoke, adapted compact profile; unmatched cold/warm state"
+}
