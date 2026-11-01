@@ -108,3 +108,13 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Validate Qwen with the first complete correction case and all 20 matched histories at the 500-token reply limit.
 - [x] Show the actual replies, stated grades, abstentions and original format score in dashboard Results.
 - [ ] Freeze the content-scoring rule for the next method comparison and add Mem0 and Graphiti evidence retrieval.
+
+## Retrieval baseline work — November 1, 2026
+
+- [x] Prepare pinned LongMemEval-S and a reproducible, stratified 60-question development selection.
+- [x] Start and smoke-test a native Windows ARM64 local embedding service.
+- [ ] Integrate and validate BM25, dense, and hybrid retrieval against the published evidence annotations.
+- [ ] Run matched development comparisons and record evidence recall, latency, resource use, answer accuracy and limitations.
+- [ ] Compare Mem0 and Graphiti using documented, matched settings.
+
+[Preparation report](reports/2026-11-01-retrieval-preparation.md) records versions and measured scope.
