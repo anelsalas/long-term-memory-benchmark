@@ -349,8 +349,8 @@ int main(int argc, char** argv) {
         }
         const auto distractors =
             config.contains("fresh_distractors") ? integer(config.at("fresh_distractors")) : 8;
-        if (distractors > 10000 || (config.contains("fresh_distractors") && !compact_local)) {
-            throw std::invalid_argument("Fresh distractor override requires compact local profile");
+        if (distractors > 10000 || (config.contains("fresh_distractors") && !local_mode)) {
+            throw std::invalid_argument("Fresh distractor override requires local execution");
         }
         if (compact_local && config.contains("public_case") &&
             !config.at("public_case").is_null()) {

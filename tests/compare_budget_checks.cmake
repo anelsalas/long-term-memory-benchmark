@@ -11,16 +11,22 @@ set(work "${LTM_TEST_DIR}/compare-budget-${nonce}")
 file(MAKE_DIRECTORY "${work}")
 
 function(write_config path conditions budget_field)
+  if(NOT DEFINED profile)
+    set(profile "compact_local_smoke")
+  endif()
+  if(NOT DEFINED input_bound)
+    set(input_bound "512")
+  endif()
   file(WRITE "${path}" "{
   \"schema_version\": 1, \"source_revision\": \"test\",
   \"endpoint_url\": \"http://127.0.0.1:8766/v1/chat/completions\",
-  \"execution_mode\": \"local\", \"prompt_profile\": \"compact_local_smoke\", \"fresh_distractors\": 6,
+  \"execution_mode\": \"local\", \"prompt_profile\": \"${profile}\", \"fresh_distractors\": 6,
   \"conditions\": [${conditions}], ${budget_field}
   \"reader\": {\"id\": \"r\", \"version\": \"r\"}, \"judge\": {\"id\": \"r\", \"version\": \"r\"},
   \"provider_policy\": {\"max_requests\": \"8\", \"max_tokens\": \"4096\", \"max_cost_nanos\": \"0\",
     \"input_token_price_nanos\": \"0\", \"output_token_price_nanos\": \"0\", \"request_price_nanos\": \"0\",
     \"max_prompt_bytes\": \"4000000\", \"max_response_bytes\": \"1000000\", \"max_attempts\": 1},
-  \"input_token_upper_bound\": \"512\", \"context_token_limit\": \"1024\", \"output_token_limit\": \"500\",
+  \"input_token_upper_bound\": \"${input_bound}\", \"context_token_limit\": \"32768\", \"output_token_limit\": \"500\",
   \"judge_output_token_limit\": \"32\", \"seed\": \"42\", \"top_k\": 1, \"timeout_ms\": 60000,
   \"output_token_parameter\": \"max_tokens\", \"temperature\": null,
   \"output_directory\": \"artifacts\", \"chat_framing_token_allowance\": 32, \"tokenizer_bound_verified\": true
@@ -68,5 +74,22 @@ endif()
 file(READ "${artifacts}/manifest.json" manifest)
 if(NOT manifest MATCHES "context_budget_tokens")
   message(FATAL_ERROR "The manifest must record the budget")
+endif()
+# A benchmark-only local server is not bound by the Dumas compact profile: the
+# standard prompt accepts distractors and fits full history in a large context.
+set(profile "standard")
+set(input_bound "30000")
+write_config("${work}/standard.json" "\"full_history\", \"bm25_budget\"" "\"context_budget_tokens\": \"50\",")
+dry_run("${work}/standard.json" code out)
+if(NOT code EQUAL 0)
+  message(FATAL_ERROR "Standard local profile with distractors must plan (${code}): ${out}")
+endif()
+string(JSON artifacts GET "${out}" artifact_directory)
+file(READ "${artifacts}/plan.json" plan)
+string(JSON full GET "${plan}" cases 0 prompt)
+string(JSON budget_bytes GET "${plan}" cases 1 prompt_bytes)
+string(JSON full_bytes GET "${plan}" cases 0 prompt_bytes)
+if(NOT full MATCHES "Visitor" OR NOT budget_bytes LESS full_bytes)
+  message(FATAL_ERROR "Full history must include the distractors and exceed the budgeted prompt")
 endif()
 message(STATUS "bm25_budget checks passed")
