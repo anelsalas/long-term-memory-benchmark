@@ -1,0 +1,70 @@
+{
+  "seed": 42,
+  "histories": 1,
+  "expected_grade": "82",
+  "selected_model": "gpt-6.1-sol",
+  "model_identity": "Account catalog selection. The response relay supplies no independent serving snapshot.",
+  "system_instruction": "Follow the instructions in the user's message.",
+  "observations": [
+    {
+      "condition": "no_memory",
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "source_ids": [],
+      "sol_answer": "UNKNOWN",
+      "sol_stated_grade": "unknown",
+      "sol_wall_ms": 2925,
+      "sol_exact_integer_match": false,
+      "sonnet_answer": "UNKNOWN",
+      "qwen_answer": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "qwen_stated_grade": "unknown"
+    },
+    {
+      "condition": "full_history",
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 23.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 63.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 23 has been corrected to 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "58dece49d904bb2ea1bd8acfc27b41015b4be3121d8017fd599a0ab4f65507ca",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "sol_answer": "82",
+      "sol_stated_grade": "82",
+      "sol_wall_ms": 2046,
+      "sol_exact_integer_match": true,
+      "sonnet_answer": "82",
+      "qwen_answer": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **82**.",
+      "qwen_stated_grade": "82"
+    },
+    {
+      "condition": "retrieved_evidence",
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 23.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "fbf68d1495ae5ef504f751d7362ed71cbfd56bd8a41c6dc6c2b3c3c0cdaa231f",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "sol_answer": "23",
+      "sol_stated_grade": "23",
+      "sol_wall_ms": 3612,
+      "sol_exact_integer_match": false,
+      "sonnet_answer": "23",
+      "qwen_answer": "As of 2026-03-13T10:00:00Z, **no score** was recorded for Lina-1 in astronomy.",
+      "qwen_stated_grade": "unknown"
+    },
+    {
+      "condition": "known_evidence",
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 23 has been corrected to 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "prompt_sha256": "dabef79ddb37fc5c1d29d64da09a45075815dbf4cc3e39fee3208db90294d167",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "sol_answer": "82",
+      "sol_stated_grade": "82",
+      "sol_wall_ms": 2413,
+      "sol_exact_integer_match": true,
+      "sonnet_answer": "82",
+      "qwen_answer": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **82**.",
+      "qwen_stated_grade": "82"
+    }
+  ]
+}

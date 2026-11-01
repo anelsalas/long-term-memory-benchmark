@@ -1,3 +1,7 @@
+## GPT Sol validation — November 1, 2026
+
+One frozen history, four GPT-6.1-Sol requests. The actual replies were UNKNOWN, 82, 23 and 82 for question only, full history, keyword retrieval and correction alone. All four matched Sonnet. The selected Sol model comes from the account catalog. The relay does not report a distinct serving snapshot.
+
 ## Sonnet validation — November 1, 2026
 
 Sonnet 5.5 completed all four conditions for the first frozen history. It answered UNKNOWN, 82, 23 and 82 with no history, full history, keyword retrieval and direct evidence respectively. Read the actual replies in reports/2026-11-01-sonnet-first-case.json and dashboard /sonnet-first-case.html.

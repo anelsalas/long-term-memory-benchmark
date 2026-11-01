@@ -151,3 +151,7 @@ the earlier text and the direct-evidence control stated the correct grade 20/20.
 ## Sonnet validation
 
 Use the same frozen user messages and the Qwen content-reading rule. Record returned model identity and literal replies. Report evidence supplied and distinguish abstaining with no history from retrieving a superseded grade.
+
+## GPT Sol pilot
+
+Compare the four identical prompt hashes and selected evidence from seed 42. Record the requested catalog model and distinguish that identity from a provider-reported model snapshot.
