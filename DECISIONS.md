@@ -171,3 +171,11 @@ Use twelve CPU threads for the current retrieval preparation run; record competi
 ## Dataset chronology and repeated IDs
 
 Stable-sort dated sessions and retain repeated source IDs as distinct opaque occurrences. Keep excluding post-question sessions under the existing chronological policy and report excluded cases; compare a full-corpus policy separately. Verify repeated-ID scorer parity against upstream before publication claims.
+
+## Repeated-ID parity check
+
+Keep the authors' evaluation functions external and pin their revision for comparison. The parity fixture covers repeated source IDs, 162 permutations/cutoffs and all three retrieval levels, using standard-library DCG in place of NumPy.
+
+## History time sensitivity
+
+Keep strict history-time validation as the default. Provide an explicit include-all policy for source-corpus fidelity; callers must record it and flag later timestamps. The six affected development cases include five with answer-labelled future sessions, so filtering individual sessions could remove evidence.

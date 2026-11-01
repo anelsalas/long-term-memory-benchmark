@@ -152,6 +152,24 @@ int main(int argc, char** argv) {
         }
         std::cout << report.dump() << '\n'; return 0;
     }
+    if (argc == 2 && std::string(argv[1]) == "--duplicate-report") {
+        auto data = sample();
+        data.evaluator.sessions[2].original_session_id = "answer_b";
+        data.evaluator.messages[4].original_session_id = "answer_b";
+        data.evaluator.messages[4].has_answer = true;
+        nlohmann::json report = nlohmann::json::array();
+        for (int mode = 0; mode < 3; ++mode) {
+            std::vector<std::string> rank = mode == 0 ? std::vector<std::string>{"s1", "s2", "s3"} : std::vector<std::string>{"m1", "m3", "m4", "m5"};
+            std::sort(rank.begin(), rank.end());
+            do {
+                for (std::size_t k = 1; k <= 3; ++k) {
+                    const auto v = ltm::score_official_retrieval(data, rank, k, static_cast<ltm::RetrievalLevel>(mode));
+                    report.push_back({{"mode", mode}, {"rank", rank}, {"k", k}, {"any", v.metrics->recall_any}, {"all", v.metrics->recall_all}, {"ndcg", v.metrics->ndcg}, {"effective_k", v.metrics->effective_k}});
+                }
+            } while (std::next_permutation(rank.begin(), rank.end()));
+        }
+        std::cout << report.dump() << '\n'; return 0;
+    }
     if (argc == 2 && std::string(argv[1]) == "--prompt-report") {
         nlohmann::json report = nlohmann::json::array();
         for (const auto& type : {"single-session-user", "single-session-assistant", "multi-session", "temporal-reasoning", "knowledge-update", "single-session-preference"}) {

@@ -85,7 +85,10 @@ Json parse(std::string_view bytes) {
 }
 
 LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,
-    std::string_view question_id, const DatasetProvenance& provenance) {
+    std::string_view question_id, const DatasetProvenance& provenance,
+    HistoryTimePolicy time_policy) {
+    if (time_policy != HistoryTimePolicy::require_not_after_question &&
+        time_policy != HistoryTimePolicy::include_all) invalid("Invalid history time policy");
     constexpr std::size_t hard_limit = 512u * 1024u * 1024u;
     if (provenance.source_uri.empty() || provenance.revision.empty() ||
         !valid_digest(provenance.expected_sha256) || provenance.max_bytes == 0 ||
@@ -137,7 +140,7 @@ LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,
         source_ids.insert(original_id);
         CandidateSession session{opaque_id("session-", i), text(dates[i]), {}};
         const auto date = date_key(session.date);
-        if (date > question_date)
+        if (time_policy == HistoryTimePolicy::require_not_after_question && date > question_date)
             invalid("History session occurs after question time");
         if (!sessions[i].is_array() || sessions[i].empty()) invalid("History session must contain messages");
         evaluator.sessions.push_back({session.source_id, original_id});

@@ -31,7 +31,7 @@ candidate struct or its serialization. Gold annotations remain evaluator inputs.
 History dates and question dates are preserved exactly. The adapter accepts the
 published `YYYY/MM/DD (Day) HH:MM` format and UTC `YYYY-MM-DDTHH:MM:SSZ`, validates
 calendar/time ranges and recognized weekday labels, and compares chronological
-date components. The loader stably sorts sessions by date while preserving source occurrence IDs and original session mappings. Repeated original IDs remain separate occurrences. Sessions dated after the question are rejected and counted as an explicit evaluation adaptation. The weekday label remains source text rather than a recomputed
+date components. The loader stably sorts sessions by date while preserving source occurrence IDs and original session mappings. Repeated original IDs remain separate occurrences. By default sessions dated after the question are rejected and counted as an explicit evaluation adaptation. `HistoryTimePolicy::include_all` opts into preserving all source sessions, including later-dated ones; experiment callers must record the chosen policy and flag affected cases. The weekday label remains source text rather than a recomputed
 calendar constraint. Session timestamps describe recorded chat sessions; event
 validity dates embedded in conversation text remain distinct.
 
@@ -70,3 +70,30 @@ answering and official metric parity are subsequent evaluation stages.
 Format references: [LongMemEval dataset schema](https://github.com/xiaowu0162/LongMemEval/tree/9e0b455f4ef0e2ab8f2e582289761153549043fc#dataset-format)
 and [paper](https://arxiv.org/abs/2410.10813v2). Record S/M, cleaned/original data
 revision and extraction details in the experiment manifest.
+
+## Repeated-ID scorer parity
+
+The synthetic repeated-ID score matrix can be compared with the authors'
+`src/retrieval/eval_utils.py` from revision `9e0b455f4ef0e2ab8f2e582289761153549043fc`:
+
+```powershell
+python scripts/check-duplicate-parity.py PATH_TO_UPSTREAM_EVAL_UTILS build-local-ui/Release/ltm_scoring_tests.exe
+```
+
+The check calls the upstream retrieval functions with a standard-library
+replacement for NumPy DCG. It covered 162 ranking/cutoff combinations in the
+November 1 run.
+
+## History timestamp policy
+
+The strict default rejects a case when a session timestamp is after the question.
+Use `HistoryTimePolicy::include_all` as the fourth loader argument to preserve all
+source sessions for a separately labelled comparison. Session dates are sorted
+stably in either mode. This policy does not establish whether a later date is a
+timezone mismatch or information that would be unavailable at question time.
+
+In the fixed 60-case development selection, six cases contain later-dated
+sessions; five include an answer-labelled session among them (including one
+abstention case). Their maximum date difference is 0.19–0.62 days. All six
+loaded in the opt-in schema validation. Scoring and answer behavior for this
+condition remain to be measured.

@@ -96,3 +96,11 @@ A 32-short-text batch returned all vectors in 7.874 s with two CPU threads and 2
 ## Dataset loader correction — November 1, 2026
 
 The loader sorts sessions chronologically and retains repeated original session IDs as distinct opaque occurrences. The scorer accepts those mappings. New behavioral tests and validation of three affected published cases passed. Sessions dated after a question remain excluded pending a declared policy; official metric parity for repeated IDs needs further verification.
+
+## Repeated-ID scorer parity — November 1, 2026
+
+A synthetic repeated-ID fixture matched the pinned upstream retrieval evaluation across 162 rankings and cutoffs at session, turn, and turn-to-session levels. The upstream NumPy DCG calculation was replaced by an equivalent standard-library function for this check. Loader and scorer CTest groups passed. Post-question-date cases still require a declared policy.
+
+## Explicit history-time policy — November 1, 2026
+
+The loader offers a documented opt-in to preserve all source sessions while retaining the strict default. All six development cases with later timestamps loaded using that opt-in; the existing ARM64 suite passed 53/53. Their answer/retrieval metrics still require a separately labelled run.
