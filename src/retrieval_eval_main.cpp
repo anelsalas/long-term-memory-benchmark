@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -75,13 +76,22 @@ int main(int argc, char** argv) {
     try {
         const auto started = std::chrono::steady_clock::now();
         const auto provenance = Json::parse(read_file(options["--provenance"]));
-        const auto bytes = read_file(options["--dataset"]);
-        if (bytes.size() != provenance.at("bytes").get<std::size_t>() || ltm::sha256(bytes) != provenance.at("sha256"))
-            throw std::runtime_error("Dataset size or SHA-256 does not match its provenance");
-        const auto dataset = Json::parse(bytes);
+        const auto question_ids = Json::parse(read_file(options["--questions"])).get<std::vector<std::string>>();
+        // Keep only the selected questions in memory: the full file parses to several GB.
+        Json dataset;
+        {
+            auto bytes = read_file(options["--dataset"]);
+            if (bytes.size() != provenance.at("bytes").get<std::size_t>() || ltm::sha256(bytes) != provenance.at("sha256"))
+                throw std::runtime_error("Dataset size or SHA-256 does not match its provenance");
+            const std::set<std::string> wanted(question_ids.begin(), question_ids.end());
+            dataset = Json::parse(bytes, [&](int depth, Json::parse_event_t event, Json& parsed) {
+                if (depth != 1 || event != Json::parse_event_t::object_end) return true;
+                const auto id = parsed.find("question_id");
+                return id != parsed.end() && id->is_string() && wanted.count(id->get<std::string>()) > 0;
+            });
+        }
         std::map<std::string, const Json*> entries;
         for (const auto& entry : dataset) entries[entry.at("question_id").get<std::string>()] = &entry;
-        const auto question_ids = Json::parse(read_file(options["--questions"])).get<std::vector<std::string>>();
         const auto budgets = parse_budgets(options["--budgets"]);
 
         std::unique_ptr<HttpEmbedder> http;
