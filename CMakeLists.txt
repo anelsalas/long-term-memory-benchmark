@@ -199,10 +199,11 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   endforeach()
   add_executable(ltm_retrieval_eval_tests tests/retrieval_eval_tests.cpp)
   target_link_libraries(ltm_retrieval_eval_tests PRIVATE LongTermMemoryBenchmark::retrieval)
+  target_include_directories(ltm_retrieval_eval_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
   target_compile_definitions(ltm_retrieval_eval_tests PRIVATE
     LTM_FIXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
   foreach(case IN ITEMS lexical_methods_score_evidence dense_and_hybrid_use_the_embedder abstention_is_excluded
-      coverage_summary)
+      coverage_summary sessions_sort_by_date)
     add_test(NAME ltm.retrieval.eval.${case} COMMAND ltm_retrieval_eval_tests ${case})
     set_tests_properties(ltm.retrieval.eval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()

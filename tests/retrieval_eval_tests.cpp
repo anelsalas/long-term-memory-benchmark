@@ -1,5 +1,6 @@
 #include "long_term_memory_benchmark/hash.hpp"
 #include "long_term_memory_benchmark/retrieval_eval.hpp"
+#include <nlohmann/json.hpp>
 #include <cmath>
 #include <fstream>
 #include <functional>
@@ -67,13 +68,29 @@ void coverage_summary() {
     require(summary.all_included_rate && std::abs(*summary.all_included_rate - 1.0 / 3) < 1e-12, "One of three fully covered");
     require(!summarize_coverage({{0, 0}}).mean_fraction, "No eligible questions, no mean");
 }
+void sessions_sort_by_date() {
+    using Json = nlohmann::json;
+    const Json entry = {{"question_id", "q"}, {"haystack_session_ids", {"a", "b", "c", "d"}},
+        {"haystack_dates", {"2023/05/20 (Sat) 02:21", "2023/05/01 (Mon) 10:00", "2023/05/20 (Sat) 01:00", "2023/05/01 (Mon) 10:00"}},
+        {"haystack_sessions", {{{{"role", "user"}, {"content", "A"}}}, {{{"role", "user"}, {"content", "B"}}},
+            {{{"role", "user"}, {"content", "C"}}}, {{{"role", "user"}, {"content", "D"}}}}}};
+    bool moved = false;
+    const auto sorted = Json::parse(sort_sessions_by_date(entry.dump(), moved));
+    require(moved && sorted["haystack_session_ids"] == Json{"b", "d", "c", "a"}, "Sessions sorted by date, ties stable");
+    require(sorted["haystack_sessions"][3][0]["content"] == "A" && sorted["haystack_dates"][0] == "2023/05/01 (Mon) 10:00",
+        "Sessions, dates and IDs move together");
+    require(sorted["question_id"] == "q", "Other fields are kept");
+    bool again = true;
+    require(Json::parse(sort_sessions_by_date(sorted.dump(), again)) == sorted && !again, "Sorted input is unchanged");
+}
 }
 
 int main(int argc, char** argv) {
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"lexical_methods_score_evidence", lexical_methods_score_evidence},
         {"dense_and_hybrid_use_the_embedder", dense_and_hybrid_use_the_embedder},
-        {"abstention_is_excluded", abstention_is_excluded}, {"coverage_summary", coverage_summary}};
+        {"abstention_is_excluded", abstention_is_excluded}, {"coverage_summary", coverage_summary},
+        {"sessions_sort_by_date", sessions_sort_by_date}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {
