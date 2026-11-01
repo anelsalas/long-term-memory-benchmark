@@ -86,7 +86,6 @@ void malformed() {
         rejects([&] { (void)load(text); });
     };
     reject_edit([](Json& j) { j[0]["haystack_dates"].erase(0); });
-    reject_edit([](Json& j) { j[0]["haystack_session_ids"][1] = j[0]["haystack_session_ids"][0]; });
     reject_edit([](Json& j) { j[1]["question_id"] = j[0]["question_id"]; });
     reject_edit([](Json& j) { j[0]["haystack_dates"][0] = "2026/02/30 (Mon) 09:00"; });
     reject_edit([](Json& j) { j[0]["haystack_dates"][0] = "2026/03/14 (Sat) 09:00"; });
@@ -106,7 +105,19 @@ void malformed() {
 void chronology() {
     auto data = Json::parse(fixture());
     data[0]["haystack_dates"] = {"2026/03/12 (Thu) 10:00", "2026/03/03 (Tue) 10:00"};
-    const auto text = data.dump(); rejects([&] { (void)load(text); });
+    const auto result = load(data.dump());
+    require(result.candidate.sessions[0].date == "2026/03/03 (Tue) 10:00", "Sessions are sorted by date");
+    require(result.candidate.sessions[0].source_id == "session-000002", "Original occurrence identity retained");
+    require(result.evaluator.sessions[1].original_session_id == "answer_school_02", "Source mapping retained");
+}
+void repeated_ids() {
+    auto data = Json::parse(fixture());
+    data[0]["haystack_session_ids"][1] = data[0]["haystack_session_ids"][0];
+    data[0]["answer_session_ids"] = {"answer_school_01"};
+    const auto result = load(data.dump());
+    require(result.candidate.sessions.size() == 2, "Repeated occurrences retained");
+    require(result.candidate.sessions[0].source_id != result.candidate.sessions[1].source_id, "Opaque occurrence identities unique");
+    require(result.evaluator.sessions[0].original_session_id == result.evaluator.sessions[1].original_session_id, "Repeated source mapping retained");
 }
 void iso_dates() {
     auto data = Json::parse(fixture());
@@ -137,7 +148,7 @@ int main(int argc, char** argv) {
     for (const auto& item : std::vector<std::pair<const char*, std::function<void()>>>{
         {"schema", schema}, {"gold isolation", isolation}, {"identity", identity},
         {"abstention", abstention}, {"malformed", malformed}, {"chronology", chronology},
-        {"ISO dates", iso_dates}}) {
+        {"ISO dates", iso_dates}, {"repeated IDs", repeated_ids}}) {
         try { item.second(); std::cout << "PASS " << item.first << '\n'; }
         catch (const std::exception& e) { ++failed; std::cerr << "FAIL " << item.first << ": " << e.what() << '\n'; }
     }

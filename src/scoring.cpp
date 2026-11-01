@@ -125,13 +125,11 @@ OfficialRetrievalScore score_official_retrieval(const LoadedLongMemEvalCase& dat
     if(sessions.size()!=data.candidate.sessions.size()) throw std::invalid_argument("Session sidecar size mismatch");
     std::vector<Document> corpus;bool user_target=false;
     std::size_t message_count=0;
-    std::set<std::string> original_sessions;
     for(const auto& s:data.candidate.sessions) {
         auto si=sessions.find(s.source_id);
         if(si==sessions.end()) throw std::invalid_argument("Missing session mapping");
         const auto& original=si->second.original_session_id;
-        if(original.empty()||!original_sessions.insert(original).second)
-            throw std::invalid_argument("Invalid original session identity");
+        if(original.empty()) throw std::invalid_argument("Invalid original session identity");
         bool session_target=false;
         std::size_t message_number=0;
         for(const auto& m:s.messages) {

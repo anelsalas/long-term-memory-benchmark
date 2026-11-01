@@ -66,6 +66,15 @@ void bad_rankings() {
     bad = data; bad.evaluator.messages[0].has_answer.reset();
     invalid([&] { (void)ltm::score_official_retrieval(bad, {"s1", "s2", "s3"}, 1, ltm::RetrievalLevel::session); });
 }
+void repeated_source_ids() {
+    auto data = sample();
+    data.evaluator.sessions[2].original_session_id = "answer_b";
+    data.evaluator.messages[4].original_session_id = "answer_b";
+    data.evaluator.messages[4].has_answer = false;
+    const auto result = ltm::score_official_retrieval(data, {"s1", "s2", "s3"}, 2, ltm::RetrievalLevel::session);
+    require(result.metrics.has_value(), "Repeated original identity scores by occurrence");
+    close(result.metrics->recall_all, 1);
+}
 void grade_prompts() {
     auto data = sample();
     const auto candidate = ltm::candidate_input_json(data.candidate);
@@ -159,7 +168,7 @@ int main(int argc, char** argv) {
     int failed = 0;
     for (const auto& item : std::vector<std::pair<const char*, std::function<void()>>>{
         {"session metrics", sessions}, {"turn mapping", turn_mapping}, {"exclusions", exclusions},
-        {"bad rankings", bad_rankings}, {"grade prompts", grade_prompts}, {"verdicts", verdicts},
+        {"bad rankings", bad_rankings}, {"repeated source IDs", repeated_source_ids}, {"grade prompts", grade_prompts}, {"verdicts", verdicts},
         {"aggregates", aggregate_checks}, {"marker semantics", marker_semantics}}) {
         try { item.second(); std::cout << "PASS " << item.first << '\n'; }
         catch (const std::exception& e) { ++failed; std::cerr << "FAIL " << item.first << ": " << e.what() << '\n'; }
