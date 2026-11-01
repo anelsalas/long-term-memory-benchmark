@@ -9,9 +9,12 @@ Full history answered82 correctly. Lexical top1 retrieved the original record,
 answered23 and missed the correction. One fresh question/two conditions:1/2correct.
 [Measured report](reports/2026-11-01-local-qwen-smoke.md) records scope and timings.
 
-Coordinator reran Claude's dashboard checkout:56/56 native tests passed, webhelper
-checks passed, and the browser SaveSetup/Start/Output flow completed exit0.
-Dashboard local-execute control is being integrated in an isolated checkout.
+Coordinator reran Claude's original checkout:56/56 native tests passed. The
+integrated dashboard/local runner passed57/57 after a startup regression fix.
+Browser SaveSetup/Startdryrun/Output passed, then explicit Startlocalrun completed
+with2 real Qwen requests, accuracy0.5 and APIcost0. Both observed runs are saved.
+Dashboard is active on http://127.0.0.1:18080/ (PID14676), loopback-only.
+[Browser acceptance](reports/2026-11-01-browser-acceptance.md).
 
 ## Verified
 

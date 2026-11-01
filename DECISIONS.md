@@ -122,3 +122,13 @@ Preserve that result rather than tuning it away. Unmatched cold/warm timings are
 reported as observations. Completiontokens are reported; inputtokens unknown and
 retained reservations remain separate. Modelworker resources are outside runner
 sampling. Claude dashboard source stays preserved; integration uses a new branch.
+
+## Explicit local dashboard execution
+
+November1,2026. Add savedrun_mode dry_run(default)/local. Local requires numeric
+loopbackHTTP, zero prices/cost and positive request/token caps; the reviewed
+compactplan supplies verifiedlimits. Browser actualrun completed with2 requests
+and accuracy0.5. Separate plan-template validation from savedsettings to permit
+startup without a configured model. RuntimeRED endpoint_url failure led to a
+startup-check regression; finalcombined57/57 passed. Integrate originalClaude
+branch and testedcore through a separateworktree, preserving its checkout.

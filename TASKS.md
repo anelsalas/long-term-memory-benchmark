@@ -80,9 +80,15 @@ Core P03-P05 published main454b486; command publication follows verified27/27.
 - [x] Execute local Qwen3-0.6B through explicit no-key/zero-cost loopback profile.
 - [x] Record full-history82 correct and top1-retrieval23 incorrect against gold82.
 - [x] Observe56/56 original dashboard/core tests and actual browser dry-run completion.
-- [ ] Integrate dashboard explicit local-run mode and verify it in the browser.
+- [x] Integrate dashboard explicit local-run mode; browser run completed2realrequests atcost0.
 - [ ] Expand frozen local correction cases; separate reference failure from method changes.
 - [ ] Choose a larger-context execution profile for published-history comparisons.
 
 The tiny local smoke is one fresh case in two conditions. P06's published plus
 fresh workload and P08's full benchmark remain distinct pending experiments.
+
+## Dashboard integration acceptance
+
+57/57 combined native ARM64 tests passed. Browser completed dryrun and localrun;
+full-history answer82 correct, retrieved23 incorrect. Preserve the reference result.
+Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending.
