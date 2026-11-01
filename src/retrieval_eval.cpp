@@ -63,4 +63,14 @@ CoverageSummary summarize_coverage(const std::vector<EvidenceCoverage>& coverage
 }
 
 
+std::size_t sessions_after_question(const CandidateCase& history) {
+    const auto key = [](const std::string& date) {
+        return date.size() < 16 ? date : date.substr(0, 10) + date.substr(date.size() - 5);
+    };
+    const auto question = key(history.question_date);
+    std::size_t later = 0;
+    for (const auto& session : history.sessions) later += key(session.date) > question;
+    return later;
+}
+
 } // namespace ltm::retrieval

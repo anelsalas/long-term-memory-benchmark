@@ -203,7 +203,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_compile_definitions(ltm_retrieval_eval_tests PRIVATE
     LTM_FIXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
   foreach(case IN ITEMS lexical_methods_score_evidence dense_and_hybrid_use_the_embedder abstention_is_excluded
-      coverage_summary)
+      coverage_summary counts_sessions_after_question)
     add_test(NAME ltm.retrieval.eval.${case} COMMAND ltm_retrieval_eval_tests ${case})
     set_tests_properties(ltm.retrieval.eval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()
@@ -312,4 +312,10 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_retrieval_http)
     --singletons "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/singletons")
   set_tests_properties(ltm.retrieval.eval_tool PROPERTIES LABELS "retrieval;integration;offline"
     PASS_REGULAR_EXPRESSION "\\| bm25 \\| 100\\.0% \\| 100\\.0% \\|.*scored for retrieval: 1")
+  add_test(NAME ltm.retrieval.eval_tool_include_all COMMAND ltm-retrieval-eval --dataset "${ltm_fixture}"
+    --provenance "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
+    --questions "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json"
+    --out "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/results-include-all.json" --history-policy include_all)
+  set_tests_properties(ltm.retrieval.eval_tool_include_all PROPERTIES LABELS "retrieval;integration;offline"
+    PASS_REGULAR_EXPRESSION "loaded: 2, excluded: 0")
 endif()

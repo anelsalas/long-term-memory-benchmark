@@ -67,13 +67,23 @@ void coverage_summary() {
     require(summary.all_included_rate && std::abs(*summary.all_included_rate - 1.0 / 3) < 1e-12, "One of three fully covered");
     require(!summarize_coverage({{0, 0}}).mean_fraction, "No eligible questions, no mean");
 }
+void counts_sessions_after_question() {
+    ltm::CandidateCase history;
+    history.question_date = "2023/05/20 (Sat) 10:00";
+    history.sessions = {{"s1", "2023/05/19 (Fri) 23:00", {}}, {"s2", "2023/05/20 (Sat) 10:00", {}},
+        {"s3", "2023/05/20 (Sat) 10:01", {}}, {"s4", "2023/06/01 (Thu) 08:00", {}}};
+    require(sessions_after_question(history) == 2, "Sessions strictly after the question time are counted");
+    history.sessions.resize(2);
+    require(sessions_after_question(history) == 0, "Sessions up to the question time are not");
+}
 }
 
 int main(int argc, char** argv) {
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"lexical_methods_score_evidence", lexical_methods_score_evidence},
         {"dense_and_hybrid_use_the_embedder", dense_and_hybrid_use_the_embedder},
-        {"abstention_is_excluded", abstention_is_excluded}, {"coverage_summary", coverage_summary}};
+        {"abstention_is_excluded", abstention_is_excluded}, {"coverage_summary", coverage_summary},
+        {"counts_sessions_after_question", counts_sessions_after_question}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

@@ -28,4 +28,8 @@ struct CoverageSummary {
 };
 CoverageSummary summarize_coverage(const std::vector<EvidenceCoverage>& coverage);
 
+// Sessions dated after the question (dates as "YYYY/MM/DD (Day) HH:MM"). Nonzero only when
+// the history was loaded with HistoryTimePolicy::include_all.
+std::size_t sessions_after_question(const CandidateCase& history);
+
 } // namespace ltm::retrieval

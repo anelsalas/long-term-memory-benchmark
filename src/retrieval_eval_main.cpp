@@ -26,7 +26,7 @@ using namespace ltm::retrieval;
 
 const char* usage =
     "Usage: ltm-retrieval-eval --dataset FILE --provenance FILE --questions FILE --out FILE\n"
-    "         [--budgets 1000,2000,4000,8000] [--singletons DIR]\n"
+    "         [--budgets 1000,2000,4000,8000] [--singletons DIR] [--history-policy strict|include_all]\n"
     "         [--embeddings-url URL --embedding-model NAME --embedding-cache DIR [--query-prefix TEXT]]\n"
     "  Ranks each question's user rounds with recency and BM25 (and dense and hybrid when an\n"
     "  embeddings URL is given), scores official turn/session retrieval and evidence coverage\n"
@@ -65,7 +65,7 @@ Json aggregate_json(const std::vector<std::string>& ids, const std::vector<ltm::
 }
 
 int main(int argc, char** argv) {
-    std::map<std::string, std::string> options = {{"--budgets", "1000,2000,4000,8000"},
+    std::map<std::string, std::string> options = {{"--budgets", "1000,2000,4000,8000"}, {"--history-policy", "strict"},
         {"--query-prefix", "Instruct: Given a question, retrieve the conversation turns that answer it\nQuery: "}};
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
@@ -95,6 +95,10 @@ int main(int argc, char** argv) {
         std::map<std::string, const Json*> entries;
         for (const auto& entry : dataset) entries[entry.at("question_id").get<std::string>()] = &entry;
         const auto budgets = parse_budgets(options["--budgets"]);
+        const auto& policy_name = options["--history-policy"];
+        if (policy_name != "strict" && policy_name != "include_all") { std::cerr << usage; return 2; }
+        const auto time_policy = policy_name == "strict" ? ltm::HistoryTimePolicy::require_not_after_question
+                                                         : ltm::HistoryTimePolicy::include_all;
 
         std::unique_ptr<HttpEmbedder> http;
         std::unique_ptr<CachedEmbedder> cached;
@@ -118,7 +122,7 @@ int main(int argc, char** argv) {
             ltm::LoadedLongMemEvalCase data;
             try {
                 data = ltm::load_longmemeval_case(singleton, id,
-                    {source_uri, provenance.at("revision").get<std::string>(), ltm::sha256(singleton)});
+                    {source_uri, provenance.at("revision").get<std::string>(), ltm::sha256(singleton)}, time_policy);
             } catch (const std::invalid_argument& e) {
                 excluded.push_back({{"question_id", id}, {"question_type", found->second->at("question_type")},
                     {"reason", e.what()}});
@@ -161,7 +165,7 @@ int main(int argc, char** argv) {
             for (const auto& session : data.candidate.sessions)
                 for (const auto& message : session.messages) rounds_count += message.role == "user";
             questions.push_back({{"question_id", id}, {"question_type", data.evaluator.question_type},
-                {"abstention", data.evaluator.abstention},
+                {"abstention", data.evaluator.abstention}, {"sessions_after_question", sessions_after_question(data.candidate)},
                 {"singleton_sha256", data.actual_sha256},
                 {"user_rounds", rounds_count}, {"elapsed_ms", case_ms}, {"methods", methods_json}});
             std::cerr << "done " << id << " (" << questions.size() << "/" << question_ids.size() << ", "
@@ -203,6 +207,8 @@ int main(int argc, char** argv) {
             {"ranking_text", "user message only (official LongMemEval user-turn corpus); query is the question"},
             {"bm25", {{"k1", 1.2}, {"b", 0.75}, {"idf", "ln(1 + (N - n + 0.5) / (n + 0.5))"}}},
             {"history_order", "P02 loader (main 039f627): sessions stable-sorted by date, repeated sessions kept as distinct occurrences"},
+            {"history_time_policy", policy_name == "strict" ? "strict: questions with sessions after the question are excluded"
+                                                            : "include_all: full official corpus; later sessions counted per question"},
             {"rrf_k", 60}, {"embedding", embedding}, {"elapsed_s", elapsed_s}, {"excluded", excluded},
             {"summary", summary}, {"questions", questions}};
         std::ofstream(options["--out"], std::ios::binary | std::ios::trunc) << output.dump(2) << '\n';
