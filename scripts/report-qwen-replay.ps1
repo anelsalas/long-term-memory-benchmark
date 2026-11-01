@@ -91,7 +91,7 @@ $example = $rows | Where-Object { $_.seed -eq 42 -and $_.condition -eq 'full_his
 $status = if ($Preview) { 'In progress' } else { 'Completed' }
 $page = @"
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Qwen replay results</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="app-header"><strong>Memory Benchmark</strong><a href="/">Dashboard controls</a></header><main>
+<header class="app-header"><strong>Memory Benchmark</strong><a href="sonnet-first-case.html">Sonnet comparison</a><a href="/">Dashboard controls</a></header><main>
 <div class="page-heading"><div><p class="eyebrow">$status · Local Qwen3-0.6B</p><h1>Does Qwen give the corrected grade?</h1><p>$cases of 20 histories completed. Four evidence conditions per history. Each reply can use up to 500 tokens.</p></div></div>
 <article class="card"><h2>First case</h2><p>Lina's grade changed from 23 to 82. With the full history, Qwen replied:</p><blockquote>$(Escape $example.answer_at_500)</blockquote></article>
 <article class="card table-scroll"><h2>Answers by memory condition</h2><table><thead><tr><th>Evidence</th><th>Correct grade stated</th><th>Correction supplied</th><th>Abstained</th><th>Mixed or unclear</th><th>Exact integer only</th></tr></thead><tbody>$($tableRows -join '')</tbody></table></article>

@@ -1,3 +1,7 @@
+## Sonnet validation — November 1, 2026
+
+Sonnet 5.5 completed all four conditions for the first frozen history. It answered UNKNOWN, 82, 23 and 82 with no history, full history, keyword retrieval and direct evidence respectively. Read the actual replies in reports/2026-11-01-sonnet-first-case.json and dashboard /sonnet-first-case.html.
+
 ## Qwen 500-token replay — November 1, 2026
 
 All 80 matched requests completed. Qwen stated the corrected grade in 20/20

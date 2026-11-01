@@ -83,3 +83,5 @@ License: [Apache-2.0](LICENSE).
 
 See [dashboard continuation](DASHBOARD-START-HERE.md) and
 [UI/API contract](docs/DASHBOARD.md) for the lightweight Surface/cellphone interface.
+
+[Sonnet and Qwen on the first correction case](reports/2026-11-01-sonnet-first-case.json) records the four matched prompts and actual replies.

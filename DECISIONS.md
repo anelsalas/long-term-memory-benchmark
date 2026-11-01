@@ -147,3 +147,7 @@ November 1, 2026. Use 500 as the local output ceiling. Compare the exact earlier
 and current prompts, evidence and returned text. Retain the original format score
 and label the additional content reading as retrospective. All 80 replies continued
 the earlier text and the direct-evidence control stated the correct grade 20/20.
+
+## Sonnet validation
+
+Use the same frozen user messages and the Qwen content-reading rule. Record returned model identity and literal replies. Report evidence supplied and distinguish abstaining with no history from retrieving a superseded grade.
