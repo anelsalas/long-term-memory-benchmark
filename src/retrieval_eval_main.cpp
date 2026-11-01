@@ -111,14 +111,10 @@ int main(int argc, char** argv) {
         std::map<std::string, std::map<std::string, std::vector<std::vector<EvidenceCoverage>>>> coverage_by_type;
         std::vector<std::string> methods;
         Json questions = Json::array(), excluded = Json::array(), singletons = Json::array();
-        std::size_t reordered = 0;
         for (const auto& id : question_ids) {
             const auto found = entries.find(id);
             if (found == entries.end()) throw std::runtime_error("Question not in dataset: " + id);
-            bool moved = false;
-            const auto entry = sort_sessions_by_date(found->second->dump(), moved);
-            reordered += moved;
-            const auto singleton = "[" + entry + "]";
+            const auto singleton = Json::array({*found->second}).dump();
             ltm::LoadedLongMemEvalCase data;
             try {
                 data = ltm::load_longmemeval_case(singleton, id,
@@ -135,7 +131,7 @@ int main(int argc, char** argv) {
                 std::ofstream(dir / (id + ".json"), std::ios::binary | std::ios::trunc) << singleton;
                 singletons.push_back({{"question_id", id}, {"question_type", data.evaluator.question_type},
                     {"path", (std::filesystem::absolute(dir) / (id + ".json")).generic_string()},
-                    {"sha256", data.actual_sha256}, {"sessions_reordered", moved}});
+                    {"sha256", data.actual_sha256}});
             }
             const auto case_started = std::chrono::steady_clock::now();
             const auto results = evaluate_case(data, cached.get(), options["--query-prefix"], budgets);
@@ -165,7 +161,7 @@ int main(int argc, char** argv) {
             for (const auto& session : data.candidate.sessions)
                 for (const auto& message : session.messages) rounds_count += message.role == "user";
             questions.push_back({{"question_id", id}, {"question_type", data.evaluator.question_type},
-                {"abstention", data.evaluator.abstention}, {"sessions_reordered", moved},
+                {"abstention", data.evaluator.abstention},
                 {"singleton_sha256", data.actual_sha256},
                 {"user_rounds", rounds_count}, {"elapsed_ms", case_ms}, {"methods", methods_json}});
             std::cerr << "done " << id << " (" << questions.size() << "/" << question_ids.size() << ", "
@@ -206,8 +202,7 @@ int main(int argc, char** argv) {
             {"token_estimate", "ceil(UTF-8 bytes / 4) per round (user message plus replies)"},
             {"ranking_text", "user message only (official LongMemEval user-turn corpus); query is the question"},
             {"bm25", {{"k1", 1.2}, {"b", 0.75}, {"idf", "ln(1 + (N - n + 0.5) / (n + 0.5))"}}},
-            {"adaptations", {{"sessions_sorted_by_date", reordered},
-                {"note", "Sessions stable-sorted by date before the P02 loader; questions it still rejects are listed in excluded"}}},
+            {"history_order", "P02 loader (main 039f627): sessions stable-sorted by date, repeated sessions kept as distinct occurrences"},
             {"rrf_k", 60}, {"embedding", embedding}, {"elapsed_s", elapsed_s}, {"excluded", excluded},
             {"summary", summary}, {"questions", questions}};
         std::ofstream(options["--out"], std::ios::binary | std::ios::trunc) << output.dump(2) << '\n';
@@ -229,7 +224,7 @@ int main(int argc, char** argv) {
             std::cout << '\n';
         }
         std::cout << "\nQuestions: " << question_ids.size() << ", loaded: " << questions.size() << ", excluded: "
-                  << excluded.size() << ", histories re-sorted: " << reordered << ", scored for retrieval: "
+                  << excluded.size() << ", scored for retrieval: "
                   << summary[methods.front()]["turn_at_5"]["eligible"] << ". Elapsed " << static_cast<long>(elapsed_s) << " s.\n";
     } catch (const std::exception& e) {
         std::cerr << "ltm-retrieval-eval failed: " << e.what() << '\n';

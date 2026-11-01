@@ -203,7 +203,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_compile_definitions(ltm_retrieval_eval_tests PRIVATE
     LTM_FIXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
   foreach(case IN ITEMS lexical_methods_score_evidence dense_and_hybrid_use_the_embedder abstention_is_excluded
-      coverage_summary sessions_sort_by_date)
+      coverage_summary)
     add_test(NAME ltm.retrieval.eval.${case} COMMAND ltm_retrieval_eval_tests ${case})
     set_tests_properties(ltm.retrieval.eval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()

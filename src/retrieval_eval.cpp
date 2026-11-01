@@ -1,10 +1,6 @@
 #include "long_term_memory_benchmark/retrieval_eval.hpp"
 
-#include <nlohmann/json.hpp>
-#include <algorithm>
-#include <numeric>
 #include <set>
-#include <stdexcept>
 #include <utility>
 
 namespace ltm::retrieval {
@@ -66,26 +62,5 @@ CoverageSummary summarize_coverage(const std::vector<EvidenceCoverage>& coverage
     return summary;
 }
 
-std::string sort_sessions_by_date(const std::string& entry_json, bool& moved) {
-    auto entry = nlohmann::json::parse(entry_json);
-    const auto& dates = entry.at("haystack_dates");
-    const auto key = [&](std::size_t i) {
-        const auto date = dates.at(i).get<std::string>();
-        if (date.size() < 16) throw std::invalid_argument("Unsupported history date: " + date);
-        return date.substr(0, 10) + date.substr(date.size() - 5);
-    };
-    std::vector<std::size_t> order(dates.size());
-    std::iota(order.begin(), order.end(), std::size_t{0});
-    std::stable_sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) { return key(a) < key(b); });
-    moved = !std::is_sorted(order.begin(), order.end());
-    if (!moved) return entry_json;
-    for (const auto* field : {"haystack_sessions", "haystack_dates", "haystack_session_ids"}) {
-        const auto original = entry.at(field);
-        if (original.size() != order.size()) throw std::invalid_argument("History fields differ in length");
-        auto& target = entry[field];
-        for (std::size_t i = 0; i < order.size(); ++i) target[i] = original[order[i]];
-    }
-    return entry.dump();
-}
 
 } // namespace ltm::retrieval

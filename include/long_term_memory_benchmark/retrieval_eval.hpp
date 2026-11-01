@@ -28,9 +28,4 @@ struct CoverageSummary {
 };
 CoverageSummary summarize_coverage(const std::vector<EvidenceCoverage>& coverage);
 
-// The pinned LongMemEval_S file lists some histories out of date order. Returns the
-// entry JSON with haystack_sessions, haystack_dates and haystack_session_ids
-// stable-sorted by date ("YYYY/MM/DD (Day) HH:MM"); `moved` says whether any moved.
-std::string sort_sessions_by_date(const std::string& entry_json, bool& moved);
-
 } // namespace ltm::retrieval
