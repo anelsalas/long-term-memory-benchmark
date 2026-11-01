@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -25,11 +26,12 @@ using namespace ltm::retrieval;
 
 const char* usage =
     "Usage: ltm-retrieval-eval --dataset FILE --provenance FILE --questions FILE --out FILE\n"
-    "         [--budgets 1000,2000,4000,8000]\n"
+    "         [--budgets 1000,2000,4000,8000] [--singletons DIR]\n"
     "         [--embeddings-url URL --embedding-model NAME --embedding-cache DIR [--query-prefix TEXT]]\n"
     "  Ranks each question's user rounds with recency and BM25 (and dense and hybrid when an\n"
     "  embeddings URL is given), scores official turn/session retrieval and evidence coverage\n"
-    "  per token budget, writes JSON to --out and prints a Markdown table.\n";
+    "  per token budget, writes JSON to --out and prints a Markdown table. --singletons writes each\n"
+    "  loaded question as DIR/<id>.json (sessions sorted) with DIR/singletons.json listing digests.\n";
 
 std::string read_file(const std::string& path) {
     std::ifstream in(path, std::ios::binary);
@@ -108,7 +110,7 @@ int main(int argc, char** argv) {
         std::map<std::string, std::vector<std::vector<EvidenceCoverage>>> coverage;
         std::map<std::string, std::map<std::string, std::vector<std::vector<EvidenceCoverage>>>> coverage_by_type;
         std::vector<std::string> methods;
-        Json questions = Json::array(), excluded = Json::array();
+        Json questions = Json::array(), excluded = Json::array(), singletons = Json::array();
         std::size_t reordered = 0;
         for (const auto& id : question_ids) {
             const auto found = entries.find(id);
@@ -126,6 +128,14 @@ int main(int argc, char** argv) {
                     {"reason", e.what()}});
                 std::cerr << "excluded " << id << ": " << e.what() << '\n';
                 continue;
+            }
+            if (options.count("--singletons")) {
+                const std::filesystem::path dir = options["--singletons"];
+                std::filesystem::create_directories(dir);
+                std::ofstream(dir / (id + ".json"), std::ios::binary | std::ios::trunc) << singleton;
+                singletons.push_back({{"question_id", id}, {"question_type", data.evaluator.question_type},
+                    {"path", (std::filesystem::absolute(dir) / (id + ".json")).generic_string()},
+                    {"sha256", data.actual_sha256}, {"sessions_reordered", moved}});
             }
             const auto case_started = std::chrono::steady_clock::now();
             const auto results = evaluate_case(data, cached.get(), options["--query-prefix"], budgets);
@@ -201,6 +211,9 @@ int main(int argc, char** argv) {
             {"rrf_k", 60}, {"embedding", embedding}, {"elapsed_s", elapsed_s}, {"excluded", excluded},
             {"summary", summary}, {"questions", questions}};
         std::ofstream(options["--out"], std::ios::binary | std::ios::trunc) << output.dump(2) << '\n';
+        if (options.count("--singletons"))
+            std::ofstream(std::filesystem::path(options["--singletons"]) / "singletons.json", std::ios::binary | std::ios::trunc)
+                << Json{{"source_uri", source_uri}, {"revision", provenance.at("revision")}, {"questions", singletons}}.dump(2) << '\n';
 
         std::cout << "| Method | Turn recall@5 | Turn recall@10 | Turn NDCG@10 | Session recall@5 |";
         for (const auto budget : budgets) std::cout << " All evidence in " << budget << " tokens |";

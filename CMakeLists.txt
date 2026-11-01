@@ -308,7 +308,8 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_retrieval_http)
   add_test(NAME ltm.retrieval.eval_tool COMMAND ltm-retrieval-eval --dataset "${ltm_fixture}"
     --provenance "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
     --questions "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json"
-    --out "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/results.json" --budgets 10,1000)
+    --out "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/results.json" --budgets 10,1000
+    --singletons "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/singletons")
   set_tests_properties(ltm.retrieval.eval_tool PROPERTIES LABELS "retrieval;integration;offline"
     PASS_REGULAR_EXPRESSION "\\| bm25 \\| 100\\.0% \\| 100\\.0% \\|.*scored for retrieval: 1")
 endif()
