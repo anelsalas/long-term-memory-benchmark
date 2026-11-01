@@ -119,6 +119,17 @@ void repeated_ids() {
     require(result.candidate.sessions[0].source_id != result.candidate.sessions[1].source_id, "Opaque occurrence identities unique");
     require(result.evaluator.sessions[0].original_session_id == result.evaluator.sessions[1].original_session_id, "Repeated source mapping retained");
 }
+void future_session_policy() {
+    auto data = Json::parse(fixture());
+    data[0]["haystack_dates"][1] = "2026/03/14 (Sat) 09:00";
+    const auto bytes = data.dump();
+    rejects([&] { (void)load(bytes); });
+    const auto result = ltm::load_longmemeval_case(bytes, "fictional-school-01", provenance(bytes),
+        ltm::HistoryTimePolicy::include_all);
+    require(result.candidate.sessions.size() == 2, "Explicit policy preserves all source sessions");
+    require(result.candidate.sessions[1].date == "2026/03/14 (Sat) 09:00", "Future timestamp preserved");
+    require(result.evaluator.answer_session_ids.size() == 2, "Gold references preserved");
+}
 void iso_dates() {
     auto data = Json::parse(fixture());
     data[0]["question_date"] = "2026-03-13T09:00:00Z";
@@ -128,13 +139,16 @@ void iso_dates() {
 }
 }
 int main(int argc, char** argv) {
-    if (argc == 4 && std::string(argv[1]) == "--validate-file") {
+    if ((argc == 4 || (argc == 5 && std::string(argv[4]) == "--include-all")) &&
+        std::string(argv[1]) == "--validate-file") {
         try {
             const auto bytes = file_bytes(argv[2]);
             const auto metadata = Json::parse(file_bytes(argv[3]));
             ltm::DatasetProvenance p{metadata.at("source_uri").get<std::string>(),
                 metadata.at("revision").get<std::string>(), metadata.at("sha256").get<std::string>()};
-            const auto result = ltm::load_longmemeval_case(bytes, metadata.at("case_id").get<std::string>(), p);
+            const auto policy = argc == 5 ? ltm::HistoryTimePolicy::include_all
+                                          : ltm::HistoryTimePolicy::require_not_after_question;
+            const auto result = ltm::load_longmemeval_case(bytes, metadata.at("case_id").get<std::string>(), p, policy);
             const auto sanitized = Json::parse(ltm::candidate_input_json(result.candidate));
             require(sanitized.at("sessions").size() == result.evaluator.sessions.size(), "Source mapping complete");
             std::cout << "PASS external schema validation: bytes=" << bytes.size()
@@ -148,7 +162,7 @@ int main(int argc, char** argv) {
     for (const auto& item : std::vector<std::pair<const char*, std::function<void()>>>{
         {"schema", schema}, {"gold isolation", isolation}, {"identity", identity},
         {"abstention", abstention}, {"malformed", malformed}, {"chronology", chronology},
-        {"ISO dates", iso_dates}, {"repeated IDs", repeated_ids}}) {
+        {"ISO dates", iso_dates}, {"repeated IDs", repeated_ids}, {"future session policy", future_session_policy}}) {
         try { item.second(); std::cout << "PASS " << item.first << '\n'; }
         catch (const std::exception& e) { ++failed; std::cerr << "FAIL " << item.first << ": " << e.what() << '\n'; }
     }

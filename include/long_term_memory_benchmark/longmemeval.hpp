@@ -64,8 +64,11 @@ struct LoadedLongMemEvalCase {
     EvaluatorCase evaluator;
 };
 
+enum class HistoryTimePolicy { require_not_after_question, include_all };
+
 LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,
-    std::string_view question_id, const DatasetProvenance& provenance);
+    std::string_view question_id, const DatasetProvenance& provenance,
+    HistoryTimePolicy time_policy = HistoryTimePolicy::require_not_after_question);
 std::string candidate_input_json(const CandidateCase& candidate);
 
 } // namespace ltm

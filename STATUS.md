@@ -100,3 +100,7 @@ The loader sorts sessions chronologically and retains repeated original session 
 ## Repeated-ID scorer parity — November 1, 2026
 
 A synthetic repeated-ID fixture matched the pinned upstream retrieval evaluation across 162 rankings and cutoffs at session, turn, and turn-to-session levels. The upstream NumPy DCG calculation was replaced by an equivalent standard-library function for this check. Loader and scorer CTest groups passed. Post-question-date cases still require a declared policy.
+
+## Explicit history-time policy — November 1, 2026
+
+The loader offers a documented opt-in to preserve all source sessions while retaining the strict default. All six development cases with later timestamps loaded using that opt-in; the existing ARM64 suite passed 53/53. Their answer/retrieval metrics still require a separately labelled run.
