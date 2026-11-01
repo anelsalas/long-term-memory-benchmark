@@ -39,6 +39,11 @@ and proposed pilot envelope. Example configs have zero spending allowances.
 
 ## Local model smoke
 
+The current local Qwen profile allows a 500-token reply. Use
+`configs/local-qwen-500.example.json` for a new local run. The [matched replay
+report](reports/2026-11-01-qwen-500-replay.md) compares the same model and
+histories at both reply limits. Open **Results** on the dashboard to read each answer.
+
 With the reviewed local service running:
 
 ```powershell

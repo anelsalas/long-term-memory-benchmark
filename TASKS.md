@@ -102,3 +102,9 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [ ] Integrate semantic retrieval, Mem0 and Graphiti through the same conditions and scorer.
 - [ ] Measure model-worker resources and ingestion/storage cost separately.
 - [ ] Run published and held-out workloads with declared adaptations.
+
+## Measured Qwen replay
+
+- [x] Validate Qwen with the first complete correction case and all 20 matched histories at the 500-token reply limit.
+- [x] Show the actual replies, stated grades, abstentions and original format score in dashboard Results.
+- [ ] Freeze the content-scoring rule for the next method comparison and add Mem0 and Graphiti evidence retrieval.

@@ -1,0 +1,1408 @@
+{
+  "model": "qwen3-0.6b-q8_0",
+  "requested_output_limit": 500,
+  "baseline_output_limit": 32,
+  "completed_cases": 20,
+  "continued_replies": 80,
+  "score_readout": "Retrospective reading of the stated grade, abstention or ambiguous reply. The original run uses exact integer match.",
+  "conditions": [
+    {
+      "condition": "no_memory",
+      "cases": 20,
+      "correct_grades": 0,
+      "exact_matches": 0,
+      "abstentions": 20,
+      "review": 0,
+      "with_correction": 0
+    },
+    {
+      "condition": "full_history",
+      "cases": 20,
+      "correct_grades": 20,
+      "exact_matches": 0,
+      "abstentions": 0,
+      "review": 0,
+      "with_correction": 20
+    },
+    {
+      "condition": "retrieved_evidence",
+      "cases": 20,
+      "correct_grades": 0,
+      "exact_matches": 0,
+      "abstentions": 16,
+      "review": 1,
+      "with_correction": 0
+    },
+    {
+      "condition": "known_evidence",
+      "cases": 20,
+      "correct_grades": 20,
+      "exact_matches": 0,
+      "abstentions": 0,
+      "review": 0,
+      "with_correction": 20
+    }
+  ],
+  "observations": [
+    {
+      "seed": 42,
+      "condition": "no_memory",
+      "expected_grade": "82",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 42,
+      "condition": "full_history",
+      "expected_grade": "82",
+      "stated_grade": "82",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 23.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 63.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 23 has been corrected to 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "58dece49d904bb2ea1bd8acfc27b41015b4be3121d8017fd599a0ab4f65507ca",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **82**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 42,
+      "condition": "retrieved_evidence",
+      "expected_grade": "82",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 23.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "fbf68d1495ae5ef504f751d7362ed71cbfd56bd8a41c6dc6c2b3c3c0cdaa231f",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **no score** was recorded for L",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **no score** was recorded for Lina-1 in astronomy.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 42,
+      "condition": "known_evidence",
+      "expected_grade": "82",
+      "stated_grade": "82",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 23 has been corrected to 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "dabef79ddb37fc5c1d29d64da09a45075815dbf4cc3e39fee3208db90294d167",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **82**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 43,
+      "condition": "full_history",
+      "expected_grade": "88",
+      "stated_grade": "88",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 80.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 9.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 80 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "d5e42b3a725fb6acbd8389457fff0306394a408c5c009696485334dc82caeb84",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **88**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 43,
+      "condition": "retrieved_evidence",
+      "expected_grade": "88",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 80.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "6df6a18cbb73c83064bdedc53f90c79669bc1ef70a64d4fd752dc692be2ae0d1",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 43,
+      "condition": "known_evidence",
+      "expected_grade": "88",
+      "stated_grade": "88",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 80 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "e4e5364876beb69c04f0169bbccd9bc4a7d83f0bb9a43fee1bc4a76a1c8f08d1",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **88**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 43,
+      "condition": "no_memory",
+      "expected_grade": "88",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 44,
+      "condition": "retrieved_evidence",
+      "expected_grade": "8",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 71.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "6f31710a7917097a1b5381d02f1ccec142d24ff35a85fc1833f8a30afe3d77a2",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 44,
+      "condition": "known_evidence",
+      "expected_grade": "8",
+      "stated_grade": "8",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 71 has been corrected to 8.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "aa5c25ad17306c8a5fef3e55d386d60b3927f3b8b998ae5ea12aae48d78208cd",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **8**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 44,
+      "condition": "no_memory",
+      "expected_grade": "8",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 44,
+      "condition": "full_history",
+      "expected_grade": "8",
+      "stated_grade": "8",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 71.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 92.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 71 has been corrected to 8.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "a1a48f08d05bd2b69415d4bf0037ca643bd02a3a91e527d28eef6df2a5a2976f",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **8**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 45,
+      "condition": "known_evidence",
+      "expected_grade": "87",
+      "stated_grade": "87",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 65 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "3d15f4f0ff2245f717759be61d071303da9e17940bc0d25eeccb7743deae2caa",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **87**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 45,
+      "condition": "no_memory",
+      "expected_grade": "87",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 45,
+      "condition": "full_history",
+      "expected_grade": "87",
+      "stated_grade": "87",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 65.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 50.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 65 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "454c4d734c153dc75aa0db1b2ecf8a1534644c5f3a27d702d6383fe0636c32de",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **87**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 45,
+      "condition": "retrieved_evidence",
+      "expected_grade": "87",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 65.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "dd2c7773ffaae2814e3717c983dfbc2b5e0c087452831d7977f16c7ffe1b032e",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 46,
+      "condition": "no_memory",
+      "expected_grade": "70",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 46,
+      "condition": "full_history",
+      "expected_grade": "70",
+      "stated_grade": "70",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 95.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 59.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 95 has been corrected to 70.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "3d28dd4155098ffca270b577bac7420ef67365b9c7baf59606079ff8b6e229f9",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **70**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 46,
+      "condition": "retrieved_evidence",
+      "expected_grade": "70",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 95.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "4c6969065336a18ba9ad065c0c4b88595639a338bc45c03b8b01f5f747bd2395",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 46,
+      "condition": "known_evidence",
+      "expected_grade": "70",
+      "stated_grade": "70",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 95 has been corrected to 70.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "36b8d769f051cd924abfe5ae5ebfb9d926bcc215c1c8fde517dc5eac3d136040",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **70**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 47,
+      "condition": "full_history",
+      "expected_grade": "87",
+      "stated_grade": "87",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 2.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 49.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 2 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "ac0f8ad2caaba214211827b5953549c0efba5645b10cf25696cfd03540a45b7e",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **87**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 47,
+      "condition": "retrieved_evidence",
+      "expected_grade": "87",
+      "stated_grade": "review",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 2.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "6b2444f1d3512be13cddb6846f1191c1320978946eec840ef5bb2fba1f41dfdd",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is not recorded**. \n\nIf the score was recorded in the past, it would be **2**. If it's not available, the score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 47,
+      "condition": "known_evidence",
+      "expected_grade": "87",
+      "stated_grade": "87",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 2 has been corrected to 87.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "fac9451dda375f27d493e02baf4575854351b6c8a1792506b65665f4ff96b175",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **87**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 47,
+      "condition": "no_memory",
+      "expected_grade": "87",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 48,
+      "condition": "retrieved_evidence",
+      "expected_grade": "81",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "d8cd9b965bb9563bab521084bc83a3fe5a706433fc716faf7504c64683d8e478",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 48,
+      "condition": "known_evidence",
+      "expected_grade": "81",
+      "stated_grade": "81",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 81.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "ee3ea3d8ea77b89f12b9baeeaa34884e1e227710ed3e4e8f0368c85ecc946d60",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **81**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 48,
+      "condition": "no_memory",
+      "expected_grade": "81",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 48,
+      "condition": "full_history",
+      "expected_grade": "81",
+      "stated_grade": "81",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 73.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 81.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "c3b5d3750c347a056bd554aee22e702e6a150a0f389913b731124eee8242daa0",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **81**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 49,
+      "condition": "known_evidence",
+      "expected_grade": "29",
+      "stated_grade": "29",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 15 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "4e403f0b7f54250570eb1ac5a42b725454822f6df89b22907cca0cfe1b6ff364",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **29**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 49,
+      "condition": "no_memory",
+      "expected_grade": "29",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 49,
+      "condition": "full_history",
+      "expected_grade": "29",
+      "stated_grade": "29",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 15.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 25.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 15 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "e2484bf896ed4413a5aee07a930e5b8db21da5608f14cf70e0a1e902cbb62d2f",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **29**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 49,
+      "condition": "retrieved_evidence",
+      "expected_grade": "29",
+      "stated_grade": "15",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 15.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "8936f9f729cc01e7c9d34e7458b0d8e0ee55e991c9e788d930361cacc03f4405",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **15**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 50,
+      "condition": "no_memory",
+      "expected_grade": "86",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 50,
+      "condition": "full_history",
+      "expected_grade": "86",
+      "stated_grade": "86",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 82.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 56.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 82 has been corrected to 86.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "74deaca9af6ae38963ebcf35c30ebfc355c772a5ea09885e88fc69c8ee212308",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **86**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 50,
+      "condition": "retrieved_evidence",
+      "expected_grade": "86",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 82.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "46f15f50f364ab61f91f6a8d941b3acbe475e94fd56695c00c300dc0176584b6",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 50,
+      "condition": "known_evidence",
+      "expected_grade": "86",
+      "stated_grade": "86",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 82 has been corrected to 86.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "e2a8bdc9592a463a47fa367195bf68f40e266137ee178326515f432f1f03aa4f",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **86**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 51,
+      "condition": "full_history",
+      "expected_grade": "58",
+      "stated_grade": "58",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 48.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 8.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 48 has been corrected to 58.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "9cf56b82c467a7f0c213e49185ae507638dfe4f14a47aaa60a98885dc90a2e09",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **58**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 51,
+      "condition": "retrieved_evidence",
+      "expected_grade": "58",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 48.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "a227851c8660bdfe551ca07bcb849b712ab784837c1e2a7b6199a9d4acb083b3",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 51,
+      "condition": "known_evidence",
+      "expected_grade": "58",
+      "stated_grade": "58",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 48 has been corrected to 58.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "7bf27bbcbc9074058d580b8782af4dce8076aa2f4644e9a9e5e4995e4902d82b",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **58**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 51,
+      "condition": "no_memory",
+      "expected_grade": "58",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 52,
+      "condition": "retrieved_evidence",
+      "expected_grade": "88",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 73.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "a288f1734aaab4fff9ae8e1a3b0af5e7c26709d1d179ea59d09b8adae59750d4",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 52,
+      "condition": "known_evidence",
+      "expected_grade": "88",
+      "stated_grade": "88",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 73 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "e8ba336109c29dee540ac0efdaa3954a6d1e70d560057a1a5300313fc83ec903",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **88**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 52,
+      "condition": "no_memory",
+      "expected_grade": "88",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 52,
+      "condition": "full_history",
+      "expected_grade": "88",
+      "stated_grade": "88",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 73.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 22.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 73 has been corrected to 88.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "465e5255ea83dbe08f3ed694ff05038b5cffdb8b90fcacbfcb51e15d78841dc6",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **88**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 53,
+      "condition": "known_evidence",
+      "expected_grade": "12",
+      "stated_grade": "12",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 1 has been corrected to 12.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "d4b9062088f68d3d09ae650b159676c307cc068d324ebaced98bddab1da52ae8",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **12**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 53,
+      "condition": "no_memory",
+      "expected_grade": "12",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 53,
+      "condition": "full_history",
+      "expected_grade": "12",
+      "stated_grade": "12",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 1.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 20.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 1 has been corrected to 12.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "9850a699f115dfd2c7b1880886d0b2c58d9c2313f817be4d4bb3dd4a348fdc3d",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **12**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 53,
+      "condition": "retrieved_evidence",
+      "expected_grade": "12",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 1.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "e9f324805849219ee5165969e8cb22b3bc161183b230b03cc4a8ba03efd34efa",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is not recorded**. \n\nIf the score is missing, the answer is: **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 54,
+      "condition": "no_memory",
+      "expected_grade": "29",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 54,
+      "condition": "full_history",
+      "expected_grade": "29",
+      "stated_grade": "29",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 30.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 91.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 30 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "808950d296e4386822bde7c97c753eb29057b0ae4bc90f72975fe32b486e8082",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **29**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 54,
+      "condition": "retrieved_evidence",
+      "expected_grade": "29",
+      "stated_grade": "30",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 30.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "12ffe89a957f99270ec194becd05dd5a2dbc6fd7e040de939232ad698f01f78a",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **30**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 54,
+      "condition": "known_evidence",
+      "expected_grade": "29",
+      "stated_grade": "29",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 30 has been corrected to 29.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "fafe140d1d98817c01b37f8d2d406465537ac48c488c27f28e0e736e42fbda5d",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **29**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 55,
+      "condition": "full_history",
+      "expected_grade": "19",
+      "stated_grade": "19",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 37.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 41.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 37 has been corrected to 19.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "e32090286e288ef04052e88e2f356793b46ac6724d35645f500dfeb855abfb3d",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **19**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 55,
+      "condition": "retrieved_evidence",
+      "expected_grade": "19",
+      "stated_grade": "37",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 37.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "e3542e9d318c519da078d67949aed4b85cb75d4c9ba6f51611d70bc50685aff1",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **37**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 55,
+      "condition": "known_evidence",
+      "expected_grade": "19",
+      "stated_grade": "19",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 37 has been corrected to 19.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "62824ee2df218cf72d98300d4e9eeddc6abbaa2a481d9c066b7609c7c21c6af9",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **19**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 55,
+      "condition": "no_memory",
+      "expected_grade": "19",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 56,
+      "condition": "retrieved_evidence",
+      "expected_grade": "84",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 28.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "99bf6dc8ada046572b09129b332664fc630aa27a847e5146d3e5608d72d80052",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 56,
+      "condition": "known_evidence",
+      "expected_grade": "84",
+      "stated_grade": "84",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 28 has been corrected to 84.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "fd18a6d51e02d1b581b7a3a15cad1c2786aacccafa6d87e04bec73f2d98bb340",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **84**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 56,
+      "condition": "no_memory",
+      "expected_grade": "84",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 56,
+      "condition": "full_history",
+      "expected_grade": "84",
+      "stated_grade": "84",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 28.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 42.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 28 has been corrected to 84.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "ea9c33d3ec143856c40de3aba18b28dd6684244a8544ab7faeeea226871eacb1",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **84**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 57,
+      "condition": "known_evidence",
+      "expected_grade": "0",
+      "stated_grade": "0",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 0.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "63d4e9aff73c2236431671b7f0583d317b8e8f4b2212400afc0c36283919ab93",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy was **0**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 57,
+      "condition": "no_memory",
+      "expected_grade": "0",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 57,
+      "condition": "full_history",
+      "expected_grade": "0",
+      "stated_grade": "0",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 22.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 76 has been corrected to 0.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "ef4b593021688c903164920974a14e0066d200dd515a8a232d30771e4ce154fb",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **0**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 57,
+      "condition": "retrieved_evidence",
+      "expected_grade": "0",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 76.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "d8cd9b965bb9563bab521084bc83a3fe5a706433fc716faf7504c64683d8e478",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **Lina-1's astronomy score is unknown**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 58,
+      "condition": "no_memory",
+      "expected_grade": "18",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 58,
+      "condition": "full_history",
+      "expected_grade": "18",
+      "stated_grade": "18",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 52.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 18.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "25f7b4053ac4ee07c9c0ae3de891a07739e3b20b64744e15f4feddcccb8595db",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **18**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 58,
+      "condition": "retrieved_evidence",
+      "expected_grade": "18",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "95b09f3bafad851a84133fa4e9dcba04a4d37406b6edc9764c75b0c0bc743a56",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 58,
+      "condition": "known_evidence",
+      "expected_grade": "18",
+      "stated_grade": "18",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 18.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "6998d2fa002982c13e65d9d658b2ff5fc6668eeb050ff950306c9bfad0462c63",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **18**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 59,
+      "condition": "full_history",
+      "expected_grade": "95",
+      "stated_grade": "95",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 25.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 90.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 25 has been corrected to 95.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "24b78766cb75d1098575291a876cb4a51483f3ed083657abb0dbd92a36c7e2d7",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **95**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 59,
+      "condition": "retrieved_evidence",
+      "expected_grade": "95",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 25.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "b04df20f10b4447c09f87656447f8aececde049c1741338942add5fcf4a96511",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, **no score** was recorded for L",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, **no score** was recorded for Lina-1 in astronomy.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 59,
+      "condition": "known_evidence",
+      "expected_grade": "95",
+      "stated_grade": "95",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 25 has been corrected to 95.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "e211748e8dfbf587da3007c931d2c8fd20fd1c11e89abc29ad6c05471686ec03",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **95**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 59,
+      "condition": "no_memory",
+      "expected_grade": "95",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 60,
+      "condition": "retrieved_evidence",
+      "expected_grade": "90",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "95b09f3bafad851a84133fa4e9dcba04a4d37406b6edc9764c75b0c0bc743a56",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 60,
+      "condition": "known_evidence",
+      "expected_grade": "90",
+      "stated_grade": "90",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 90.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "1a633ce8ee83c579613d5bb20cfc20864b396e51c740c04a88c1af8d481accd3",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **90**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 60,
+      "condition": "no_memory",
+      "expected_grade": "90",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 60,
+      "condition": "full_history",
+      "expected_grade": "90",
+      "stated_grade": "90",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 26.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 21.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 26 has been corrected to 90.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "298be5464880d137f804213bec984cd17d88f064bfc645cd83af18cd952df389",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **90**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 61,
+      "condition": "known_evidence",
+      "expected_grade": "51",
+      "stated_grade": "51",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 39 has been corrected to 51.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "f2a5dc4e6b2020dae9498464329f73432507e5c1745fa74d92111f033937193b",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for Lina-1 in astronomy is **51**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 61,
+      "condition": "no_memory",
+      "expected_grade": "51",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [],
+      "prompt_sha256": "2f02574298965302c8eff77795e38d2afb3d58f1aa6b4e2999d420a79f4d9401",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, no score was recorded for Lina-1 in astronomy. The latest recorded score is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 61,
+      "condition": "full_history",
+      "expected_grade": "51",
+      "stated_grade": "51",
+      "correct_grade": true,
+      "exact_integer_match": false,
+      "correction_supplied": true,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 39.\n2026-03-04T10:00:00Z I recorded Robin-1's astronomy score as 7.\n2026-03-12T10:00:00Z Lina-1's previous astronomy score of 39 has been corrected to 51.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001",
+        "session-000002/message-000001",
+        "session-000003/message-000001"
+      ],
+      "prompt_sha256": "598791a183e0bdddd048658e89a925dfd001e407cddfd558de4d43d576fc5efa",
+      "answer_at_32": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1",
+      "answer_at_500": "As of **2026-03-13T10:00:00Z**, the score for **Lina-1** in astronomy is **51**.",
+      "extends_earlier_reply": true
+    },
+    {
+      "seed": 61,
+      "condition": "retrieved_evidence",
+      "expected_grade": "51",
+      "stated_grade": "unknown",
+      "correct_grade": false,
+      "exact_integer_match": false,
+      "correction_supplied": false,
+      "prompt": "Use the latest recorded score. Reply with its integer, or UNKNOWN if absent.\n2026-03-03T10:00:00Z I recorded Lina-1's astronomy score as 39.\nAs of 2026-03-13T10:00:00Z, what score was recorded for Lina-1 in astronomy?",
+      "source_ids": [
+        "session-000001/message-000001"
+      ],
+      "prompt_sha256": "018a58e64ba16b543105cfbcb17e698679311cd8980d73930c4cc13908256d4f",
+      "answer_at_32": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in",
+      "answer_at_500": "As of 2026-03-13T10:00:00Z, the score for Lina-1 in astronomy is **UNKNOWN**.",
+      "extends_earlier_reply": true
+    }
+  ]
+}

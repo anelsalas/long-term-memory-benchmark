@@ -1,3 +1,11 @@
+## Qwen 500-token replay — November 1, 2026
+
+All 80 matched requests completed. Qwen stated the corrected grade in 20/20
+full-history and 20/20 direct-evidence answers. Keyword retrieval missed all
+20 corrections. Question-only answers abstained in all 20 cases. The original
+strict integer score and the retrospective content reading are both visible in
+[the report](reports/2026-11-01-qwen-500-replay.md) and dashboard Results.
+
 ## Qwen four-condition results — November 1, 2026
 
 Completed 80 local requests across 20 correction histories. All responses reached

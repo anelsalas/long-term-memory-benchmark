@@ -140,3 +140,10 @@ question-only controls, and identical prompts across conditions. Rotate order
 across20 seeds. Record integer gold agreement, abstention, supporting evidence,
 output cap and timing separately. Preserve the all-zero answer result and the
 prompt change; validate the reader before using these cases to rank memory systems.
+
+## Qwen reply allowance for correction histories
+
+November 1, 2026. Use 500 as the local output ceiling. Compare the exact earlier
+and current prompts, evidence and returned text. Retain the original format score
+and label the additional content reading as retrospective. All 80 replies continued
+the earlier text and the direct-evidence control stated the correct grade 20/20.

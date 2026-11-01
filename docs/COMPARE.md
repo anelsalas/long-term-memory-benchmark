@@ -161,3 +161,10 @@ The compact service profile fits 512 context bytes and 32 output tokens.
 Gold agreement for no-memory requests is a guessing diagnostic. Exact UNKNOWN
 responses are recorded separately. Output-at-cap counts expose possible truncation.
 Seed variations share one correction template; broader question types follow.
+
+For the 500-token replay, use `scripts/run-qwen-controls.ps1 -Plan
+configs/local-qwen-500.example.json -RunDirectory runtime/controls-500`
+from the repository root (on one command line). Then run
+`scripts/report-qwen-replay.ps1 -RunDirectory runtime/controls-500`.
+The report checks each returned model and prompt against the archived baseline,
+reads the grade stated in each reply, and preserves the original integer-only score.
