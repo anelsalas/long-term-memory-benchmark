@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <set>
 #include <stdexcept>
 
 namespace ltm::retrieval {
@@ -148,6 +149,26 @@ EvidenceCoverage evidence_in_budget(const std::vector<Unit>& units, const std::v
     for (const auto& unit : units) coverage.evidence += evidence_ids.count(unit.id);
     for (const auto index : pack(units, ranking, budget_tokens)) coverage.included += evidence_ids.count(units[index].id);
     return coverage;
+}
+
+CandidateCase select_rounds(const CandidateCase& history, const std::vector<Unit>& units,
+    const std::vector<Ranked>& ranking, std::size_t budget_tokens, std::vector<std::string>& selected) {
+    std::set<std::string> keep;
+    for (const auto index : pack(units, ranking, budget_tokens))
+        keep.insert(units[index].source_ids.begin(), units[index].source_ids.end());
+    auto reduced = history;
+    reduced.sessions.clear();
+    for (const auto& session : history.sessions) {
+        auto kept = session;
+        kept.messages.clear();
+        for (const auto& message : session.messages) {
+            if (!keep.count(message.source_id)) continue;
+            kept.messages.push_back(message);
+            selected.push_back(message.source_id);
+        }
+        if (!kept.messages.empty()) reduced.sessions.push_back(std::move(kept));
+    }
+    return reduced;
 }
 
 } // namespace ltm::retrieval

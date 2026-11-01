@@ -84,4 +84,10 @@ struct EvidenceCoverage {
 EvidenceCoverage evidence_in_budget(const std::vector<Unit>& units, const std::vector<Ranked>& ranking,
     const std::set<std::string>& evidence_ids, std::size_t budget_tokens);
 
+// The history reduced to the rounds packed within the budget (see pack), keeping
+// session order and dates; sessions left empty are dropped. `selected` receives
+// the kept message source IDs in order.
+CandidateCase select_rounds(const CandidateCase& history, const std::vector<Unit>& units,
+    const std::vector<Ranked>& ranking, std::size_t budget_tokens, std::vector<std::string>& selected);
+
 } // namespace ltm::retrieval

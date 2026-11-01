@@ -5,6 +5,7 @@
 #include "long_term_memory_benchmark/memory.hpp"
 #include "long_term_memory_benchmark/resources.hpp"
 #include "long_term_memory_benchmark/scoring.hpp"
+#include "long_term_memory_benchmark/retrieval.hpp"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -330,7 +331,8 @@ int main(int argc, char** argv) {
                               "public_case",
                               "chat_framing_token_allowance",
                               "tokenizer_bound_verified",
-                              "max_candidate_answer_bytes"});
+                              "max_candidate_answer_bytes",
+                              "context_budget_tokens"});
         if (integer(config.at("schema_version")) != 1) {
             throw std::invalid_argument("Unsupported runtime configuration version");
         }
@@ -397,7 +399,8 @@ int main(int argc, char** argv) {
         std::set<std::string> unique_conditions;
         for (const auto& condition : conditions) {
             if ((condition != "full_history" && condition != "retrieved_evidence" &&
-                 condition != "no_memory" && condition != "known_evidence") ||
+                 condition != "no_memory" && condition != "known_evidence" &&
+                 condition != "bm25_budget") ||
                 !unique_conditions.insert(condition).second) {
                 throw std::invalid_argument("Invalid or repeated condition");
             }
@@ -410,6 +413,12 @@ int main(int argc, char** argv) {
         const auto top_k = integer(config.at("top_k"));
         if (!top_k || top_k > 1000) {
             throw std::invalid_argument("top_k must be 1 to 1000");
+        }
+        const auto context_budget = config.contains("context_budget_tokens")
+                                        ? integer(config.at("context_budget_tokens"))
+                                        : 0;
+        if (unique_conditions.count("bm25_budget") && !context_budget) {
+            throw std::invalid_argument("bm25_budget requires positive context_budget_tokens");
         }
         stage = "dataset_preparation";
         const auto ledger =
@@ -453,6 +462,11 @@ int main(int argc, char** argv) {
         manifest.method = "declared-memory-controls-ascii-lexical-both-roles";
         manifest.method_revision = "v1";
         manifest.method_parameters = {{"top_k_messages", std::to_string(top_k)}};
+        if (context_budget) {
+            manifest.method_parameters["context_budget_tokens"] = std::to_string(context_budget);
+            manifest.method_parameters["budget_retriever"] =
+                "bm25-user-rounds-k1.2-b0.75-lucene-idf-estimated-tokens-bytes-div-4";
+        }
         for (const auto* role : {"reader", "judge"}) {
             known_fields(config.at(role), {"id", "version"});
         }
@@ -520,6 +534,14 @@ int main(int argc, char** argv) {
                 auto candidate =
                     select_evidence(item.data.candidate, static_cast<std::size_t>(top_k),
                                     std::string(condition) == "full_history", sources);
+                if (condition == "bm25_budget") {
+                    namespace retrieval = ltm::retrieval;
+                    sources.clear();
+                    const auto units = retrieval::rounds(item.data.candidate, retrieval::RoundText::user_only);
+                    candidate = retrieval::select_rounds(item.data.candidate, units,
+                        retrieval::Bm25(units).rank(item.data.candidate.question),
+                        static_cast<std::size_t>(context_budget), sources);
+                }
                 if (condition == "no_memory" || condition == "known_evidence") {
                     candidate = item.data.candidate;
                     sources.clear();

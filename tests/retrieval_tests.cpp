@@ -109,6 +109,17 @@ void evaluation_helpers() {
     require(coverage.evidence == 2 && coverage.included == 1, "Counts evidence rounds present and packed");
     require(evidence_in_budget(units, ranking, {}, 20).evidence == 0, "No evidence, nothing to cover");
 }
+void select_rounds_keeps_packed_history() {
+    const auto h = history();
+    const auto units = rounds(h, RoundText::user_and_replies);  // u1+a1 (41 B), u2 (20 B), u3+a3+a4 (55 B)
+    Ids selected;
+    const auto reduced = select_rounds(h, units, {{2, 3}, {1, 2}, {0, 1}}, 20, selected);
+    require(selected == Ids{"u2", "u3", "a3", "a4"}, "Packed rounds keep their replies, in order");
+    require(reduced.sessions.size() == 2 && reduced.sessions[0].messages.size() == 1, "Unselected messages are removed");
+    require(reduced.sessions[1].date == "2026/01/09 (Fri) 10:00" && reduced.question == h.question, "Dates and question kept");
+    Ids none;
+    require(select_rounds(h, units, {{0, 1}}, 0, none).sessions.empty() && none.empty(), "Zero budget leaves no history");
+}
 }
 
 int main(int argc, char** argv) {
@@ -119,7 +130,8 @@ int main(int argc, char** argv) {
         {"bm25_ties_keep_input_order", bm25_ties_keep_input_order},
         {"cosine_orders_by_similarity", cosine_orders_by_similarity}, {"rrf_fuses_rankings", rrf_fuses_rankings},
         {"pack_fills_budget_in_rank_order", pack_fills_budget_in_rank_order},
-        {"evaluation_helpers", evaluation_helpers}};
+        {"evaluation_helpers", evaluation_helpers},
+        {"select_rounds_keeps_packed_history", select_rounds_keeps_packed_history}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

@@ -70,7 +70,7 @@ add_executable(ltm-compare src/compare_main.cpp)
 target_link_libraries(ltm-compare PRIVATE LongTermMemoryBenchmark::core
   LongTermMemoryBenchmark::dataset LongTermMemoryBenchmark::provider
   LongTermMemoryBenchmark::scoring LongTermMemoryBenchmark::fresh_facts
-  LongTermMemoryBenchmark::http_provider)
+  LongTermMemoryBenchmark::http_provider LongTermMemoryBenchmark::retrieval)
 target_include_directories(ltm-compare SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
 
 add_library(ltm_dashboard STATIC src/dashboard_settings.cpp src/dashboard_plan.cpp src/dashboard_runs.cpp src/dashboard_api.cpp)
@@ -185,7 +185,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   foreach(case IN ITEMS rounds_group_user_with_replies rounds_score_user_text_only
       terms_fold_case_and_split bm25_matches_okapi bm25_ties_keep_input_order
       cosine_orders_by_similarity rrf_fuses_rankings pack_fills_budget_in_rank_order
-      evaluation_helpers)
+      evaluation_helpers select_rounds_keeps_packed_history)
     add_test(NAME ltm.retrieval.${case} COMMAND ltm_retrieval_tests ${case})
     set_tests_properties(ltm.retrieval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()
@@ -218,6 +218,10 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
     "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/compare_cli_checks.cmake")
   set_tests_properties(ltm.integration.compare_cli PROPERTIES LABELS "memory;integration;offline")
+  add_test(NAME ltm.integration.compare_bm25_budget COMMAND ${CMAKE_COMMAND}
+    "-DLTM_COMPARE_EXE=$<TARGET_FILE:ltm-compare>" "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/compare_budget_checks.cmake")
+  set_tests_properties(ltm.integration.compare_bm25_budget PROPERTIES LABELS "retrieval;memory;integration;offline")
   add_executable(ltm_dashboard_settings_tests tests/dashboard_settings_tests.cpp)
   target_link_libraries(ltm_dashboard_settings_tests PRIVATE LongTermMemoryBenchmark::dashboard)
   foreach(case IN ITEMS roundtrip rejects_malformed rejects_bad_decimals endpoint_rules
