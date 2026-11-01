@@ -163,3 +163,7 @@ Document the compact extraction instruction, deterministic token-feature represe
 ## Retrieval development selection and embeddings — November 1, 2026
 
 Pin the cleaned LongMemEval-S revision and select ten cases per question type using a fixed seed and stable hash ranking, reserving an abstention case in eligible types. Use a local Qwen3 embedding model for this adapted baseline and record its revision, normalization, configuration and resource measurements. Compare paper configurations separately.
+
+## Embedding thread setting
+
+Use twelve CPU threads for the current retrieval preparation run; record competing workloads when comparing timings. The original two-thread smoke measurement remains in the preparation report.

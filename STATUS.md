@@ -88,3 +88,7 @@ paid calls remain zero. Local loopback Qwen execution is now observed; cloud acc
 ## Retrieval baseline preparation — November 1, 2026
 
 Pinned LongMemEval-S data and a 60-question stratified development selection are ready. A Windows ARM64 CPU embedding endpoint produced four normalized 1,024-dimensional vectors; the warm short-text sample ran at 2.34 texts/s. Retrieval comparison and answer evaluation are next. Details and selection: [preparation report](reports/2026-11-01-retrieval-preparation.md).
+
+## Embedding throughput check — November 1, 2026
+
+A 32-short-text batch returned all vectors in 7.874 s with two CPU threads and 2.106 s with twelve in separate runs. Long input throughput and concurrent workload effects require measurement.
