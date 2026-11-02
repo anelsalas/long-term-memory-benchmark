@@ -50,7 +50,8 @@ function New-Config([object]$question, [string[]]$conditions) {
 $records = @()
 foreach ($question in $questions) {
     $id = $question.question_id
-    $fitting = @(); $notFitting = @()
+    if (Test-Path (Join-Path $RunDirectory "$id.result.json")) { Write-Output "$id already done"; continue }
+    $fitting = @(); $notFitting = @(); $failed = $null
     foreach ($condition in $Conditions) {
         $probe = Join-Path $RunDirectory "$id.$condition.probe.json"
         [IO.File]::WriteAllText((Join-Path (Get-Location) $probe), ((New-Config $question @($condition)) | ConvertTo-Json -Depth 6))
@@ -59,18 +60,21 @@ foreach ($question in $questions) {
         $ErrorActionPreference = 'Stop'
         if ($LASTEXITCODE -eq 0) { $fitting += $condition }
         elseif ($probeOutput -match '"stage":"prompt_preflight"') { $notFitting += $condition }
-        else { throw "Dry run of $condition for $id failed: $probeOutput" }
+        else { $failed = ($probeOutput | ConvertFrom-Json).stage; Remove-Item $probe; break }
         Remove-Item $probe
     }
     $result = $null
+    if ($failed) { $fitting = @() }
     if ($fitting.Count -and -not $DryRun) {
         $path = Join-Path $RunDirectory "$id.json"
         [IO.File]::WriteAllText((Join-Path (Get-Location) $path), ((New-Config $question $fitting) | ConvertTo-Json -Depth 6))
         $result = & ./build-vs2026/Release/ltm-compare.exe --config $path --execute | Out-String
         $result | Set-Content (Join-Path $RunDirectory "$id.result.json")
     }
-    $records += [ordered]@{ question_id = $id; question_type = $question.question_type
-        ran = $fitting; does_not_fit = $notFitting; summary = if ($result) { $result | ConvertFrom-Json } else { $null } }
-    Write-Output "$id ran=[$($fitting -join ',')] does_not_fit=[$($notFitting -join ',')]"
+    $record = [ordered]@{ question_id = $id; question_type = $question.question_type
+        ran = $fitting; does_not_fit = $notFitting; error_stage = $failed; summary = if ($result) { $result | ConvertFrom-Json } else { $null } }
+    $records += $record
+    [IO.File]::WriteAllText((Join-Path (Get-Location) (Join-Path $RunDirectory "$id.run.json")), ($record | ConvertTo-Json -Depth 8))
+    Write-Output "$id ran=[$($fitting -join ',')] does_not_fit=[$($notFitting -join ',')]$(if ($failed) { " error=$failed" })"
 }
 [IO.File]::WriteAllText((Join-Path (Get-Location) (Join-Path $RunDirectory 'runs.json')), ($records | ConvertTo-Json -Depth 8))
