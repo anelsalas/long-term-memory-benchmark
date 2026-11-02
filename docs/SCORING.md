@@ -53,8 +53,8 @@ The prompt is a single user-role message with one sample, temperature 0 and a
 requested output limit of 10 tokens.
 
 The request records SHA-256 for both the frozen template and full instantiated
-prompt. Current exact prompt parity supports string-valued gold; structured or
-numeric gold is an explicit compatibility error pending a declared conversion.
+prompt. String-valued gold is used as text, and integer gold is rendered in decimal,
+matching Python string formatting. Other JSON types remain explicit compatibility errors.
 The candidate object remains unchanged and its serialization excludes evaluator gold.
 
 `parse_judge_verdict` accepts only a whitespace-trimmed, case-insensitive `yes`

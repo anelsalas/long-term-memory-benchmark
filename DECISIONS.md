@@ -179,3 +179,7 @@ Keep the authors' evaluation functions external and pin their revision for compa
 ## History time sensitivity
 
 Keep strict history-time validation as the default. Provide an explicit include-all policy for source-corpus fidelity; callers must record it and flag later timestamps. The six affected development cases include five with answer-labelled future sessions, so filtering individual sessions could remove evidence.
+
+## Integer gold in official judge prompts
+
+Render integer JSON gold as decimal text to match upstream Python formatting. Preserve explicit errors for other non-string JSON types until separately validated.
