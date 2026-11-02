@@ -187,3 +187,7 @@ Render integer JSON gold as decimal text to match upstream Python formatting. Pr
 ## Retrieval baseline review
 
 Use the dataset adapter's validated timestamp comparison for diagnostics, and treat the reader/retrieval bottleneck as an open hypothesis. A model-reviewed judge sample requires recoverable selection details for independent verification.
+
+## Stronger-reader report review
+
+Present matching source-ID selection, model-judged outcomes and serving differences separately. Report subscription-credit spending as unmeasured and describe the local bridge's access boundary.

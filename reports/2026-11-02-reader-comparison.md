@@ -7,8 +7,8 @@ verdicts, token counts and timings, without dialogue text.
 ## Question
 
 The local Qwen3-0.6B run left this open: how much of LongMemEval accuracy depends
-on the reader rather than on retrieval? This run keeps everything else fixed and
-changes only the reader:
+on the reader rather than on retrieval? This run compares readers with these
+matched inputs:
 - the 54 strict development questions;
 - the five conditions;
 - the packed evidence.
@@ -24,8 +24,8 @@ changes only the reader:
   0.163.0.
 - **How the CLIs ran.** Both ran through `ltm-cli-bridge`
   ([docs/CLI-BRIDGE.md](../docs/CLI-BRIDGE.md)): tools off, the same neutral system
-  prompt, an empty working folder. The plans' usage is not billed per request: $0
-  marginal cost.
+  prompt, an empty working folder. Actual usage-credit expenditure was not
+  measured; calls consume plan quota and may consume paid credits.
 
 **Conditions** (unchanged from the Qwen run)
 - question only;
@@ -33,8 +33,10 @@ changes only the reader:
   rounds;
 - the labelled evidence messages only.
 
-**Same evidence for every reader.** The packed source IDs are identical across
-all three readers for all 270 question-condition pairs.
+**Matched selection.** The packed source-ID hashes match across all three
+readers for all 270 question-condition pairs. This verifies selection identity;
+byte-identical evidence content was not independently established. The serving
+stacks, prompt framing, tokenization and inference settings differ.
 
 **Judges**
 - **Primary: GPT-6.1-sol, reasoning effort high.** The official LongMemEval judge
@@ -103,7 +105,7 @@ Under the Claude judge, every count in the results table is the same, except:
 
 All three disagreements on the strong readers' answers are
 single-session-preference questions in the labelled-evidence condition, where
-the rubric is open to judgment. Neither judge favors its own family's answers:
+the rubric is open to judgment. Observed disagreements do not establish whether either judge has family bias:
 - On Claude's answers, the only disagreement is the Claude judge rejecting one.
 - On GPT's answers, there is one flip in each direction.
 
@@ -112,12 +114,13 @@ to any judge.
 
 ## Readings
 
-- **The reader dominates at this budget.** With the same evidence, accuracy goes:
+- **Reader results differ at this budget.** With matched source-ID selections,
+  judged accuracy is:
   - dense: 35% (Qwen) to 85–89%;
   - labelled evidence: 67% to 93–94%.
-- **Retrieval's remaining gap is small for strong readers.** Dense retrieval at
+- **A measured gap for strong readers.** Dense retrieval at
   6k tokens is 5–7 points below labelled evidence.
-- **The gap is mostly multi-session questions.** There, both strong readers get
+- **Multi-session questions in this sample.** There, both strong readers get
   10 of 10 with the evidence and 6 of 10 with dense retrieval. Evidence spread
   across sessions is where a memory system can still add accuracy over plain
   retrieval.
@@ -165,4 +168,5 @@ to any judge.
   long-context comparison, if the plans allow.
 - **Framing.** The CLIs add their own framing (Codex's tool schemas and base
   instructions) even with tools disabled. Readers are not compared on identical
-  raw prompts, only on identical evidence and instructions.
+  raw prompts; selected source IDs match, while evidence bytes have not been
+  independently verified.

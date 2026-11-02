@@ -1,3 +1,7 @@
+## Stronger-reader report review — November 2, 2026
+
+Independently verified 105/105 ARM64 tests, 270 matched source-ID pairs, 15 answer-summary totals and 803 cross-judge records on frozen 95e6534. The public report identifies serving-stack differences, unmeasured credit spending and judge limitations. The loopback bridge is stopped; its current access controls allow local processes to submit requests.
+
 ## Retrieval baseline integration — November 1, 2026
 
 The frozen retrieval branch was independently built and passed 86/86 ARM64 tests. Five answer-summary counts were verified against 270 recorded outcomes; the local judge remains provisional. An ISO timestamp diagnostic was corrected with behavioral tests. The judge-audit sample details are pending. See [the benchmark report](reports/2026-11-01-retrieval-baselines.md).

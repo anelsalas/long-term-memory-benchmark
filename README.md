@@ -17,8 +17,10 @@ Full reports:
 
 **Setup**
 - **Questions.** 54 development questions from LongMemEval_S, pinned revision
-  `98d7416c`, 10 per question type.
-- **Context.** Each reader gets the same evidence in every condition. Ranked
+  `98d7416c`, from a stratified 60-question selection. Six cases with later-dated
+  sessions are excluded under the strict policy.
+- **Context.** The selected source IDs match across readers for each condition.
+  The serving stacks and prompt framing differ. Ranked
   conversation rounds are packed into 6,000 estimated tokens and shown in date
   order.
 - **Readers.**
@@ -36,7 +38,7 @@ Full reports:
 | BM25 | 33.3% | 81.5% | 75.9% | 42/51 |
 | Dense embeddings | 35.2% | **88.9%** | **85.2%** | 49/51 |
 | BM25 + dense (RRF) | 40.7% | 87.0% | 83.3% | 45/51 |
-| Labelled evidence only (upper bound) | 66.7% | 94.4% | 92.6% | 51/51 |
+| Labelled evidence only (control) | 66.7% | 94.4% | 92.6% | 51/51 |
 
 **Retrieval alone.** Share of questions with every evidence turn retrieved, 46
 scorable questions, official LongMemEval retrieval metrics:
@@ -49,19 +51,23 @@ scorable questions, official LongMemEval retrieval metrics:
 | BM25 + dense (RRF) | **78.3%** | 84.8% |
 
 **Findings**
-- **The reader matters most.** With identical evidence, dense retrieval scores
-  35% with Qwen3-0.6B and 85–89% with the strong readers.
+- **Reader results differ.** With matching selected source IDs, dense retrieval
+  scores 35% with Qwen3-0.6B and 85–89% with the stronger readers. Serving
+  configuration and prompt framing also differ.
 - **Retrieval's remaining gap is multi-session questions.** For strong readers,
   dense retrieval is 5–7 points below the labelled evidence. That gap is mostly
   multi-session questions: 6 of 10 with retrieval, against 10 of 10 with the
   evidence. A memory system has to beat dense retrieval there, at a matched
   budget.
 - **The judges are consistent.** A second judge, Claude Opus 5.5, agrees with
-  the GPT judge on 797 of 803 answers, with no sign of favoring its own family.
-  - Qwen3-0.6B was too lenient as a judge of its own answers.
+  the GPT judge on 797 of 803 answers. Agreement measures consistency; shared
+  errors and bias remain possible.
+  - Qwen3-0.6B accepted more of its own answers than the GPT judge.
 
 **Limits**
-- One run per configuration.
+- One run per configuration; the sample is small.
+- Actual subscription-credit expenditure was not measured; requests may use
+  included quota or additional paid credits.
 - The judges aren't the official GPT-4o, and no human has graded the answers.
 - Token budgets are byte estimates.
 - Full history (~115k tokens), Mem0 and Graphiti haven't been run on these

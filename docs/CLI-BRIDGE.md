@@ -52,7 +52,9 @@ with zero prices. Each request runs one CLI process:
 - **Endpoints.** Only `POST /v1/chat/completions` (one user message, no
   streaming) and `GET /health`, on 127.0.0.1. Requests that carry an `Origin`
   header, or a `Host` other than the bridge's own loopback port, get 403. This
-  keeps web pages from spending the owner's plans.
+  blocks ordinary cross-origin browser requests. Other local processes can
+  still submit requests while the bridge runs; it has no client authentication
+  or server-side spending cap.
 - **Concurrency.** Each connection gets its own thread, so parallel workers
   don't queue behind a slow reply.
 - **Child processes.** Each runs in a kill-on-close Job Object, stopped at
@@ -60,8 +62,8 @@ with zero prices. Each request runs one CLI process:
 - **Failures.** A run that ends without an answer returns 502 with a short code:
   `cli_exit_N`, `cli_error` (a failed turn), `no_answer`, `tool_use` or
   `unreadable_output`. It is retried `retries` times, waiting `retry_delay_ms`
-  multiplied by the attempt number. A subscription CLI has no per-request
-  charge, so a retry only re-asks.
+  multiplied by the attempt number. Retries consume plan usage and may use paid
+  credits depending on the account.
 - **Failure log.** With `--failures DIR`, each failed run's code and output go
   to their own file. Keep that folder in ignored runtime storage.
 - **Codex transport notices.** Codex prints top-level `error` events while it
