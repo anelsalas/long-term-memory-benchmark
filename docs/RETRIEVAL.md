@@ -84,6 +84,12 @@ dry-runs each condition, so a condition that doesn't fit is recorded as
 blocking a question's other conditions. `scripts/report-qwen-longmemeval.ps1`
 writes a record without dialogue text.
 
+The same script drives other loopback readers. `-Judge` selects a separate
+judge, `-Shard`/`-Shards` split the questions across parallel workers, and
+`-Temperature null` omits temperature for readers that can't set it.
+[CLI-BRIDGE.md](CLI-BRIDGE.md) covers running Claude and GPT readers through the
+owner's signed-in CLIs, and re-judging saved answers with `ltm-rejudge`.
+
 `scripts/run-qwen-budget.ps1` runs the fresh correction histories through local
 Qwen. `scripts/report-qwen-budget.ps1` summarizes them with the same
 stated-grade reading as `scripts/report-qwen-replay.ps1`.
