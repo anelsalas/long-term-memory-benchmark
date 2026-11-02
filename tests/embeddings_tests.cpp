@@ -71,13 +71,24 @@ void cache_asks_only_for_new_texts() {
     require(reopened.embed({"ab", "xyz"}) == Vectors{{2, 0.5f}, {3, 0.5f}} && fresh.requests.empty(), "The cache survives restarts");
     require(cache.embed({}).empty() && inner.requests.size() == 2, "No texts, no request");
 }
+void cache_only_refuses_unknown_texts() {
+    const TempDir dir; FakeEmbedder warm;
+    CachedEmbedder(warm, dir.path).embed({"known"});
+    CacheOnlyEmbedder none;
+    CachedEmbedder cache(none, dir.path);
+    require(cache.embed({"known"}) == Vectors{{5, 0.5f}}, "Cached texts are served without an embedder");
+    bool refused = false;
+    try { cache.embed({"known", "new"}); } catch (const std::runtime_error&) { refused = true; }
+    require(refused, "A text missing from the cache is an error");
+}
 }
 
 int main(int argc, char** argv) {
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"request_lists_inputs", request_lists_inputs}, {"parse_orders_by_index", parse_orders_by_index},
         {"parse_rejects_bad_responses", parse_rejects_bad_responses},
-        {"cache_asks_only_for_new_texts", cache_asks_only_for_new_texts}};
+        {"cache_asks_only_for_new_texts", cache_asks_only_for_new_texts},
+        {"cache_only_refuses_unknown_texts", cache_only_refuses_unknown_texts}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

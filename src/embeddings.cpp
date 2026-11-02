@@ -79,4 +79,9 @@ std::vector<std::vector<float>> CachedEmbedder::embed(const std::vector<std::str
     return result;
 }
 
+std::vector<std::vector<float>> CacheOnlyEmbedder::embed(const std::vector<std::string>& texts) {
+    throw std::runtime_error(std::to_string(texts.size()) + " text(s) missing from the embedding cache; "
+        "compute them first with ltm-retrieval-eval --embeddings-url");
+}
+
 } // namespace ltm::retrieval

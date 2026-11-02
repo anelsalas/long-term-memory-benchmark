@@ -120,6 +120,27 @@ void select_rounds_keeps_packed_history() {
     Ids none;
     require(select_rounds(h, units, {{0, 1}}, 0, none).sessions.empty() && none.empty(), "Zero budget leaves no history");
 }
+struct LengthEmbedder : Embedder {
+    std::vector<std::string> seen;
+    std::vector<std::vector<float>> embed(const std::vector<std::string>& texts) override {
+        std::vector<std::vector<float>> vectors;
+        for (const auto& text : texts) { seen.push_back(text); vectors.push_back({text.find("82") != std::string::npos ? 1.0f : 0.1f, 1}); }
+        return vectors;
+    }
+};
+void rank_rounds_by_method() {
+    const auto units = corpus({"lina got 23", "weather is nice", "lina got 82 correction"});
+    require(order(rank_rounds("bm25", units, "lina correction", nullptr, "")) == order(Bm25(units).rank("lina correction")),
+        "bm25 matches the BM25 ranker");
+    LengthEmbedder embedder;
+    const auto dense = rank_rounds("dense", units, "score 82?", &embedder, "Q: ");
+    require(dense.front().unit == 2 && embedder.seen.back() == "Q: score 82?", "dense embeds rounds and the prefixed query");
+    const auto hybrid = rank_rounds("hybrid", units, "lina correction", &embedder, "Q: ");
+    require(order(hybrid) == order(reciprocal_rank_fusion({Bm25(units).rank("lina correction"),
+        cosine_rank({{0.1f, 1}, {0.1f, 1}, {1, 1}}, {0.1f, 1})})), "hybrid fuses bm25 and dense");
+    require(rejected([&] { rank_rounds("dense", units, "q", nullptr, ""); }), "dense needs an embedder");
+    require(rejected([&] { rank_rounds("fancy", units, "q", nullptr, ""); }), "unknown methods are rejected");
+}
 }
 
 int main(int argc, char** argv) {
@@ -131,7 +152,8 @@ int main(int argc, char** argv) {
         {"cosine_orders_by_similarity", cosine_orders_by_similarity}, {"rrf_fuses_rankings", rrf_fuses_rankings},
         {"pack_fills_budget_in_rank_order", pack_fills_budget_in_rank_order},
         {"evaluation_helpers", evaluation_helpers},
-        {"select_rounds_keeps_packed_history", select_rounds_keeps_packed_history}};
+        {"select_rounds_keeps_packed_history", select_rounds_keeps_packed_history},
+        {"rank_rounds_by_method", rank_rounds_by_method}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {

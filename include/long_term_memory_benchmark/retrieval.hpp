@@ -90,4 +90,9 @@ EvidenceCoverage evidence_in_budget(const std::vector<Unit>& units, const std::v
 CandidateCase select_rounds(const CandidateCase& history, const std::vector<Unit>& units,
     const std::vector<Ranked>& ranking, std::size_t budget_tokens, std::vector<std::string>& selected);
 
+// Ranks rounds for `method`: "bm25", "dense" (needs an embedder; the query is
+// query_prefix + question) or "hybrid" (RRF of bm25 and dense).
+std::vector<Ranked> rank_rounds(const std::string& method, const std::vector<Unit>& units,
+    const std::string& question, Embedder* embedder, const std::string& query_prefix);
+
 } // namespace ltm::retrieval

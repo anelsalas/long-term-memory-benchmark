@@ -185,7 +185,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   foreach(case IN ITEMS rounds_group_user_with_replies rounds_score_user_text_only
       terms_fold_case_and_split bm25_matches_okapi bm25_ties_keep_input_order
       cosine_orders_by_similarity rrf_fuses_rankings pack_fills_budget_in_rank_order
-      evaluation_helpers select_rounds_keeps_packed_history)
+      evaluation_helpers select_rounds_keeps_packed_history rank_rounds_by_method)
     add_test(NAME ltm.retrieval.${case} COMMAND ltm_retrieval_tests ${case})
     set_tests_properties(ltm.retrieval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()
@@ -193,7 +193,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_link_libraries(ltm_embeddings_tests PRIVATE LongTermMemoryBenchmark::retrieval)
   target_include_directories(ltm_embeddings_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
   foreach(case IN ITEMS request_lists_inputs parse_orders_by_index parse_rejects_bad_responses
-      cache_asks_only_for_new_texts)
+      cache_asks_only_for_new_texts cache_only_refuses_unknown_texts)
     add_test(NAME ltm.retrieval.embeddings.${case} COMMAND ltm_embeddings_tests ${case})
     set_tests_properties(ltm.retrieval.embeddings.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()

@@ -22,16 +22,9 @@ std::vector<MethodResult> evaluate_case(const LoadedLongMemEvalCase& data, Embed
     const auto units = rounds(data.candidate, RoundText::user_only);
     std::vector<std::pair<std::string, std::vector<Ranked>>> methods;
     methods.emplace_back("recency", recency_rank(units.size()));
-    methods.emplace_back("bm25", Bm25(units).rank(data.candidate.question));
-    if (embedder) {
-        std::vector<std::string> texts;
-        for (const auto& unit : units) texts.push_back(unit.text);
-        texts.push_back(query_prefix + data.candidate.question);
-        auto vectors = embedder->embed(texts);
-        const auto query = std::move(vectors.back());
-        vectors.pop_back();
-        methods.emplace_back("dense", cosine_rank(vectors, query));
-        methods.emplace_back("hybrid", reciprocal_rank_fusion({methods[1].second, methods[2].second}));
+    for (const auto* method : {"bm25", "dense", "hybrid"}) {
+        if (std::string(method) != "bm25" && !embedder) break;
+        methods.emplace_back(method, rank_rounds(method, units, data.candidate.question, embedder, query_prefix));
     }
     const auto evidence = evidence_rounds(data);
     std::vector<MethodResult> results;

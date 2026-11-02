@@ -27,4 +27,11 @@ private:
     std::filesystem::path directory_;
 };
 
+// Inner embedder for CachedEmbedder when every vector must already be cached:
+// asking it for any text is an error.
+class CacheOnlyEmbedder final : public Embedder {
+public:
+    std::vector<std::vector<float>> embed(const std::vector<std::string>& texts) override;
+};
+
 } // namespace ltm::retrieval

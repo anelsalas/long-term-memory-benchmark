@@ -171,4 +171,20 @@ CandidateCase select_rounds(const CandidateCase& history, const std::vector<Unit
     return reduced;
 }
 
+std::vector<Ranked> rank_rounds(const std::string& method, const std::vector<Unit>& units,
+    const std::string& question, Embedder* embedder, const std::string& query_prefix) {
+    if (method == "bm25") return Bm25(units).rank(question);
+    if (method != "dense" && method != "hybrid") throw std::invalid_argument("Unknown ranking method: " + method);
+    if (!embedder) throw std::invalid_argument(method + " ranking needs an embedder");
+    std::vector<std::string> texts;
+    for (const auto& unit : units) texts.push_back(unit.text);
+    texts.push_back(query_prefix + question);
+    auto vectors = embedder->embed(texts);
+    const auto query = std::move(vectors.back());
+    vectors.pop_back();
+    auto dense = cosine_rank(vectors, query);
+    if (method == "dense") return dense;
+    return reciprocal_rank_fusion({Bm25(units).rank(question), std::move(dense)});
+}
+
 } // namespace ltm::retrieval
