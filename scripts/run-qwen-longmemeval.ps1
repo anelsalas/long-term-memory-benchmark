@@ -14,7 +14,8 @@ param(
     [string[]]$Conditions = @('no_memory', 'full_history', 'bm25_budget', 'dense_budget', 'hybrid_budget', 'known_evidence'),
     [string]$EmbeddingCache = 'runtime/embedding-cache/qwen3-embedding-0.6b-q8_0_last-pool-l2',
     [int]$Limit = 0,
-    [switch]$DryRun  # report what fits without sending requests
+    [switch]$DryRun,  # report what fits without sending requests
+    [switch]$PerCondition  # one ltm-compare run per condition, so a stalled reply blocks only its own condition
 )
 $ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force $RunDirectory | Out-Null
@@ -50,7 +51,7 @@ function New-Config([object]$question, [string[]]$conditions) {
 $records = @()
 foreach ($question in $questions) {
     $id = $question.question_id
-    if (Test-Path (Join-Path $RunDirectory "$id.result.json")) { Write-Output "$id already done"; continue }
+    if ((Test-Path (Join-Path $RunDirectory "$id.result.json")) -or (Get-ChildItem $RunDirectory -Filter "$id.*.result.json")) { Write-Output "$id already done"; continue }
     $fitting = @(); $notFitting = @(); $failed = $null
     foreach ($condition in $Conditions) {
         $probe = Join-Path $RunDirectory "$id.$condition.probe.json"
@@ -66,10 +67,14 @@ foreach ($question in $questions) {
     $result = $null
     if ($failed) { $fitting = @() }
     if ($fitting.Count -and -not $DryRun) {
-        $path = Join-Path $RunDirectory "$id.json"
-        [IO.File]::WriteAllText((Join-Path (Get-Location) $path), ((New-Config $question $fitting) | ConvertTo-Json -Depth 6))
-        $result = & ./build-vs2026/Release/ltm-compare.exe --config $path --execute | Out-String
-        $result | Set-Content (Join-Path $RunDirectory "$id.result.json")
+        $groups = if ($PerCondition) { $fitting | ForEach-Object { , @($_) } } else { , $fitting }
+        foreach ($group in $groups) {
+            $name = if ($PerCondition) { "$id.$($group[0])" } else { $id }
+            $path = Join-Path $RunDirectory "$name.json"
+            [IO.File]::WriteAllText((Join-Path (Get-Location) $path), ((New-Config $question $group) | ConvertTo-Json -Depth 6))
+            $result = & ./build-vs2026/Release/ltm-compare.exe --config $path --execute | Out-String
+            $result | Set-Content (Join-Path $RunDirectory "$name.result.json")
+        }
     }
     $record = [ordered]@{ question_id = $id; question_type = $question.question_type
         ran = $fitting; does_not_fit = $notFitting; error_stage = $failed; summary = if ($result) { $result | ConvertFrom-Json } else { $null } }

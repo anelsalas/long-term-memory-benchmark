@@ -57,10 +57,32 @@ build-vs2026\Release\ltm-retrieval-eval.exe --dataset longmemeval_s_cleaned.json
 
 ## Budgeted answers in ltm-compare
 
-The `bm25_budget` condition packs BM25-ranked user rounds into
-`context_budget_tokens` and gives them to the reader chronologically. The budget
-and retriever are recorded in the manifest's `method_parameters`. It is not
-available for dense or hybrid yet, because `ltm-compare` has no embeddings client.
+The `bm25_budget`, `dense_budget` and `hybrid_budget` conditions pack ranked user
+rounds into `context_budget_tokens` and give them to the reader chronologically.
+Dense and hybrid read vectors from `embedding_cache`, the cache folder written
+by `ltm-retrieval-eval`. They use the same query prefix, which
+`embedding_query_prefix` can override. A text missing from the cache is an
+error. The budget, retriever, cache and prefix digest are recorded in the
+manifest's `method_parameters`.
+
+Other `ltm-compare` options added for this work:
+- `include_fresh: false` runs only the public case.
+- `known_evidence` on a public case gives the reader that question's labelled
+  evidence messages, as an upper bound.
+- `fresh_distractors` is allowed with any local prompt profile.
+
+`scripts/start-qwen-benchmark-server.ps1` starts a benchmark-only Qwen3 server
+with the model's full 32,768-token context. That's separate from the Dumas voice
+service, whose 512-byte prompts and 1024-token context are tuned for short
+spoken replies. Build llama.cpp with clang
+(`cmake/arm64-windows-llvm.cmake`): here the MSVC build read prompts about 3×
+slower.
+
+`scripts/run-qwen-longmemeval.ps1` runs one `ltm-compare` per question. It first
+dry-runs each condition, so a condition that doesn't fit is recorded as
+`does_not_fit`. It resumes, and `-PerCondition` keeps a stalled reply from
+blocking a question's other conditions. `scripts/report-qwen-longmemeval.ps1`
+writes a record without dialogue text.
 
 `scripts/run-qwen-budget.ps1` runs the fresh correction histories through local
 Qwen. `scripts/report-qwen-budget.ps1` summarizes them with the same

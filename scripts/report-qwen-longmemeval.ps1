@@ -10,15 +10,33 @@ $ErrorActionPreference = 'Stop'
 $types = @{}
 foreach ($q in (Get-Content $Singletons -Raw | ConvertFrom-Json).questions) { $types[$q.question_id] = $q.question_type }
 
+# Labelled evidence for a question: the known_evidence condition's sources in any
+# run of that question (per-condition runs keep it in a separate run).
+$knownCache = @{}
+function ltm_known_evidence([string]$id, [string]$dir) {
+    if ($knownCache.ContainsKey($id)) { return $knownCache[$id] }
+    $sources = @()
+    foreach ($candidate in @((Join-Path $RunDirectory "$id.result.json"), (Join-Path $RunDirectory "$id.known_evidence.result.json"))) {
+        if (!(Test-Path $candidate)) { continue }
+        $runDir = (Get-Content $candidate -Raw | ConvertFrom-Json).artifact_directory
+        $plan = Get-Content (Join-Path $runDir 'plan.json') -Raw | ConvertFrom-Json
+        $sources += @(($plan.cases | Where-Object condition -eq 'known_evidence').source_ids)
+    }
+    $knownCache[$id] = $sources
+    return $sources
+}
+
 $rows = @(); $failed = @()
 foreach ($file in Get-ChildItem $RunDirectory -Filter '*.result.json' | Sort-Object Name) {
-    $id = $file.Name -replace '\.result\.json$', ''
+    $name = $file.Name -replace '\.result\.json$', ''
+    $id = $name.Split('.')[0]  # per-condition runs are named <id>.<condition>
     $summary = Get-Content $file.FullName -Raw | ConvertFrom-Json
     $dir = $summary.artifact_directory
-    $config = Get-Content (Join-Path $RunDirectory "$id.json") -Raw | ConvertFrom-Json
+    $config = Get-Content (Join-Path $RunDirectory "$name.json") -Raw | ConvertFrom-Json
     $plan = Get-Content (Join-Path $dir 'plan.json') -Raw | ConvertFrom-Json
     $records = (Get-Content (Join-Path $dir 'results.json') -Raw | ConvertFrom-Json).records
-    $known = @(($plan.cases | Where-Object condition -eq 'known_evidence').source_ids)
+    $loaded = ltm_known_evidence $id $dir
+    $known = @($loaded)
     for ($i = 0; $i -lt $plan.cases.Count; $i++) {
         $case = $plan.cases[$i]
         $record = $records | Where-Object case_id -eq $case.case_id
@@ -31,7 +49,7 @@ foreach ($file in Get-ChildItem $RunDirectory -Filter '*.result.json' | Sort-Obj
             evidence_in_context = if ($known.Count) { @($case.source_ids | Where-Object { $known -contains $_ }).Count -gt 0 } else { $null }
             input_tokens = $result.attempts[-1].usage.input_tokens; output_tokens = $result.attempts[-1].usage.output_tokens
             prompt_bytes = $case.prompt_bytes; reader_wall_ms = [math]::Round($result.reader_wall_ms)
-            source_revision = $config.source_revision
+            source_revision = $config.source_revision; output_token_limit = [int]$config.output_token_limit
         }
     }
 }
@@ -68,8 +86,10 @@ foreach ($type in ($rows | Select-Object -ExpandProperty question_type -Unique |
 $record = [ordered]@{
     schema_version = 1
     experiment = 'LongMemEval_S strict development questions answered by a benchmark-only local Qwen3-0.6B server'
-    server = Get-Content (Join-Path $RunDirectory 'server.json') -Raw | ConvertFrom-Json
-    reader_and_judge = 'qwen3-0.6b-q8_0-32k, thinking on, 1024 output tokens, temperature 0'
+    # Local paths are reduced to file names: the record is public.
+    server = (Get-Content (Join-Path $RunDirectory 'server.json') -Raw) -replace '(?i)[A-Z]:(?:\\\\|/)(?:[^"\\\\/ ]+(?:\\\\|/))*', '' | ConvertFrom-Json
+    reader_and_judge = 'qwen3-0.6b-q8_0-32k, thinking on, temperature 0 (greedy); output cap per case in output_token_limit'
+    output_cap_note = 'Questions first run at 1024 output tokens whose thinking hit the cap were rerun at 4096; under greedy decoding a larger cap leaves replies that finished below 1024 unchanged'
     judge_adaptation = 'Official LongMemEval judge prompts (P04) answered by the same local Qwen instead of gpt-4o-2024-08-06'
     full_history = 'Not run: about 115k tokens exceeds the 32,768-token context'
     budget = '6000 estimated tokens (UTF-8 bytes / 4) of ranked user rounds, shown chronologically'

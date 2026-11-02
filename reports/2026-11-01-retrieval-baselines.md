@@ -78,12 +78,74 @@ Observations:
 Strict integer match is 0/20 everywhere because Qwen replies in a sentence; this
 matches the earlier runs.
 
+## LongMemEval_S answers with a benchmark-only local Qwen
+
+**Setup**
+- **Questions:** the 54 strict development questions (6 are excluded for
+  sessions dated after the question).
+- **Reader:** Qwen3-0.6B Q8_0 on a benchmark-only llama.cpp server: full
+  32,768-token context, thinking on, temperature 0.
+  - Built with clang 22.1.3 at `620d222`; build flags and model SHA-256 are
+    recorded with the run.
+  - Not the Dumas voice service (512-byte prompts, 1024-token context).
+- **Conditions:** question only; BM25, dense and hybrid each packed to 6,000
+  estimated tokens; the labelled evidence messages only (upper bound). Full
+  history (about 115k tokens) does not fit and is reported as `does_not_fit`.
+- **Judge:** the official LongMemEval judge prompts (P04), answered by the same
+  local Qwen instead of `gpt-4o-2024-08-06`, declared as an adaptation.
+- **Record:** `reports/2026-11-01-qwen-longmemeval.json`. It holds IDs,
+  verdicts, real token counts and revisions, but no dialogue text; raw answers
+  stay in ignored runtime storage.
+
+| Condition | Judged correct | Evidence in reader's context | No answer (thinking loop) | Mean input tokens |
+|---|---|---|---|---|
+| Question only | 7/54 (13.0%) | 0/51 | 0 | 105 |
+| BM25, 6k-token budget | 20/54 (37.0%) | 42/51 | 3 | 6,024 |
+| Dense, 6k-token budget | 23/54 (42.6%) | 49/51 | 3 | 6,150 |
+| Hybrid, 6k-token budget | **24/54 (44.4%)** | 45/51 | 1 | 6,084 |
+| Labelled evidence only | 36/54 (66.7%) | 51/51 | 0 | 332 |
+
+Judged correct by question type (BM25 / dense / hybrid / labelled evidence):
+
+| Question type | BM25 | Dense | Hybrid | Labelled evidence |
+|---|---|---|---|---|
+| knowledge-update (9) | 4 | 3 | 5 | 7 |
+| multi-session (10) | 2 | 2 | 2 | 5 |
+| single-session-assistant (10) | 4 | 5 | 5 | 7 |
+| single-session-preference (10) | 5 | 2 | 3 | 4 |
+| single-session-user (10) | 4 | 6 | 6 | 8 |
+| temporal-reasoning (5) | 1 | 2 | 1 | 1 |
+
+**Readings**
+- Retrieval puts the evidence in front of the reader most of the time (dense
+  49/51). Accuracy still stops near 40%, against 67% with only the evidence. At
+  6k tokens, this 0.6B reader loses the answer among the surrounding rounds.
+  With this model, the reader is the bottleneck, not retrieval.
+- **No answer:** 7 of 270 cases produced no answer. Greedy decoding made
+  Qwen3's thinking repeat until it hit 4,096 output tokens. Qwen's model card
+  advises against greedy decoding in thinking mode.
+
+**How the run was assembled**
+- The first pass used a 1,024-token cap. Questions whose thinking hit the cap
+  were rerun at 4,096. All 22 replies that had finished under 1,024 tokens were
+  byte-identical at 4,096, so the larger cap changes only truncated replies.
+- An "uncertain" reply stops later requests in the same run, so the 6 questions
+  that still looped were rerun with one run per condition.
+- Superseded attempts are kept in runtime storage.
+- The 5 integer-gold questions ran after Codex's P04 fix (main `b3cdf3d`); each
+  case records its `source_revision`.
+
+**Judge check**
+- Claude compared a fixed-seed sample of 25 verdicts (5 per condition) with the
+  gold answers and replies, and agreed with all 25. Two were borderline: a
+  preference rubric, and a self-contradicting reply whose final answer matched.
+- This was a check by Claude, not by a human, and the sample is small.
 ## Verification
 
-- `ctest -C Release` on Windows ARM64 with VS 2026: 84/84. This covers
+- `ctest -C Release` on Windows ARM64 with VS 2026: 86/86. This covers
   retrieval units, the embeddings client against an in-process Beast server,
-  the evaluation tool on the fixture, the `bm25_budget` and public-case CLI
-  checks, and Codex's suites.
+  the evaluation tool on the fixture, the budget and public-case CLI checks,
+  and Codex's suites.
 - Each behavior was written test-first, with the red step observed.
 - The dense run was stopped twice by Claude Code's low-memory rule for
   background jobs. With the user's approval it was resumed as an ordinary
@@ -91,14 +153,17 @@ matches the earlier runs.
 - One server refusal (HTTP 400) led to the split-and-halve client fix; 1 text
   was truncated in total.
 - Lexical runs peak at 442 MB.
+- The benchmark Qwen server was stopped after the answer runs.
 
 ## Not verified
 
-- No LongMemEval answers have been produced or judged yet; that needs the
-  benchmark-only Qwen server (see the scripts).
+- The answers were judged by a 0.6B local model, not the official GPT-4o judge.
+  Qwen's recommended sampling (instead of greedy) and a stronger reader, for
+  example on the idle 12 GB GPU, have not been tried.
 - No full-history LongMemEval run: about 115k tokens exceeds Qwen3's 32k
   native context.
-- Dense and hybrid aren't yet available as `ltm-compare` answer conditions.
-- Token budgets are byte estimates, not tokenizer counts.
+- Token budgets are byte estimates, not tokenizer counts. `ltm-compare` also
+  bounds prompt bytes by the context's token count, so about a quarter of the
+  32k context goes unused.
 - One run per configuration; retrieval is deterministic, embedding server
   nondeterminism wasn't measured.
