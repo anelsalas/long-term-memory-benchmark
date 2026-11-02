@@ -31,7 +31,7 @@ function New-Config([object]$question, [string[]]$conditions) {
         embedding_cache = (Resolve-Path $EmbeddingCache).Path
         reader = @{ id = $Model; version = $Model }; judge = @{ id = $Model; version = $Model }
         provider_policy = [ordered]@{
-            max_requests = '8'; max_tokens = '400000'; max_cost_nanos = '0'
+            max_requests = '20'; max_tokens = '2000000'; max_cost_nanos = '0'
             input_token_price_nanos = '0'; output_token_price_nanos = '0'; request_price_nanos = '0'
             max_prompt_bytes = '4000000'; max_response_bytes = '1000000'; max_attempts = 1
         }
