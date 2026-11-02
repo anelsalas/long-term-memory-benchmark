@@ -1,3 +1,7 @@
+## Retrieval baseline integration — November 1, 2026
+
+The frozen retrieval branch was independently built and passed 86/86 ARM64 tests. Five answer-summary counts were verified against 270 recorded outcomes; the local judge remains provisional. An ISO timestamp diagnostic was corrected with behavioral tests. The judge-audit sample details are pending. See [the benchmark report](reports/2026-11-01-retrieval-baselines.md).
+
 ## Mem0 first case — November 1, 2026
 
 Mem0 stored and retrieved the fictional correction, and Sol answered 82. The adapted setup and synthetic evidence are in reports/2026-11-01-mem0-first-case.json and dashboard /mem0-first-case.html.

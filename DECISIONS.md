@@ -183,3 +183,7 @@ Keep strict history-time validation as the default. Provide an explicit include-
 ## Integer gold in official judge prompts
 
 Render integer JSON gold as decimal text to match upstream Python formatting. Preserve explicit errors for other non-string JSON types until separately validated.
+
+## Retrieval baseline review
+
+Use the dataset adapter's validated timestamp comparison for diagnostics, and treat the reader/retrieval bottleneck as an open hypothesis. A model-reviewed judge sample requires recoverable selection details for independent verification.

@@ -84,6 +84,10 @@ Json parse(std::string_view bytes) {
 }
 }
 
+bool longmemeval_date_after(const std::string& left, const std::string& right) {
+    return date_key(left) > date_key(right);
+}
+
 LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,
     std::string_view question_id, const DatasetProvenance& provenance,
     HistoryTimePolicy time_policy) {

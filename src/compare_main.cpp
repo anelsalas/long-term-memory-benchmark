@@ -5,6 +5,8 @@
 #include "long_term_memory_benchmark/memory.hpp"
 #include "long_term_memory_benchmark/resources.hpp"
 #include "long_term_memory_benchmark/scoring.hpp"
+#include "long_term_memory_benchmark/embeddings.hpp"
+#include "long_term_memory_benchmark/retrieval.hpp"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -13,6 +15,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <set>
 #include <stdexcept>
@@ -330,7 +333,11 @@ int main(int argc, char** argv) {
                               "public_case",
                               "chat_framing_token_allowance",
                               "tokenizer_bound_verified",
-                              "max_candidate_answer_bytes"});
+                              "max_candidate_answer_bytes",
+                              "context_budget_tokens",
+                              "include_fresh",
+                              "embedding_cache",
+                              "embedding_query_prefix"});
         if (integer(config.at("schema_version")) != 1) {
             throw std::invalid_argument("Unsupported runtime configuration version");
         }
@@ -347,8 +354,8 @@ int main(int argc, char** argv) {
         }
         const auto distractors =
             config.contains("fresh_distractors") ? integer(config.at("fresh_distractors")) : 8;
-        if (distractors > 10000 || (config.contains("fresh_distractors") && !compact_local)) {
-            throw std::invalid_argument("Fresh distractor override requires compact local profile");
+        if (distractors > 10000 || (config.contains("fresh_distractors") && !local_mode)) {
+            throw std::invalid_argument("Fresh distractor override requires local execution");
         }
         if (compact_local && config.contains("public_case") &&
             !config.at("public_case").is_null()) {
@@ -397,19 +404,45 @@ int main(int argc, char** argv) {
         std::set<std::string> unique_conditions;
         for (const auto& condition : conditions) {
             if ((condition != "full_history" && condition != "retrieved_evidence" &&
-                 condition != "no_memory" && condition != "known_evidence") ||
+                 condition != "no_memory" && condition != "known_evidence" &&
+                 condition != "bm25_budget" && condition != "dense_budget" &&
+                 condition != "hybrid_budget") ||
                 !unique_conditions.insert(condition).second) {
                 throw std::invalid_argument("Invalid or repeated condition");
             }
         }
         if (conditions.empty()) throw std::invalid_argument("Conditions required");
-        if (unique_conditions.count("known_evidence") && config.contains("public_case") &&
-            !config.at("public_case").is_null()) {
-            throw std::invalid_argument("Known evidence currently requires fresh fixtures");
+        const bool has_public = config.contains("public_case") && !config.at("public_case").is_null();
+        if (config.contains("include_fresh") && !config.at("include_fresh").is_boolean()) {
+            throw std::invalid_argument("include_fresh must be a boolean");
+        }
+        const bool include_fresh = config.value("include_fresh", true);
+        if (!include_fresh && !has_public) {
+            throw std::invalid_argument("include_fresh false requires a public case");
         }
         const auto top_k = integer(config.at("top_k"));
         if (!top_k || top_k > 1000) {
             throw std::invalid_argument("top_k must be 1 to 1000");
+        }
+        const auto context_budget = config.contains("context_budget_tokens")
+                                        ? integer(config.at("context_budget_tokens"))
+                                        : 0;
+        const bool budgeted = unique_conditions.count("bm25_budget") || unique_conditions.count("dense_budget") ||
+                              unique_conditions.count("hybrid_budget");
+        if (budgeted && !context_budget) {
+            throw std::invalid_argument("Budget conditions require positive context_budget_tokens");
+        }
+        const bool embedded = unique_conditions.count("dense_budget") || unique_conditions.count("hybrid_budget");
+        if (embedded && (!config.contains("embedding_cache") || !config.at("embedding_cache").is_string())) {
+            throw std::invalid_argument("Dense and hybrid budgets require an embedding_cache directory");
+        }
+        const auto query_prefix = config.value("embedding_query_prefix", std::string(
+            "Instruct: Given a question, retrieve the conversation turns that answer it\nQuery: "));
+        ltm::retrieval::CacheOnlyEmbedder no_new_embeddings;
+        std::unique_ptr<ltm::retrieval::CachedEmbedder> cached_vectors;
+        if (embedded) {
+            cached_vectors = std::make_unique<ltm::retrieval::CachedEmbedder>(no_new_embeddings,
+                config_path.parent_path() / fs::u8path(config.at("embedding_cache").get<std::string>()));
         }
         stage = "dataset_preparation";
         const auto ledger =
@@ -424,7 +457,8 @@ int main(int argc, char** argv) {
         fresh_work.data.evaluator.question_id = fresh.candidate.case_id;
         fresh_work.data.evaluator.question_type = "knowledge-update";
         fresh_work.data.evaluator.answer_json = Json(std::to_string(*fresh.expected.score)).dump();
-        std::vector<WorkCase> work = {std::move(fresh_work)};
+        std::vector<WorkCase> work;
+        if (include_fresh) work.push_back(std::move(fresh_work));
         std::string public_checksum;
         if (config.contains("public_case") && !config.at("public_case").is_null()) {
             const auto& selected = config.at("public_case");
@@ -438,7 +472,11 @@ int main(int argc, char** argv) {
             auto loaded = ltm::load_longmemeval_case(
                 bytes, selected.at("question_id").get<std::string>(), provenance);
             public_checksum = loaded.actual_sha256;
-            work.push_back({"public", std::move(loaded), {}});
+            // Known evidence for a published question: its labelled evidence messages.
+            std::vector<std::string> evidence;
+            for (const auto& message : loaded.evaluator.messages)
+                if (message.has_answer.value_or(false)) evidence.push_back(message.source_id);
+            work.push_back({"public", std::move(loaded), {}, std::move(evidence)});
         }
         ltm::ExperimentManifest manifest;
         manifest.source_revision = config.at("source_revision").get<std::string>();
@@ -453,6 +491,16 @@ int main(int argc, char** argv) {
         manifest.method = "declared-memory-controls-ascii-lexical-both-roles";
         manifest.method_revision = "v1";
         manifest.method_parameters = {{"top_k_messages", std::to_string(top_k)}};
+        if (context_budget) {
+            manifest.method_parameters["context_budget_tokens"] = std::to_string(context_budget);
+            manifest.method_parameters["budget_retriever"] =
+                "user-rounds; bm25 k1.2 b0.75 lucene-idf; dense cosine over cached embeddings; hybrid rrf k60; "
+                "estimated tokens bytes/4";
+            if (embedded) {
+                manifest.method_parameters["embedding_cache"] = config.at("embedding_cache").get<std::string>();
+                manifest.method_parameters["embedding_query_prefix_sha256"] = ltm::sha256(query_prefix);
+            }
+        }
         for (const auto* role : {"reader", "judge"}) {
             known_fields(config.at(role), {"id", "version"});
         }
@@ -520,6 +568,16 @@ int main(int argc, char** argv) {
                 auto candidate =
                     select_evidence(item.data.candidate, static_cast<std::size_t>(top_k),
                                     std::string(condition) == "full_history", sources);
+                if (condition == "bm25_budget" || condition == "dense_budget" || condition == "hybrid_budget") {
+                    namespace retrieval = ltm::retrieval;
+                    sources.clear();
+                    const auto method = std::string(condition).substr(0, std::string(condition).find('_'));
+                    const auto units = retrieval::rounds(item.data.candidate, retrieval::RoundText::user_only);
+                    candidate = retrieval::select_rounds(item.data.candidate, units,
+                        retrieval::rank_rounds(method, units, item.data.candidate.question, cached_vectors.get(),
+                                               query_prefix),
+                        static_cast<std::size_t>(context_budget), sources);
+                }
                 if (condition == "no_memory" || condition == "known_evidence") {
                     candidate = item.data.candidate;
                     sources.clear();

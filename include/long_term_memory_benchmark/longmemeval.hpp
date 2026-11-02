@@ -64,6 +64,8 @@ struct LoadedLongMemEvalCase {
     EvaluatorCase evaluator;
 };
 
+bool longmemeval_date_after(const std::string& left, const std::string& right);
+
 enum class HistoryTimePolicy { require_not_after_question, include_all };
 
 LoadedLongMemEvalCase load_longmemeval_case(std::string_view bytes,

@@ -53,6 +53,14 @@ add_library(ltm_fresh_facts STATIC src/fresh_facts.cpp)
 add_library(LongTermMemoryBenchmark::fresh_facts ALIAS ltm_fresh_facts)
 target_link_libraries(ltm_fresh_facts PUBLIC LongTermMemoryBenchmark::dataset)
 
+add_library(ltm_retrieval STATIC src/retrieval.cpp src/embeddings.cpp src/retrieval_eval.cpp)
+add_library(LongTermMemoryBenchmark::retrieval ALIAS ltm_retrieval)
+target_link_libraries(ltm_retrieval PUBLIC LongTermMemoryBenchmark::dataset LongTermMemoryBenchmark::scoring)
+target_include_directories(ltm_retrieval SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+if(MSVC)
+  target_compile_options(ltm_retrieval PRIVATE /W4 /permissive-)
+endif()
+
 add_library(ltm_http_provider STATIC src/http_provider.cpp)
 add_library(LongTermMemoryBenchmark::http_provider ALIAS ltm_http_provider)
 target_link_libraries(ltm_http_provider PUBLIC LongTermMemoryBenchmark::provider PRIVATE winhttp)
@@ -62,7 +70,7 @@ add_executable(ltm-compare src/compare_main.cpp)
 target_link_libraries(ltm-compare PRIVATE LongTermMemoryBenchmark::core
   LongTermMemoryBenchmark::dataset LongTermMemoryBenchmark::provider
   LongTermMemoryBenchmark::scoring LongTermMemoryBenchmark::fresh_facts
-  LongTermMemoryBenchmark::http_provider)
+  LongTermMemoryBenchmark::http_provider LongTermMemoryBenchmark::retrieval)
 target_include_directories(ltm-compare SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
 
 add_library(ltm_dashboard STATIC src/dashboard_settings.cpp src/dashboard_plan.cpp src/dashboard_runs.cpp src/dashboard_api.cpp)
@@ -107,6 +115,27 @@ else()
   message(STATUS "Dashboard server skipped: set LTM_BOOST_INCLUDE_DIR to a Boost root (Windows only)")
 endif()
 
+# Embeddings over loopback HTTP (Beast); retrieval evaluation needs it for dense retrieval.
+if(ltm_boost_beast_dir)
+  add_library(ltm_retrieval_http STATIC src/embeddings_http.cpp)
+  add_library(LongTermMemoryBenchmark::retrieval_http ALIAS ltm_retrieval_http)
+  target_link_libraries(ltm_retrieval_http PUBLIC LongTermMemoryBenchmark::retrieval)
+  target_include_directories(ltm_retrieval_http SYSTEM PUBLIC "${ltm_boost_beast_dir}")
+  target_include_directories(ltm_retrieval_http SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  if(WIN32)
+    target_link_libraries(ltm_retrieval_http PUBLIC ws2_32 mswsock)
+    target_compile_definitions(ltm_retrieval_http PUBLIC _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN NOMINMAX)
+  endif()
+  if(MSVC)
+    target_compile_options(ltm_retrieval_http PRIVATE /W4 /permissive- /bigobj)
+  endif()
+  add_executable(ltm-retrieval-eval src/retrieval_eval_main.cpp)
+  target_link_libraries(ltm-retrieval-eval PRIVATE LongTermMemoryBenchmark::retrieval_http)
+  target_include_directories(ltm-retrieval-eval SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  if(MSVC)
+    target_compile_options(ltm-retrieval-eval PRIVATE /W4 /permissive- /bigobj)
+  endif()
+endif()
 if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   enable_testing()
   add_executable(ltm_component_tests tests/component_tests.cpp)
@@ -151,6 +180,33 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   target_link_libraries(ltm_fresh_facts_tests PRIVATE LongTermMemoryBenchmark::fresh_facts)
   add_test(NAME ltm.unit.fresh_facts COMMAND ltm_fresh_facts_tests)
   set_tests_properties(ltm.unit.fresh_facts PROPERTIES LABELS "memory;unit;component;offline")
+  add_executable(ltm_retrieval_tests tests/retrieval_tests.cpp)
+  target_link_libraries(ltm_retrieval_tests PRIVATE LongTermMemoryBenchmark::retrieval)
+  foreach(case IN ITEMS rounds_group_user_with_replies rounds_score_user_text_only
+      terms_fold_case_and_split bm25_matches_okapi bm25_ties_keep_input_order
+      cosine_orders_by_similarity rrf_fuses_rankings pack_fills_budget_in_rank_order
+      evaluation_helpers select_rounds_keeps_packed_history rank_rounds_by_method)
+    add_test(NAME ltm.retrieval.${case} COMMAND ltm_retrieval_tests ${case})
+    set_tests_properties(ltm.retrieval.${case} PROPERTIES LABELS "retrieval;unit;offline")
+  endforeach()
+  add_executable(ltm_embeddings_tests tests/embeddings_tests.cpp)
+  target_link_libraries(ltm_embeddings_tests PRIVATE LongTermMemoryBenchmark::retrieval)
+  target_include_directories(ltm_embeddings_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  foreach(case IN ITEMS request_lists_inputs parse_orders_by_index parse_rejects_bad_responses
+      cache_asks_only_for_new_texts cache_only_refuses_unknown_texts)
+    add_test(NAME ltm.retrieval.embeddings.${case} COMMAND ltm_embeddings_tests ${case})
+    set_tests_properties(ltm.retrieval.embeddings.${case} PROPERTIES LABELS "retrieval;unit;offline")
+  endforeach()
+  add_executable(ltm_retrieval_eval_tests tests/retrieval_eval_tests.cpp)
+  target_link_libraries(ltm_retrieval_eval_tests PRIVATE LongTermMemoryBenchmark::retrieval)
+  target_include_directories(ltm_retrieval_eval_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  target_compile_definitions(ltm_retrieval_eval_tests PRIVATE
+    LTM_FIXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
+  foreach(case IN ITEMS lexical_methods_score_evidence dense_and_hybrid_use_the_embedder abstention_is_excluded
+      coverage_summary counts_sessions_after_question)
+    add_test(NAME ltm.retrieval.eval.${case} COMMAND ltm_retrieval_eval_tests ${case})
+    set_tests_properties(ltm.retrieval.eval.${case} PROPERTIES LABELS "retrieval;unit;offline")
+  endforeach()
   add_executable(ltm_http_provider_tests tests/http_provider_tests.cpp)
   target_link_libraries(ltm_http_provider_tests PRIVATE LongTermMemoryBenchmark::http_provider)
   target_include_directories(ltm_http_provider_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
@@ -162,6 +218,11 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
     "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/compare_cli_checks.cmake")
   set_tests_properties(ltm.integration.compare_cli PROPERTIES LABELS "memory;integration;offline")
+  add_test(NAME ltm.integration.compare_bm25_budget COMMAND ${CMAKE_COMMAND}
+    "-DLTM_COMPARE_EXE=$<TARGET_FILE:ltm-compare>" "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
+    "-DLTM_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/compare_budget_checks.cmake")
+  set_tests_properties(ltm.integration.compare_bm25_budget PROPERTIES LABELS "retrieval;memory;integration;offline")
   add_executable(ltm_dashboard_settings_tests tests/dashboard_settings_tests.cpp)
   target_link_libraries(ltm_dashboard_settings_tests PRIVATE LongTermMemoryBenchmark::dashboard)
   foreach(case IN ITEMS roundtrip rejects_malformed rejects_bad_decimals endpoint_rules
@@ -223,4 +284,38 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_dashboard_server)
     add_test(NAME ltm.dashboard.server.${case} COMMAND ltm_dashboard_server_tests ${case})
     set_tests_properties(ltm.dashboard.server.${case} PROPERTIES LABELS "dashboard;integration;offline" TIMEOUT 30)
   endforeach()
+endif()
+
+if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_retrieval_http)
+  add_executable(ltm_embeddings_http_tests tests/embeddings_http_tests.cpp)
+  target_link_libraries(ltm_embeddings_http_tests PRIVATE LongTermMemoryBenchmark::retrieval_http)
+  target_include_directories(ltm_embeddings_http_tests SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+  if(MSVC)
+    target_compile_options(ltm_embeddings_http_tests PRIVATE /bigobj)
+  endif()
+  foreach(case IN ITEMS posts_batches_to_loopback accepts_only_loopback reports_http_errors
+      batches_by_size_and_cuts_long_texts splits_and_cuts_when_the_server_refuses)
+    add_test(NAME ltm.retrieval.http.${case} COMMAND ltm_embeddings_http_tests ${case})
+    set_tests_properties(ltm.retrieval.http.${case} PROPERTIES LABELS "retrieval;integration;offline" TIMEOUT 30)
+  endforeach()
+  # Smoke run of the evaluation tool on the checked-in fixture (BM25 and recency only).
+  set(ltm_fixture "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
+  file(SHA256 "${ltm_fixture}" ltm_fixture_sha256)
+  file(SIZE "${ltm_fixture}" ltm_fixture_bytes)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
+    "{\"name\":\"longmemeval_development.json\",\"bytes\":${ltm_fixture_bytes},\"sha256\":\"${ltm_fixture_sha256}\",\"revision\":\"fixture\",\"source\":\"tests/fixtures\"}")
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json" "[\"fictional-school-01\",\"fictional-school-02_abs\"]")
+  add_test(NAME ltm.retrieval.eval_tool COMMAND ltm-retrieval-eval --dataset "${ltm_fixture}"
+    --provenance "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
+    --questions "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json"
+    --out "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/results.json" --budgets 10,1000
+    --singletons "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/singletons")
+  set_tests_properties(ltm.retrieval.eval_tool PROPERTIES LABELS "retrieval;integration;offline"
+    PASS_REGULAR_EXPRESSION "\\| bm25 \\| 100\\.0% \\| 100\\.0% \\|.*scored for retrieval: 1")
+  add_test(NAME ltm.retrieval.eval_tool_include_all COMMAND ltm-retrieval-eval --dataset "${ltm_fixture}"
+    --provenance "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/provenance.json"
+    --questions "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/questions.json"
+    --out "${CMAKE_CURRENT_BINARY_DIR}/retrieval-eval/results-include-all.json" --history-policy include_all)
+  set_tests_properties(ltm.retrieval.eval_tool_include_all PROPERTIES LABELS "retrieval;integration;offline"
+    PASS_REGULAR_EXPRESSION "loaded: 2, excluded: 0")
 endif()

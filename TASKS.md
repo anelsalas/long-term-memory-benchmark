@@ -118,3 +118,10 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [ ] Compare Mem0 and Graphiti using documented, matched settings.
 
 [Preparation report](reports/2026-11-01-retrieval-preparation.md) records versions and measured scope.
+
+## Retrieval baseline review — November 1, 2026
+
+- [x] Independently build and run 86 ARM64 tests on the retrieval branch.
+- [x] Recount 270 answer outcomes and fix mixed-format timestamp diagnostics.
+- [ ] Recover the judge-audit sample identifiers, labels and selection seed.
+- [ ] Validate answer judgments with an independent reviewer and compare memory methods under matched settings.
