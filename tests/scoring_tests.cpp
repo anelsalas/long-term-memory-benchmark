@@ -99,8 +99,17 @@ void grade_prompts() {
     invalid([&] { (void)ltm::make_official_grade_request(data, "x"); });
     data.evaluator.question_type = "multi-session";
     require(ltm::make_official_grade_request(data, "x").template_sha256 == "fba020ba3d57982efdc9a937c1c01f897b789a608c7f88e60244121f6505e5bc", "Pinned general template hash");
-    data.evaluator.answer_json = "91";
-    invalid([&] { (void)ltm::make_official_grade_request(data, "x"); });
+    for (const auto& gold : {"1300", "-91", "0"}) {
+        data.evaluator.answer_json = std::string("\"") + gold + "\"";
+        const auto string_prompt = ltm::make_official_grade_request(data, "x").prompt;
+        data.evaluator.answer_json = gold;
+        require(ltm::make_official_grade_request(data, "x").prompt == string_prompt,
+            "Integer gold uses decimal text in official prompt");
+    }
+    for (const auto& gold : {"true", "1.5", "null", "[1,2]"}) {
+        data.evaluator.answer_json = gold;
+        invalid([&] { (void)ltm::make_official_grade_request(data, "x"); });
+    }
 }
 void verdicts() {
     require(ltm::parse_judge_verdict(" YES\n") == ltm::JudgeVerdict::yes, "Exact yes case-folded");

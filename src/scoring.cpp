@@ -236,7 +236,9 @@ OfficialGradeRequest make_official_grade_request(const LoadedLongMemEvalCase& da
     nlohmann::json gold;
     try {gold=nlohmann::json::parse(data.evaluator.answer_json);}
     catch(const nlohmann::json::exception&) {throw std::invalid_argument("Invalid evaluator gold JSON");}
-    if(!gold.is_string()) throw std::invalid_argument("Exact official prompt profile requires string gold");
+    if(!gold.is_string() && !gold.is_number_integer())
+        throw std::invalid_argument("Exact official prompt profile requires string or integer gold");
+    const auto gold_text = gold.is_string() ? gold.get<std::string>() : gold.dump();
     std::size_t index=0;const auto& type=data.evaluator.question_type;
     if(is_abs(data.evaluator)) index=4;
     else if(type=="single-session-user"||type=="single-session-assistant"||type=="multi-session") index=0;
@@ -244,7 +246,7 @@ OfficialGradeRequest make_official_grade_request(const LoadedLongMemEvalCase& da
     else if(type=="knowledge-update") index=2;
     else if(type=="single-session-preference") index=3;
     else throw std::invalid_argument("Unknown official QA task");
-    auto prompt=format(patterns[index],data.candidate.question,gold.get<std::string>(),response);
+    auto prompt=format(patterns[index],data.candidate.question,gold_text,response);
     return {std::move(model),prompt,sha256(prompt),sha256(patterns[index]),0,10};
 }
 JudgeVerdict parse_judge_verdict(std::string_view value) {

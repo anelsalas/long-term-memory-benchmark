@@ -104,3 +104,7 @@ A synthetic repeated-ID fixture matched the pinned upstream retrieval evaluation
 ## Explicit history-time policy — November 1, 2026
 
 The loader offers a documented opt-in to preserve all source sessions while retaining the strict default. All six development cases with later timestamps loaded using that opt-in; the existing ARM64 suite passed 53/53. Their answer/retrieval metrics still require a separately labelled run.
+
+## Integer benchmark answers — November 1, 2026
+
+The official judge-prompt adapter supports integer gold values as decimal text. Behavioral tests first reproduced the prior failure and then passed; the configured ARM64 suite passed 53/53. The pinned 500-question dataset has 32 integer-valued answers. Claude can integrate the fix and retry affected cases.
