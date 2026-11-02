@@ -5,6 +5,7 @@
 #include "long_term_memory_benchmark/memory.hpp"
 #include "long_term_memory_benchmark/resources.hpp"
 #include "long_term_memory_benchmark/scoring.hpp"
+#include "long_term_memory_benchmark/embeddings.hpp"
 #include "long_term_memory_benchmark/retrieval.hpp"
 #include <algorithm>
 #include <atomic>
@@ -14,6 +15,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <set>
 #include <stdexcept>
@@ -333,7 +335,9 @@ int main(int argc, char** argv) {
                               "tokenizer_bound_verified",
                               "max_candidate_answer_bytes",
                               "context_budget_tokens",
-                              "include_fresh"});
+                              "include_fresh",
+                              "embedding_cache",
+                              "embedding_query_prefix"});
         if (integer(config.at("schema_version")) != 1) {
             throw std::invalid_argument("Unsupported runtime configuration version");
         }
@@ -401,7 +405,8 @@ int main(int argc, char** argv) {
         for (const auto& condition : conditions) {
             if ((condition != "full_history" && condition != "retrieved_evidence" &&
                  condition != "no_memory" && condition != "known_evidence" &&
-                 condition != "bm25_budget") ||
+                 condition != "bm25_budget" && condition != "dense_budget" &&
+                 condition != "hybrid_budget") ||
                 !unique_conditions.insert(condition).second) {
                 throw std::invalid_argument("Invalid or repeated condition");
             }
@@ -422,8 +427,22 @@ int main(int argc, char** argv) {
         const auto context_budget = config.contains("context_budget_tokens")
                                         ? integer(config.at("context_budget_tokens"))
                                         : 0;
-        if (unique_conditions.count("bm25_budget") && !context_budget) {
-            throw std::invalid_argument("bm25_budget requires positive context_budget_tokens");
+        const bool budgeted = unique_conditions.count("bm25_budget") || unique_conditions.count("dense_budget") ||
+                              unique_conditions.count("hybrid_budget");
+        if (budgeted && !context_budget) {
+            throw std::invalid_argument("Budget conditions require positive context_budget_tokens");
+        }
+        const bool embedded = unique_conditions.count("dense_budget") || unique_conditions.count("hybrid_budget");
+        if (embedded && (!config.contains("embedding_cache") || !config.at("embedding_cache").is_string())) {
+            throw std::invalid_argument("Dense and hybrid budgets require an embedding_cache directory");
+        }
+        const auto query_prefix = config.value("embedding_query_prefix", std::string(
+            "Instruct: Given a question, retrieve the conversation turns that answer it\nQuery: "));
+        ltm::retrieval::CacheOnlyEmbedder no_new_embeddings;
+        std::unique_ptr<ltm::retrieval::CachedEmbedder> cached_vectors;
+        if (embedded) {
+            cached_vectors = std::make_unique<ltm::retrieval::CachedEmbedder>(no_new_embeddings,
+                config_path.parent_path() / fs::u8path(config.at("embedding_cache").get<std::string>()));
         }
         stage = "dataset_preparation";
         const auto ledger =
@@ -475,7 +494,12 @@ int main(int argc, char** argv) {
         if (context_budget) {
             manifest.method_parameters["context_budget_tokens"] = std::to_string(context_budget);
             manifest.method_parameters["budget_retriever"] =
-                "bm25-user-rounds-k1.2-b0.75-lucene-idf-estimated-tokens-bytes-div-4";
+                "user-rounds; bm25 k1.2 b0.75 lucene-idf; dense cosine over cached embeddings; hybrid rrf k60; "
+                "estimated tokens bytes/4";
+            if (embedded) {
+                manifest.method_parameters["embedding_cache"] = config.at("embedding_cache").get<std::string>();
+                manifest.method_parameters["embedding_query_prefix_sha256"] = ltm::sha256(query_prefix);
+            }
         }
         for (const auto* role : {"reader", "judge"}) {
             known_fields(config.at(role), {"id", "version"});
@@ -544,12 +568,14 @@ int main(int argc, char** argv) {
                 auto candidate =
                     select_evidence(item.data.candidate, static_cast<std::size_t>(top_k),
                                     std::string(condition) == "full_history", sources);
-                if (condition == "bm25_budget") {
+                if (condition == "bm25_budget" || condition == "dense_budget" || condition == "hybrid_budget") {
                     namespace retrieval = ltm::retrieval;
                     sources.clear();
+                    const auto method = std::string(condition).substr(0, std::string(condition).find('_'));
                     const auto units = retrieval::rounds(item.data.candidate, retrieval::RoundText::user_only);
                     candidate = retrieval::select_rounds(item.data.candidate, units,
-                        retrieval::Bm25(units).rank(item.data.candidate.question),
+                        retrieval::rank_rounds(method, units, item.data.candidate.question, cached_vectors.get(),
+                                               query_prefix),
                         static_cast<std::size_t>(context_budget), sources);
                 }
                 if (condition == "no_memory" || condition == "known_evidence") {
