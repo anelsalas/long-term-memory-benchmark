@@ -294,7 +294,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_retrieval_http)
     target_compile_options(ltm_embeddings_http_tests PRIVATE /bigobj)
   endif()
   foreach(case IN ITEMS posts_batches_to_loopback accepts_only_loopback reports_http_errors
-      batches_by_size_and_cuts_long_texts)
+      batches_by_size_and_cuts_long_texts splits_and_cuts_when_the_server_refuses)
     add_test(NAME ltm.retrieval.http.${case} COMMAND ltm_embeddings_http_tests ${case})
     set_tests_properties(ltm.retrieval.http.${case} PROPERTIES LABELS "retrieval;integration;offline" TIMEOUT 30)
   endforeach()

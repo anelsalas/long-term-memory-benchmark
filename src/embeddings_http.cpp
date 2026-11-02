@@ -13,6 +13,16 @@ namespace asio = boost::asio;
 namespace beast = boost::beast;
 namespace http = beast::http;
 
+struct Refused : std::runtime_error {
+    Refused() : std::runtime_error("Embeddings endpoint returned HTTP 400") {}
+};
+
+std::string cut_at_boundary(std::string text, std::size_t bytes) {
+    while (bytes > 0 && (static_cast<unsigned char>(text[bytes]) & 0xC0) == 0x80) --bytes;
+    text.resize(bytes);
+    return text;
+}
+
 bool digits(const std::string& s) {
     return !s.empty() && s.size() <= 5 && std::all_of(s.begin(), s.end(), [](char c) { return c >= '0' && c <= '9'; });
 }
@@ -44,16 +54,14 @@ std::vector<std::vector<float>> HttpEmbedder::embed(const std::vector<std::strin
     std::vector<std::string> batch;
     std::size_t batch_tokens = 0;
     const auto send = [&] {
-        for (auto& vector : post(batch)) vectors.push_back(std::move(vector));
+        for (auto& vector : post_fitting(batch, false)) vectors.push_back(std::move(vector));
         batch.clear();
         batch_tokens = 0;
     };
     for (const auto& text : texts) {
         auto input = text;
         if (input.size() > limits_.text_bytes) {
-            auto cut = limits_.text_bytes;
-            while (cut > 0 && (static_cast<unsigned char>(input[cut]) & 0xC0) == 0x80) --cut;
-            input.resize(cut);
+            input = cut_at_boundary(std::move(input), limits_.text_bytes);
             ++truncated_;
         }
         const auto tokens = estimated_tokens(input.size());
@@ -63,6 +71,22 @@ std::vector<std::vector<float>> HttpEmbedder::embed(const std::vector<std::strin
     }
     if (!batch.empty()) send();
     return vectors;
+}
+
+std::vector<std::vector<float>> HttpEmbedder::post_fitting(std::vector<std::string> batch, bool already_cut) {
+    try {
+        return post(batch);
+    } catch (const Refused&) {
+        if (batch.size() > 1) {
+            const auto middle = batch.begin() + static_cast<std::ptrdiff_t>(batch.size() / 2);
+            auto vectors = post_fitting({batch.begin(), middle}, false);
+            for (auto& vector : post_fitting({middle, batch.end()}, false)) vectors.push_back(std::move(vector));
+            return vectors;
+        }
+        if (batch.front().size() <= 1) throw;
+        if (!already_cut) ++truncated_;
+        return post_fitting({cut_at_boundary(batch.front(), batch.front().size() / 2)}, true);
+    }
 }
 
 std::vector<std::vector<float>> HttpEmbedder::post(const std::vector<std::string>& batch) {
@@ -83,6 +107,7 @@ std::vector<std::vector<float>> HttpEmbedder::post(const std::vector<std::string
         parser.body_limit(256u * 1024u * 1024u);
         http::read(stream, buffer, parser);
         const auto& response = parser.get();
+        if (response.result() == http::status::bad_request) throw Refused();
         if (response.result() != http::status::ok)
             throw std::runtime_error("Embeddings endpoint returned HTTP " + std::to_string(response.result_int()));
         for (auto& vector : parse_embeddings(response.body(), batch.size())) vectors.push_back(std::move(vector));

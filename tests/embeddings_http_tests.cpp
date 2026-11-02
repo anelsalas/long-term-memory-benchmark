@@ -3,6 +3,7 @@
 #include <boost/beast.hpp>
 #include <nlohmann/json.hpp>
 #include <atomic>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -25,7 +26,8 @@ void require(bool condition, const std::string& message) {
 // Answers each request with one vector per input: {input length, request number}.
 class FakeEndpoint {
 public:
-    explicit FakeEndpoint(http::status status = http::status::ok) : status_(status) {
+    explicit FakeEndpoint(http::status status = http::status::ok, std::size_t max_input_bytes = SIZE_MAX)
+        : status_(status), max_input_bytes_(max_input_bytes) {
         acceptor_.open(asio::ip::tcp::v4());
         acceptor_.bind({asio::ip::make_address("127.0.0.1"), 0});
         acceptor_.listen();
@@ -51,17 +53,21 @@ private:
             if (error) continue;
             const auto body = Json::parse(request.body());
             requests.push_back(body);
+            std::size_t bytes = 0;
+            for (const auto& input : body["input"]) bytes += input.get<std::string>().size();
+            const auto status = bytes > max_input_bytes_ ? http::status::bad_request : status_;
             Json data = Json::array();
             for (std::size_t i = 0; i < body["input"].size(); ++i)
                 data.push_back({{"index", i}, {"embedding", {body["input"][i].get<std::string>().size(), requests.size()}}});
-            http::response<http::string_body> response{status_, request.version()};
+            http::response<http::string_body> response{status, request.version()};
             response.set(http::field::content_type, "application/json");
-            response.body() = status_ == http::status::ok ? Json{{"data", data}}.dump() : R"({"error":"down"})";
+            response.body() = status == http::status::ok ? Json{{"data", data}}.dump() : R"({"error":"down"})";
             response.prepare_payload();
             http::write(socket, response, error);
         }
     }
     http::status status_;
+    std::size_t max_input_bytes_;
     asio::io_context io_;
     asio::ip::tcp::acceptor acceptor_{io_};
     std::thread thread_;
@@ -102,13 +108,25 @@ void batches_by_size_and_cuts_long_texts() {
     require(endpoint.requests[2]["input"][0] == std::string(11, 'a'), "Cut before the split character");
     require(vectors.size() == 4 && vectors[3] == std::vector<float>{11, 3} && embedder.truncated() == 1, "One cut text");
 }
+void splits_and_cuts_when_the_server_refuses() {
+    FakeEndpoint endpoint(http::status::ok, 10);  // refuses requests over 10 input bytes
+    HttpEmbedder embedder(endpoint.url(), "m", {32, 6000, 16000});
+    const auto vectors = embedder.embed({"abcdef", "ghijkl", std::string(30, 'x')});
+    require(vectors.size() == 3 && vectors[0][0] == 6 && vectors[1][0] == 6, "A refused batch is split and retried");
+    require(vectors[2][0] == 7 && embedder.truncated() == 1, "A refused single text is halved until accepted");
+    bool failed = false;
+    try { HttpEmbedder(FakeEndpoint(http::status::bad_request).url(), "m").embed({"a"}); }
+    catch (const std::runtime_error&) { failed = true; }
+    require(failed, "A text the server never accepts still fails");
+}
 }
 
 int main(int argc, char** argv) {
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"posts_batches_to_loopback", posts_batches_to_loopback}, {"accepts_only_loopback", accepts_only_loopback},
         {"reports_http_errors", reports_http_errors},
-        {"batches_by_size_and_cuts_long_texts", batches_by_size_and_cuts_long_texts}};
+        {"batches_by_size_and_cuts_long_texts", batches_by_size_and_cuts_long_texts},
+        {"splits_and_cuts_when_the_server_refuses", splits_and_cuts_when_the_server_refuses}};
     if (argc != 2) return 2;
     for (const auto& item : cases) {
         if (item.first == argv[1]) {
