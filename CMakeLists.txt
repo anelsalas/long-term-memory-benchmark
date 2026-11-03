@@ -360,7 +360,9 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_cli_bridge_host)
     target_compile_options(ltm_cli_bridge_host_tests PRIVATE /bigobj)
   endif()
   foreach(case IN ITEMS runner_passes_input_and_folder runner_reports_exit_codes runner_stops_at_timeout
-      runner_streams_large_input runner_uses_isolated_instructions server_serves_chat_completions server_refuses_browsers_and_foreign_hosts)
+      runner_streams_large_input runner_uses_isolated_instructions persistent_budget_survives_bridge_restart
+      persistent_budget_handles_concurrency_and_corruption
+      server_serves_chat_completions server_refuses_browsers_and_foreign_hosts)
     add_test(NAME ltm.cli_bridge.host.${case} COMMAND ltm_cli_bridge_host_tests ${case})
     set_tests_properties(ltm.cli_bridge.host.${case} PROPERTIES LABELS "cli_bridge;integration;offline" TIMEOUT 60)
   endforeach()

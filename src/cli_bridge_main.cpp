@@ -43,7 +43,10 @@ int main(int argc, char** argv) {
             throw std::runtime_error("Cannot write codex_instructions_file");
 
         ltm::cli_bridge::WindowsCommandRunner runner;
-        ltm::cli_bridge::Bridge bridge(settings, runner);
+        std::unique_ptr<ltm::cli_bridge::WindowsPersistentBudget> budget;
+        if (!settings.budget_ledger_path.empty())
+            budget = std::make_unique<ltm::cli_bridge::WindowsPersistentBudget>(settings.budget_ledger_path, settings.max_calls);
+        ltm::cli_bridge::Bridge bridge(settings, runner, budget.get());
         // Each failed run's output goes to its own file, for diagnosis.
         std::atomic<unsigned> failure_count{0};
         if (!failures.empty()) {

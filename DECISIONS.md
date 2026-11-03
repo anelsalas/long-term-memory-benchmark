@@ -246,7 +246,14 @@ Expose aggregate bridge attempt and reported token counters to loopback clients.
 The sidecar records before/after deltas while it has exclusive bridge use, flags
 missing usage and failed attempts, and marks totals unknown if the bridge restarts.
 Failed CLI attempts may have consumed unreported tokens. Counters reset with the
-bridge; preserve run-level accounting and enforce the cap across restarts.
+bridge; preserve run-level accounting across restarts.
+
+## Durable model-attempt budget
+
+When configured, reserve each attempt in a file-locked, flushed ledger before
+starting the CLI. The ledger retains its declared cap across bridge restarts,
+rejects a changed cap, and fails closed on malformed entries. Preserve the ledger
+for the whole experiment; deleting or replacing it creates a different budget.
 
 ## Memory context packing
 

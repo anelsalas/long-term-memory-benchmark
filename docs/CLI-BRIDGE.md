@@ -65,6 +65,11 @@ with zero prices. Each request runs one CLI process:
   process, including retries; exhausted requests receive HTTP 429. A missing
   or zero value leaves this cap unrestricted. Set a positive limit for benchmark
   runs. Restarting the bridge starts a new counter, so preserve run accounting.
+- **Durable budget.** Set `budget_ledger_path` with a positive `max_calls` to
+  reserve each attempt in a locked, flushed local ledger before starting a CLI.
+  The same ledger and cap persist across bridge restarts. A changed cap or corrupt
+  ledger fails closed. Preserve that file throughout the experiment; replacing
+  it starts a different budget. The metrics endpoint remains per-process.
 
 - **Endpoints.** Only `POST /v1/chat/completions` (one user message, no
   streaming) and `GET /health`, on 127.0.0.1. Requests that carry an `Origin`

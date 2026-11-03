@@ -82,6 +82,67 @@ Settings settings() {
       "system_prompt":"s","codex_instructions_file":"i.txt","working_directory":".","timeout_ms":1000,
       "profiles":[{"id":"haiku","cli":"claude","model":"claude-haiku-5-5","effort":"low"}]})");
 }
+std::string chat(const std::string& prompt);
+void persistent_budget_survives_bridge_restart() {
+    const auto folder = std::filesystem::temp_directory_path() /
+        ("ltm-budget-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directory(folder);
+    const auto ledger = folder / "attempts.log";
+    try {
+        auto config = settings();
+        config.max_calls = 2;
+        FakeRunner runner;
+        {
+            WindowsPersistentBudget budget(ledger.string(), 2);
+            Bridge bridge(config, runner, &budget);
+            require(bridge.handle(chat("hi")).status == 200 && bridge.handle(chat("hi")).status == 200,
+                "Two attempts are permitted");
+        }
+        {
+            WindowsPersistentBudget budget(ledger.string(), 2);
+            Bridge bridge(config, runner, &budget);
+            require(bridge.handle(chat("hi")).status == 429 && runner.calls == 2,
+                "Restart does not reset the durable cap");
+        }
+        bool rejected = false;
+        try { WindowsPersistentBudget changed(ledger.string(), 3); (void)changed.try_acquire(); }
+        catch (const std::runtime_error&) { rejected = true; }
+        require(rejected, "A different cap cannot silently reuse the ledger");
+    } catch (...) {
+        std::filesystem::remove(ledger);
+        std::filesystem::remove(folder);
+        throw;
+    }
+    std::filesystem::remove(ledger);
+    std::filesystem::remove(folder);
+}
+void persistent_budget_handles_concurrency_and_corruption() {
+    const auto folder = std::filesystem::temp_directory_path() /
+        ("ltm-budget-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directory(folder);
+    const auto ledger = folder / "attempts.log";
+    try {
+        WindowsPersistentBudget budget(ledger.string(), 5);
+        WindowsPersistentBudget other(ledger.string(), 5);
+        std::atomic<unsigned> accepted{0}, errors{0};
+        std::vector<std::thread> threads;
+        for (int i = 0; i < 20; ++i) threads.emplace_back([&, i] {
+            try { if ((i % 2 ? budget : other).try_acquire()) ++accepted; } catch (...) { ++errors; }
+        });
+        for (auto& thread : threads) thread.join();
+        require(accepted == 5 && errors == 0, "Concurrent handles cannot exceed the durable cap");
+        { std::ofstream out(ledger, std::ios::binary | std::ios::app); out << 'x'; }
+        bool rejected = false;
+        try { (void)budget.try_acquire(); } catch (const std::runtime_error&) { rejected = true; }
+        require(rejected, "A corrupt ledger fails closed");
+    } catch (...) {
+        std::filesystem::remove(ledger);
+        std::filesystem::remove(folder);
+        throw;
+    }
+    std::filesystem::remove(ledger);
+    std::filesystem::remove(folder);
+}
 struct Running {
     explicit Running(Bridge& bridge) : server(bridge, 0), thread([this] { server.run(); }) {}
     ~Running() { server.stop(); thread.join(); }
@@ -163,6 +224,8 @@ int main(int argc, char** argv) {
         {"runner_reports_exit_codes", runner_reports_exit_codes}, {"runner_stops_at_timeout", runner_stops_at_timeout},
         {"runner_streams_large_input", runner_streams_large_input},
         {"runner_uses_isolated_instructions", runner_uses_isolated_instructions},
+        {"persistent_budget_survives_bridge_restart", persistent_budget_survives_bridge_restart},
+        {"persistent_budget_handles_concurrency_and_corruption", persistent_budget_handles_concurrency_and_corruption},
         {"server_serves_chat_completions", server_serves_chat_completions},
         {"server_refuses_browsers_and_foreign_hosts", server_refuses_browsers_and_foreign_hosts}};
     if (argc != 2) return 2;

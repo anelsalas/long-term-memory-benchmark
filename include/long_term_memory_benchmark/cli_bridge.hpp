@@ -35,6 +35,7 @@ struct Settings {
     // A run that ends without an answer is tried again; a subscription CLI has no
     // per-request charge. Timeouts are not retried.
     std::uint64_t max_calls = 0;  // zero leaves call count unrestricted
+    std::string budget_ledger_path;  // optional durable attempt ledger
     std::uint32_t max_concurrent = 0;  // zero leaves concurrency unrestricted
     std::uint32_t retries = 0;
     std::uint32_t retry_delay_ms = 0;  // multiplied by the attempt number
@@ -77,6 +78,12 @@ class CommandRunner {
     virtual RunResult run(const Invocation& invocation) = 0;
 };
 
+class AttemptBudget {
+  public:
+    virtual ~AttemptBudget() = default;
+    virtual bool try_acquire() = 0;
+};
+
 struct Response {
     unsigned status = 0;
     std::string body;
@@ -97,7 +104,7 @@ struct Metrics {
 // if the failure log is.
 class Bridge {
   public:
-    Bridge(Settings settings, CommandRunner& runner);
+    Bridge(Settings settings, CommandRunner& runner, AttemptBudget* budget = nullptr);
     void on_failure(FailureLog log);
     Response handle(const std::string& body);
     Metrics metrics() const;
@@ -105,6 +112,7 @@ class Bridge {
   private:
     Settings settings_;
     CommandRunner& runner_;
+    AttemptBudget* budget_;
     std::atomic<std::uint64_t> calls_{0};
     std::atomic<std::uint64_t> completed_{0}, input_tokens_{0}, output_tokens_{0};
     std::atomic<std::uint64_t> missing_usage_{0};

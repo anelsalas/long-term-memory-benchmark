@@ -136,6 +136,7 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Test the sidecar ingestion, search, local HTTP and interruption safeguards.
 - [x] Add local-only sidecar startup and record the upstream package bundle hash.
 - [x] Add bridge-attempt and reported-token accounting with incomplete-usage flags.
+- [x] Persist the call cap across bridge restarts and test concurrent reservation.
 - [x] Add and test the C++ memory-service port and budget packing.
 - [x] Add and test the local memory-service HTTP adapter.
 - [x] Connect the memory-service port to the comparison runner and test it offline.

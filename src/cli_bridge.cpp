@@ -85,6 +85,11 @@ Settings parse_settings(const std::string& json) {
         if (!root.at("max_calls").is_number_unsigned()) throw std::invalid_argument("max_calls must be nonnegative");
         settings.max_calls = root.at("max_calls").get<std::uint64_t>();
     }
+    if (root.contains("budget_ledger_path")) {
+        settings.budget_ledger_path = text_field(root, "budget_ledger_path");
+        if (!settings.max_calls || settings.max_calls > 1000000)
+            throw std::invalid_argument("Durable budget requires max_calls from 1 to 1000000");
+    }
     if (root.contains("max_concurrent")) {
         if (!root.at("max_concurrent").is_number_unsigned() || root.at("max_concurrent").get<std::uint64_t>() > 1024)
             throw std::invalid_argument("max_concurrent must be between 0 and 1024");
@@ -181,7 +186,10 @@ Reply parse_codex_events(std::string_view output) {
     return reply;
 }
 
-Bridge::Bridge(Settings settings, CommandRunner& runner) : settings_(std::move(settings)), runner_(runner) {
+Bridge::Bridge(Settings settings, CommandRunner& runner, AttemptBudget* budget)
+    : settings_(std::move(settings)), runner_(runner), budget_(budget) {
+    if (!settings_.budget_ledger_path.empty() && !budget_)
+        throw std::invalid_argument("Durable budget implementation required");
     static std::atomic<std::uint64_t> sequence{0};
     instance_id_ = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + "-" +
         std::to_string(++sequence);
@@ -225,6 +233,17 @@ Response Bridge::handle(const std::string& body) {
             do {
                 if (settings_.max_calls && current >= settings_.max_calls) return error(429, "call_limit_reached");
             } while (!calls_.compare_exchange_weak(current, current + 1));
+            if (budget_) {
+                try {
+                    if (!budget_->try_acquire()) {
+                        calls_.fetch_sub(1);
+                        return error(429, "call_limit_reached");
+                    }
+                } catch (...) {
+                    calls_.fetch_sub(1);
+                    throw;
+                }
+            }
             run = runner_.run(invocation);
         }
         if (run.timed_out) {

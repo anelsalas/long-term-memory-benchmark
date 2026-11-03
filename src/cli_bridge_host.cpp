@@ -122,6 +122,52 @@ Handle kill_on_close_job() {
         fail("SetInformationJobObject");
     return job;
 }
+class FileLock {
+  public:
+    explicit FileLock(HANDLE file) : file_(file) {
+        if (!LockFileEx(file_, LOCKFILE_EXCLUSIVE_LOCK, 0, MAXDWORD, MAXDWORD, &overlap_)) fail("Lock budget ledger");
+    }
+    ~FileLock() { UnlockFileEx(file_, 0, MAXDWORD, MAXDWORD, &overlap_); }
+    FileLock(const FileLock&) = delete;
+    FileLock& operator=(const FileLock&) = delete;
+  private:
+    HANDLE file_;
+    OVERLAPPED overlap_{};
+};
+}
+
+WindowsPersistentBudget::WindowsPersistentBudget(std::string ledger_path, std::uint64_t limit)
+    : ledger_path_(std::move(ledger_path)), limit_(limit) {
+    if (ledger_path_.empty() || !limit_ || limit_ > 1000000) throw std::invalid_argument("Invalid durable budget");
+}
+
+bool WindowsPersistentBudget::try_acquire() {
+    std::lock_guard<std::mutex> local_lock(mutex_);
+    const auto path = wide(ledger_path_);
+    Handle file(CreateFileW(path.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+        nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
+    if (!file) fail("Open budget ledger");
+    FileLock lock(file.get());
+    const auto header = std::string("ltm-budget-v1 ") + std::to_string(limit_) + "\n";
+    LARGE_INTEGER size{};
+    if (!GetFileSizeEx(file.get(), &size) || size.QuadPart < 0 ||
+        static_cast<std::uint64_t>(size.QuadPart) > header.size() + limit_ * 2)
+        throw std::runtime_error("Invalid budget ledger");
+    std::string records(static_cast<std::size_t>(size.QuadPart), '\0');
+    DWORD read = 0;
+    if (!records.empty() && (!ReadFile(file.get(), records.data(), static_cast<DWORD>(records.size()), &read, nullptr) ||
+        read != records.size())) throw std::runtime_error("Cannot read budget ledger");
+    if (!records.empty() && (records.rfind(header, 0) != 0 || (records.size() - header.size()) % 2))
+        throw std::runtime_error("Invalid budget ledger or changed cap");
+    const auto record_start = records.empty() ? 0 : header.size();
+    for (std::size_t i = record_start; i < records.size(); i += 2)
+        if (records[i] != '1' || records[i + 1] != '\n') throw std::runtime_error("Invalid budget ledger");
+    if ((records.size() - record_start) / 2 >= limit_) return false;
+    const auto entry = (records.empty() ? header : std::string{}) + "1\n";
+    DWORD written = 0;
+    if (!WriteFile(file.get(), entry.data(), static_cast<DWORD>(entry.size()), &written, nullptr) || written != entry.size() ||
+        !FlushFileBuffers(file.get())) throw std::runtime_error("Cannot persist budget attempt");
+    return true;
 }
 
 RunResult WindowsCommandRunner::run(const Invocation& invocation) {
