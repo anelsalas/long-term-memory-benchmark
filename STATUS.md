@@ -1,3 +1,7 @@
+## Mem0 context-budget correction — November 3, 2026
+
+Mem0 context now renders chronological dated text and counts the complete rendered block against the configured estimate. The Windows ARM64 suite passed 118/118, followed by two focused tests including the actual comparison prompt. The first case must be re-answered and re-judged before the approved ten-case run.
+
 ## Mem0 benchmark implementation — November 3, 2026
 
 The first GPT-only Mem0 pilot completed on one published multi-session question. GPT judged both Mem0 and the existing dense baseline correct. Mem0 ingested 47 sessions using 47 calls and 741,357 reported input tokens; its reader used 17,363 input tokens versus 10,894 for the dense baseline. The [pilot report](reports/2026-11-03-mem0-pilot.md) records timing, resources and limitations. Windows ARM64 offline suites passed 118/118 C++/integration and 13/13 Node tests. The ten-question comparison is next.

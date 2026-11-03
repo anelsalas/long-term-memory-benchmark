@@ -29,6 +29,7 @@ struct SelectedMemories {
     bool unknown_provenance = false;
 };
 
+std::string render_memory_context(const CandidateCase& candidate);
 SelectedMemories select_memories(const CandidateCase& input, MemoryService& service,
     const std::string& name, std::size_t limit, std::size_t budget_tokens);
 

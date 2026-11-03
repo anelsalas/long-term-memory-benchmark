@@ -317,3 +317,6 @@ checksum-verified loader. Preserve assistant messages before the first user turn
 as `leading_assistant`; a sampled multi-session case contained one such session.
 An exporter refuses to overwrite an existing output file. The selected case's
 47 sessions and 495 messages were accounted for without exposing gold labels.
+# 2026-11-03: Budget Mem0's rendered context
+
+Count the entire dated plain-text memory block in the context estimate. The original pilot counted memory text alone and its JSON metadata made the reader input substantially larger than the dense baseline. Re-run the reader and judge with the existing memory store before comparing results.

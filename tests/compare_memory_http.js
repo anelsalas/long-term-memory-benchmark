@@ -56,6 +56,8 @@ async function main() {
     const plan = JSON.parse(fs.readFileSync(path.join(report.artifact_directory, 'plan.json')));
     const manifest = JSON.parse(fs.readFileSync(path.join(report.artifact_directory, 'manifest.json')));
     assert.match(plan.cases[0].prompt, /corrected score: 91/);
+    assert.match(plan.cases[0].prompt, /\[2026\/03\/12 \(Thu\) 10:00\] Lina corrected score: 91/);
+    assert.doesNotMatch(plan.cases[0].prompt, /memory-1|session-000002|"sessions"/);
     assert.deepEqual(plan.cases[0].source_ids, []);
     assert.deepEqual(plan.cases[0].memory_ids, ['memory-1']);
     assert.deepEqual(plan.cases[0].memory_source_session_ids, ['session-000002']);

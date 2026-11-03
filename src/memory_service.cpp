@@ -5,6 +5,14 @@
 
 namespace ltm::retrieval {
 
+std::string render_memory_context(const CandidateCase& candidate) {
+    std::string block;
+    for (const auto& session : candidate.sessions)
+        for (const auto& message : session.messages)
+            block += "[" + session.date + "] " + message.content + "\n";
+    return block;
+}
+
 SelectedMemories select_memories(const CandidateCase& input, MemoryService& service,
     const std::string& name, std::size_t limit, std::size_t budget_tokens) {
     if (name.empty() || limit == 0 || budget_tokens == 0) throw std::invalid_argument("Memory search limits must be positive");
@@ -12,14 +20,15 @@ SelectedMemories select_memories(const CandidateCase& input, MemoryService& serv
     SelectedMemories result;
     result.candidate = input;
     result.candidate.sessions.clear();
-    std::size_t used = 0;
+    std::size_t bytes = 0;
     std::set<std::string> seen;
     for (const auto& memory : ranked) {
         if (memory.id.empty() || memory.text.empty() || !seen.insert(memory.id).second)
             throw std::invalid_argument("Invalid or repeated memory ID");
-        const auto tokens = estimated_tokens(memory.text.size());
-        if (tokens > budget_tokens - used) break;
-        used += tokens;
+        const auto line_bytes = memory.session_date.size() + memory.text.size() + 4;
+        if (line_bytes > std::string{}.max_size() - bytes ||
+            estimated_tokens(bytes + line_bytes) > budget_tokens) break;
+        bytes += line_bytes;
         result.memory_ids.push_back(memory.id);
         if (memory.source_sessions.empty()) result.unknown_provenance = true;
         for (const auto& session : memory.source_sessions) {

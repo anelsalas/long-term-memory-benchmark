@@ -1,0 +1,3 @@
+# Handoff — Mem0 context budget
+
+Changed memory_service.hpp, memory_service.cpp, compare_main.cpp and retrieval and prompt integration tests. All 118 CTest checks and two focused checks passed. No model calls were made for this correction. Start the loopback embedding server, GPT-only bridge and Mem0 sidecar with the existing pilot store; run bb7c3b45 reader and judge only. Then execute the approved ten-case phase with the durable 1,500-call cap and stop on usage limits. Keep the original first-case report as an explicitly superseded comparison. No benchmark commands are intentionally left running at this checkpoint.

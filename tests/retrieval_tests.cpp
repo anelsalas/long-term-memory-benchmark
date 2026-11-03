@@ -62,12 +62,15 @@ void memory_service_packs_ranked_evidence() {
     ltm::CandidateCase input;
     input.case_id = "case1";
     input.question = "What grade?";
-    const auto result = select_memories(input, service, "case1", 3, 4);
+    const auto result = select_memories(input, service, "case1", 3, 18);
     require(result.candidate.sessions.size() == 2 && result.candidate.sessions[0].messages[0].content == "grade 23" &&
         result.candidate.sessions[1].messages[0].content == "grade 82", "Budgeted memories are presented by date");
     require(result.memory_ids == Ids{"m1", "m2"} && result.source_sessions.count("s1") && result.source_sessions.count("s2"),
         "Retained memory IDs preserve rank and source sessions remain distinct");
     require(!result.unknown_provenance, "Known source sessions remain explicit");
+    const auto block = render_memory_context(result.candidate);
+    require(block == "[2026-03-01T10:00:00Z] grade 23\n[2026-03-02T10:00:00Z] grade 82\n", "Only dated memory text is rendered in chronological order");
+    require(estimated_tokens(block.size()) <= 18, "Whole rendered block fits the context budget");
     const auto all = select_memories(input, service, "case1", 3, 100);
     require(all.unknown_provenance && all.memory_ids.size() == 3, "Missing source metadata is marked unknown");
     bool refused = false;

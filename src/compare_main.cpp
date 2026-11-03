@@ -649,6 +649,12 @@ int main(int argc, char** argv) {
                         [](const auto& session) { return session.messages.empty(); }), candidate.sessions.end());
                 }
                 auto prompt = answer_instruction + ltm::candidate_input_json(candidate);
+#ifdef LTM_HAS_MEMORY_HTTP
+                if (condition == "memory_budget") {
+                    prompt = answer_instruction + "History:\n" + ltm::retrieval::render_memory_context(candidate) +
+                        "\nQuestion date: " + candidate.question_date + "\nQuestion: " + candidate.question;
+                }
+#endif
                 if (compact_local) {
                     prompt = compact_local_prompt(candidate);
                     if (prompt.size() + std::string("user").size() + 4 > 512) {
