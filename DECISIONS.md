@@ -260,3 +260,11 @@ session provenance as unknown rather than fabricating a source.
 Use an HTTP adapter restricted to IPv4 loopback for memory search and service
 configuration. Preserve the sidecar's source-session metadata; absent metadata
 remains unknown. Do not equate a memory ID with an original message ID.
+
+## Memory comparison condition
+
+`memory_budget` accepts one published case and an explicit namespace. It records
+service configuration, selected memory IDs and session-level provenance separately
+from original turn IDs. The reader receives dated extracted memories in the
+candidate format; this representation differs from full original conversation
+rounds and will be disclosed when comparing results.

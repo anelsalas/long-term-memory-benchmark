@@ -7,6 +7,9 @@
 #include "long_term_memory_benchmark/scoring.hpp"
 #include "long_term_memory_benchmark/embeddings.hpp"
 #include "long_term_memory_benchmark/retrieval.hpp"
+#ifdef LTM_HAS_MEMORY_HTTP
+#include "long_term_memory_benchmark/memory_service_http.hpp"
+#endif
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -20,7 +23,9 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <windows.h>
 
 namespace {
@@ -337,7 +342,9 @@ int main(int argc, char** argv) {
                               "context_budget_tokens",
                               "include_fresh",
                               "embedding_cache",
-                              "embedding_query_prefix"});
+                              "embedding_query_prefix",
+                              "memory_service_url",
+                              "memory_namespace"});
         if (integer(config.at("schema_version")) != 1) {
             throw std::invalid_argument("Unsupported runtime configuration version");
         }
@@ -406,7 +413,7 @@ int main(int argc, char** argv) {
             if ((condition != "full_history" && condition != "retrieved_evidence" &&
                  condition != "no_memory" && condition != "known_evidence" &&
                  condition != "bm25_budget" && condition != "dense_budget" &&
-                 condition != "hybrid_budget") ||
+                 condition != "hybrid_budget" && condition != "memory_budget") ||
                 !unique_conditions.insert(condition).second) {
                 throw std::invalid_argument("Invalid or repeated condition");
             }
@@ -428,7 +435,7 @@ int main(int argc, char** argv) {
                                         ? integer(config.at("context_budget_tokens"))
                                         : 0;
         const bool budgeted = unique_conditions.count("bm25_budget") || unique_conditions.count("dense_budget") ||
-                              unique_conditions.count("hybrid_budget");
+                              unique_conditions.count("hybrid_budget") || unique_conditions.count("memory_budget");
         if (budgeted && !context_budget) {
             throw std::invalid_argument("Budget conditions require positive context_budget_tokens");
         }
@@ -436,6 +443,24 @@ int main(int argc, char** argv) {
         if (embedded && (!config.contains("embedding_cache") || !config.at("embedding_cache").is_string())) {
             throw std::invalid_argument("Dense and hybrid budgets require an embedding_cache directory");
         }
+#ifdef LTM_HAS_MEMORY_HTTP
+        std::unique_ptr<ltm::retrieval::HttpMemoryService> memory_service;
+        std::string memory_config;
+        std::string memory_namespace;
+        if (unique_conditions.count("memory_budget")) {
+            if (!has_public || include_fresh || top_k > 100 || !config.contains("memory_service_url") ||
+                !config.at("memory_service_url").is_string() || !config.contains("memory_namespace") ||
+                !config.at("memory_namespace").is_string())
+                throw std::invalid_argument("Memory condition requires one public case, namespace and local service");
+            memory_namespace = config.at("memory_namespace").get<std::string>();
+            if (memory_namespace.empty()) throw std::invalid_argument("Memory namespace is required");
+            memory_service = std::make_unique<ltm::retrieval::HttpMemoryService>(
+                config.at("memory_service_url").get<std::string>(), std::chrono::milliseconds(timeout));
+            memory_config = memory_service->config_json();
+        }
+#else
+        if (unique_conditions.count("memory_budget")) throw std::invalid_argument("Memory service requires Boost HTTP");
+#endif
         const auto query_prefix = config.value("embedding_query_prefix", std::string(
             "Instruct: Given a question, retrieve the conversation turns that answer it\nQuery: "));
         ltm::retrieval::CacheOnlyEmbedder no_new_embeddings;
@@ -501,6 +526,12 @@ int main(int argc, char** argv) {
                 manifest.method_parameters["embedding_query_prefix_sha256"] = ltm::sha256(query_prefix);
             }
         }
+#ifdef LTM_HAS_MEMORY_HTTP
+        if (memory_service) {
+            manifest.method_parameters["memory_service_config"] = memory_config;
+            manifest.method_parameters["memory_namespace"] = memory_namespace;
+        }
+#endif
         for (const auto* role : {"reader", "judge"}) {
             known_fields(config.at(role), {"id", "version"});
         }
@@ -557,6 +588,7 @@ int main(int argc, char** argv) {
             std::string id, condition, prompt;
             std::vector<std::string> sources;
             double preparation_ms;
+            Json memory_trace;
         };
         std::vector<Planned> planned;
         Json plans = Json::array();
@@ -565,9 +597,31 @@ int main(int argc, char** argv) {
             for (const auto& condition : conditions) {
                 const auto preparation_start = ltm::ProviderClock::now();
                 std::vector<std::string> sources;
-                auto candidate =
+                Json memory_trace = nullptr;
+                auto candidate = condition == "memory_budget" ? item.data.candidate :
                     select_evidence(item.data.candidate, static_cast<std::size_t>(top_k),
                                     std::string(condition) == "full_history", sources);
+#ifdef LTM_HAS_MEMORY_HTTP
+                if (condition == "memory_budget") {
+                    const auto selected = ltm::retrieval::select_memories(item.data.candidate, *memory_service,
+                        memory_namespace, static_cast<std::size_t>(top_k), static_cast<std::size_t>(context_budget));
+                    candidate = selected.candidate;
+                    sources.clear();
+                    std::set<std::string> expected;
+                    for (const auto& session : item.data.evaluator.sessions)
+                        if (std::find(item.data.evaluator.answer_session_ids.begin(),
+                                      item.data.evaluator.answer_session_ids.end(), session.original_session_id) !=
+                            item.data.evaluator.answer_session_ids.end()) expected.insert(session.source_id);
+                    bool found_all = !expected.empty();
+                    for (const auto& id : expected) if (!selected.source_sessions.count(id)) found_all = false;
+                    Json evidence = expected.empty() || (!found_all && selected.unknown_provenance)
+                        ? Json(nullptr) : Json(found_all);
+                    memory_trace = {{"memory_ids", selected.memory_ids},
+                                    {"memory_source_session_ids", selected.source_sessions},
+                                    {"memory_provenance_complete", !selected.unknown_provenance},
+                                    {"memory_all_evidence_sessions_found", evidence}};
+                }
+#endif
                 if (condition == "bm25_budget" || condition == "dense_budget" || condition == "hybrid_budget") {
                     namespace retrieval = ltm::retrieval;
                     sources.clear();
@@ -617,7 +671,7 @@ int main(int argc, char** argv) {
                                                 ltm::ProviderClock::now() - preparation_start)
                                                 .count();
                 planned.push_back({&item, item.name + ":" + condition, condition, prompt, sources,
-                                   preparation_ms});
+                                   preparation_ms, memory_trace});
                 if (item.name == "public") {
                     ++planned_judges;
                 }
@@ -628,6 +682,7 @@ int main(int argc, char** argv) {
                                  {"prompt_sha256", ltm::sha256(prompt)},
                                  {"prompt_bytes", prompt.size()},
                                  {"input_token_upper_bound", input_bound}});
+                if (memory_trace.is_object()) plans.back().update(memory_trace);
             }
         }
         const auto root = config_path.parent_path() /
@@ -697,6 +752,7 @@ int main(int argc, char** argv) {
             auto result = attempt_json(answer);
             result["reader_wall_ms"] = elapsed;
             result["source_ids"] = item.sources;
+            if (item.memory_trace.is_object()) result.update(item.memory_trace);
             result["retrieval_preparation_ms"] = item.preparation_ms;
             result["response_metadata"] = answer.attempts.empty()
                                               ? Json(nullptr)

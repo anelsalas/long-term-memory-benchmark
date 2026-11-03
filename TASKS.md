@@ -138,7 +138,8 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Add bridge-attempt and reported-token accounting with incomplete-usage flags.
 - [x] Add and test the C++ memory-service port and budget packing.
 - [x] Add and test the local memory-service HTTP adapter.
-- [ ] Connect the memory-service port to the comparison runner.
+- [x] Connect the memory-service port to the comparison runner and test it offline.
+- [ ] Feed published sessions to the sidecar and record ingestion results.
 - [ ] Complete prompt provenance and verify accounting in a live pilot.
 - [ ] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
 - [ ] Measure one case, project resource and call use, then evaluate the approved ten-question phase.
