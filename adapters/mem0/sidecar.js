@@ -38,11 +38,13 @@ function createService({ runtimeDir, config, memoryFactory = openMemory, metrics
   const ledger = new Database(path.join(runtimeDir, 'ledger.db'));
   ledger.exec(`CREATE TABLE IF NOT EXISTS sessions (
     config_hash TEXT NOT NULL, namespace TEXT NOT NULL, session_id TEXT NOT NULL,
-    content_hash TEXT NOT NULL, state TEXT NOT NULL, memories INTEGER,
+    content_hash TEXT NOT NULL, state TEXT NOT NULL, memories INTEGER, usage_json TEXT,
     PRIMARY KEY (config_hash, namespace, session_id))`);
-  const find = ledger.prepare('SELECT content_hash, state, memories FROM sessions WHERE config_hash = ? AND namespace = ? AND session_id = ?');
-  const begin = ledger.prepare('INSERT INTO sessions VALUES (?, ?, ?, ?, ?, NULL)');
-  const finish = ledger.prepare("UPDATE sessions SET state = 'done', memories = ? WHERE config_hash = ? AND namespace = ? AND session_id = ?");
+  if (!ledger.pragma('table_info(sessions)').some((column) => column.name === 'usage_json'))
+    ledger.exec('ALTER TABLE sessions ADD COLUMN usage_json TEXT');
+  const find = ledger.prepare('SELECT content_hash, state, memories, usage_json FROM sessions WHERE config_hash = ? AND namespace = ? AND session_id = ?');
+  const begin = ledger.prepare('INSERT INTO sessions (config_hash, namespace, session_id, content_hash, state) VALUES (?, ?, ?, ?, ?)');
+  const finish = ledger.prepare("UPDATE sessions SET state = 'done', memories = ?, usage_json = ? WHERE config_hash = ? AND namespace = ? AND session_id = ?");
   const stores = new Map();
   let queue = Promise.resolve();
   function store(namespace) {
@@ -57,8 +59,8 @@ function createService({ runtimeDir, config, memoryFactory = openMemory, metrics
     const namespace = namespaceOf(request.namespace);
     if (!Array.isArray(request.sessions) || !request.sessions.length) throw new Error('Invalid sessions');
     const sessions = request.sessions.map(normalizedSession);
-    const before = metricsProvider ? await metricsProvider() : null;
     let memories = 0;
+    const perSession = [];
     for (const session of sessions) {
       const hash = digest(JSON.stringify(session));
       const previous = find.get(configHash, namespace, session.session_id);
@@ -66,8 +68,11 @@ function createService({ runtimeDir, config, memoryFactory = openMemory, metrics
         if (previous.content_hash !== hash) throw new Error('Session content conflict');
         if (previous.state !== 'done') throw new Error('Session outcome uncertain; inspect before retry');
         memories += previous.memories;
+        perSession.push({ session_id: session.session_id, ...(previous.usage_json ? JSON.parse(previous.usage_json) :
+          { llm_calls: null, input_tokens: null, output_tokens: null, usage_complete: false, system_prompt_sha256: [] }) });
         continue;
       }
+      const before = metricsProvider ? await metricsProvider() : null;
       // Record intent first: a crash after Mem0 writes is conservatively uncertain.
       begin.run(configHash, namespace, session.session_id, hash, 'pending');
       const messages = [];
@@ -82,27 +87,40 @@ function createService({ runtimeDir, config, memoryFactory = openMemory, metrics
         round_ids: session.rounds.map((round) => round.round_id),
       } });
       const count = Array.isArray(result.results) ? result.results.length : 0;
-      finish.run(count, configHash, namespace, session.session_id);
-      memories += count;
-    }
-    let usage = { llm_calls: null, input_tokens: null, output_tokens: null, usage_complete: false };
-    if (before) {
-      try {
-        const after = await metricsProvider();
-        const names = ['attempts', 'completed', 'input_tokens', 'output_tokens', 'missing_usage'];
-        if (typeof before.instance_id !== 'string' || !before.instance_id || before.instance_id !== after.instance_id ||
-            !names.every((name) => Number.isSafeInteger(before[name]) && Number.isSafeInteger(after[name]) &&
-            before[name] >= 0 && after[name] >= before[name])) throw new Error('Invalid usage metrics');
-        const attempts = after.attempts - before.attempts;
-        const completed = after.completed - before.completed;
-        usage = { llm_calls: attempts, input_tokens: after.input_tokens - before.input_tokens,
-          output_tokens: after.output_tokens - before.output_tokens,
-          usage_complete: attempts === completed && after.missing_usage === before.missing_usage };
-      } catch (_) {
-        // Ingestion succeeded; unavailable counters remain explicitly unknown.
+      let usage = { llm_calls: null, input_tokens: null, output_tokens: null, usage_complete: false, system_prompt_sha256: [] };
+      if (before) {
+        try {
+          const after = await metricsProvider();
+          const names = ['attempts', 'completed', 'input_tokens', 'output_tokens', 'missing_usage'];
+          if (typeof before.instance_id !== 'string' || !before.instance_id || before.instance_id !== after.instance_id ||
+              !names.every((name) => Number.isSafeInteger(before[name]) && Number.isSafeInteger(after[name]) &&
+              before[name] >= 0 && after[name] >= before[name])) throw new Error('Invalid usage metrics');
+          const attempts = after.attempts - before.attempts;
+          const completed = after.completed - before.completed;
+          const hashes = Array.isArray(after.system_prompt_sha256) &&
+            after.system_prompt_sha256.every((hash) => typeof hash === 'string' && /^[0-9a-f]{64}$/.test(hash))
+            ? after.system_prompt_sha256 : [];
+          usage = { llm_calls: attempts, input_tokens: after.input_tokens - before.input_tokens,
+            output_tokens: after.output_tokens - before.output_tokens,
+            usage_complete: attempts === completed && after.missing_usage === before.missing_usage,
+            system_prompt_sha256: hashes };
+        } catch (_) {
+          // Ingestion succeeded; unavailable counters remain explicitly unknown.
+        }
       }
+      finish.run(count, JSON.stringify(usage), configHash, namespace, session.session_id);
+      memories += count;
+      perSession.push({ session_id: session.session_id, ...usage });
     }
-    return { memories, ...usage, wall_ms: Date.now() - started };
+    function total(name) {
+      if (perSession.some((entry) => !Number.isSafeInteger(entry[name]))) return null;
+      const sum = perSession.reduce((value, entry) => value + entry[name], 0);
+      return Number.isSafeInteger(sum) ? sum : null;
+    }
+    return { memories, llm_calls: total('llm_calls'), input_tokens: total('input_tokens'),
+      output_tokens: total('output_tokens'), usage_complete: perSession.every((entry) => entry.usage_complete),
+      system_prompt_sha256: [...new Set(perSession.flatMap((entry) => entry.system_prompt_sha256 || []))].sort(),
+      sessions: perSession, wall_ms: Date.now() - started };
   }
   return {
     ingest(request) {

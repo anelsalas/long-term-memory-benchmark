@@ -248,6 +248,11 @@ missing usage and failed attempts, and marks totals unknown if the bridge restar
 Failed CLI attempts may have consumed unreported tokens. Counters reset with the
 bridge; preserve run-level accounting across restarts.
 
+Persist each completed session's reported usage alongside its completion marker,
+so replay after a restart returns the original counters. Record SHA-256 hashes of
+system instructions observed by the bridge; the installed Mem0 bundle hash pins
+the upstream prompt code. Failed attempts may have unreported usage.
+
 ## Durable model-attempt budget
 
 When configured, reserve each attempt in a file-locked, flushed ledger before

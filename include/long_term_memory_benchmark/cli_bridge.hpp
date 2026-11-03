@@ -6,6 +6,7 @@
 #include <functional>
 #include <mutex>
 #include <optional>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -98,6 +99,7 @@ struct Metrics {
     std::uint64_t input_tokens = 0;
     std::uint64_t output_tokens = 0;
     std::uint64_t missing_usage = 0;
+    std::vector<std::string> system_prompt_sha256;
 };
 
 // Handles one POST /v1/chat/completions body. Safe to call from several threads
@@ -117,6 +119,8 @@ class Bridge {
     std::atomic<std::uint64_t> completed_{0}, input_tokens_{0}, output_tokens_{0};
     std::atomic<std::uint64_t> missing_usage_{0};
     std::string instance_id_;
+    mutable std::mutex prompt_hashes_mutex_;
+    std::set<std::string> prompt_hashes_;
     std::mutex slots_mutex_;
     std::condition_variable slots_available_;
     std::uint32_t active_ = 0;

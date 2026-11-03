@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The bridge has call and concurrency caps, a durable cross-restart attempt ledger, per-request system messages and model-usage counters. Mem0's sidecar reports ingestion call and token deltas when it has exclusive use of the bridge. The C++ runner supports a budgeted memory condition; a published case is prepared with all 47 sessions and 495 messages. Windows ARM64 offline suites passed 118/118 C++/integration and 9/9 Node tests. Prompt provenance and the first measured case remain. No live model calls were made for this checkpoint.
+The bridge has call and concurrency caps, a durable cross-restart attempt ledger, per-request system messages and model-usage counters. Mem0's sidecar persists per-session usage and prompt fingerprints; the ingestion runner writes dialogue-free progress. A published case is prepared with all 47 sessions and 495 messages. Windows ARM64 offline suites passed 118/118 C++/integration and 11/11 Node tests. The first measured case remains. No live model calls were made for this checkpoint.
 
 ## Stronger-reader report review — November 2, 2026
 

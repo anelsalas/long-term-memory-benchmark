@@ -270,7 +270,7 @@ struct Server::State {
             const auto metrics = bridge.metrics();
             return {200, nlohmann::json{{"instance_id", metrics.instance_id}, {"attempts", metrics.attempts}, {"completed", metrics.completed},
                 {"input_tokens", metrics.input_tokens}, {"output_tokens", metrics.output_tokens},
-                {"missing_usage", metrics.missing_usage}}.dump()};
+                {"missing_usage", metrics.missing_usage}, {"system_prompt_sha256", metrics.system_prompt_sha256}}.dump()};
         }
         if (request.method() == http::verb::post && request.target() == "/v1/chat/completions")
             return bridge.handle(request.body());

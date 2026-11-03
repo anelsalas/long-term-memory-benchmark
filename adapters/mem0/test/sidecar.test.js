@@ -22,23 +22,29 @@ test('sidecar ingests sessions once, preserves dates, and returns ranked memorie
   const calls = [];
   let attempts = 0;
   const metricsProvider = async () => ({ instance_id: 'bridge-1', attempts, completed: attempts, input_tokens: attempts * 20,
-    output_tokens: attempts * 5, missing_usage: 0 });
-  const service = createService({ runtimeDir: folder, config: { version: 'test' }, metricsProvider, memoryFactory: () => ({
+    output_tokens: attempts * 5, missing_usage: 0, system_prompt_sha256: attempts ? ['a'.repeat(64)] : [] });
+  const options = { runtimeDir: folder, config: { version: 'test' }, metricsProvider, memoryFactory: () => ({
     async add(messages, options) { ++attempts; calls.push({ messages, options }); return { results: [{ memory: 'grade 82' }] }; },
     async search() { return { results: [{ id: 'm1', memory: 'grade 82', score: 0.9,
       metadata: { session_id: 's1', session_date: '2025-02-12' } }] }; },
-  }) });
+  }) };
+  let service = createService(options);
   const session = { session_id: 's1', date: '2025-02-12', leading_assistant: ['Welcome back.'], rounds: [
     { round_id: 'r1', user: 'The grade is 82.', replies: ['Noted.'] },
   ] };
   try {
     const first = await service.ingest({ namespace: 'case1', sessions: [session] });
-    await service.ingest({ namespace: 'case1', sessions: [session] });
+    service.close();
+    service = createService(options);
+    const replay = await service.ingest({ namespace: 'case1', sessions: [session] });
     assert.equal(first.memories, 1);
     assert.equal(first.llm_calls, 1);
     assert.equal(first.input_tokens, 20);
     assert.equal(first.output_tokens, 5);
     assert.equal(first.usage_complete, true);
+    assert.deepEqual(first.system_prompt_sha256, ['a'.repeat(64)]);
+    assert.equal(replay.llm_calls, first.llm_calls, 'A resumed session retains its original usage');
+    assert.deepEqual(replay.system_prompt_sha256, first.system_prompt_sha256);
     assert.equal(calls.length, 1);
     assert.equal(calls[0].options.metadata.session_date, session.date);
     assert.equal(calls[0].messages[0].role, 'assistant');

@@ -52,7 +52,8 @@ with zero prices. Each request runs one CLI process:
 - **Usage.** Loopback `GET /metrics` reports this bridge instance's attempted
   CLI calls, completed replies, reported input/output tokens, and completed replies
   missing token usage. Counts reset on restart. Failed attempts can consume tokens
-  that are absent from completed-reply usage.
+  that are absent from completed-reply usage. The endpoint also reports SHA-256
+  fingerprints of system instructions, without returning their text.
 - **Messages.** A request may provide a leading system message followed by a
   user message. Codex receives the system message in a temporary per-attempt
   instructions file, removed when the runner returns. Abrupt process termination

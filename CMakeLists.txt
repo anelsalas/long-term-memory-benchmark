@@ -71,7 +71,7 @@ target_include_directories(ltm_http_provider SYSTEM PRIVATE "${CMAKE_CURRENT_SOU
 
 add_library(ltm_cli_bridge STATIC src/cli_bridge.cpp)
 add_library(LongTermMemoryBenchmark::cli_bridge ALIAS ltm_cli_bridge)
-target_link_libraries(ltm_cli_bridge PUBLIC LongTermMemoryBenchmark::core)
+target_link_libraries(ltm_cli_bridge PUBLIC LongTermMemoryBenchmark::core LongTermMemoryBenchmark::experiment)
 target_include_directories(ltm_cli_bridge SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
 if(MSVC)
   target_compile_options(ltm_cli_bridge PRIVATE /W4 /permissive-)

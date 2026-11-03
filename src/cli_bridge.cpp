@@ -1,4 +1,5 @@
 #include "long_term_memory_benchmark/cli_bridge.hpp"
+#include "long_term_memory_benchmark/hash.hpp"
 #include <nlohmann/json.hpp>
 #include <atomic>
 #include <chrono>
@@ -196,7 +197,9 @@ Bridge::Bridge(Settings settings, CommandRunner& runner, AttemptBudget* budget)
 }
 void Bridge::on_failure(FailureLog log) { log_ = std::move(log); }
 Metrics Bridge::metrics() const {
-    return {instance_id_, calls_.load(), completed_.load(), input_tokens_.load(), output_tokens_.load(), missing_usage_.load()};
+    std::lock_guard<std::mutex> lock(prompt_hashes_mutex_);
+    return {instance_id_, calls_.load(), completed_.load(), input_tokens_.load(), output_tokens_.load(),
+        missing_usage_.load(), {prompt_hashes_.begin(), prompt_hashes_.end()}};
 }
 
 Response Bridge::handle(const std::string& body) {
@@ -243,6 +246,11 @@ Response Bridge::handle(const std::string& body) {
                     calls_.fetch_sub(1);
                     throw;
                 }
+            }
+            {
+                const auto hash = ltm::sha256(invocation.system_prompt ? *invocation.system_prompt : settings_.system_prompt);
+                std::lock_guard<std::mutex> lock(prompt_hashes_mutex_);
+                prompt_hashes_.insert(hash);
             }
             run = runner_.run(invocation);
         }

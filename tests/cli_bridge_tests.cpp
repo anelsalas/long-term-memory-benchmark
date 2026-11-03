@@ -1,4 +1,5 @@
 #include "long_term_memory_benchmark/cli_bridge.hpp"
+#include "long_term_memory_benchmark/hash.hpp"
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <atomic>
@@ -177,6 +178,8 @@ void bridge_preserves_system_message() {
     require(bridge.handle(request.dump()).status == 200, "A leading system message is accepted");
     require(runner.calls.size() == 1 && runner.calls[0].system_prompt == "Return JSON only" &&
         runner.calls[0].input == "Find the correction", "System and user content remain separate");
+    require(bridge.metrics().system_prompt_sha256 == std::vector<std::string>{ltm::sha256("Return JSON only")},
+        "The actual system instruction is fingerprinted without storing its text");
     FakeRunner other({0, claude_success, false});
     Bridge other_bridge(settings, other);
     request["model"] = "claude-opus-5-5/high";
