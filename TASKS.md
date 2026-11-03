@@ -144,6 +144,7 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Validate the first published session through the GPT-only Mem0 pipeline.
 - [ ] Complete ingestion of the remaining published sessions and record results.
 - [x] Prepare an offline-tested, dialogue-free single-case comparison report.
+- [x] Start scoped local CPU and memory sampling during the pilot.
 - [x] Record actual system-prompt fingerprints and persist per-session usage.
 - [ ] Verify accounting in a live pilot.
 - [x] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.

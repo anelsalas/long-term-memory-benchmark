@@ -20,6 +20,12 @@ test('report compares one case and counts replayed ingestion sessions once', () 
       judge: { attempts: [{ usage: { input_tokens: 25, output_tokens: 2 }, reply: 'PRIVATE JUDGE' }] } },
     baselineCases: [{ question_id: 'case1', reader: 'GPT-6.1-sol', condition: 'dense_budget',
       correct: false, input_tokens: 120, output_tokens: 9, reader_wall_ms: 70 }],
+    resourceSamples: [
+      { timestamp_utc: '2026-11-03T12:00:00Z', processes: { embedding: {
+        cpu_total_seconds: 10, working_set_bytes: 1000, private_bytes: 800 } } },
+      { timestamp_utc: '2026-11-03T12:00:05Z', processes: { embedding: {
+        cpu_total_seconds: 12, working_set_bytes: 1500, private_bytes: 900 } } },
+    ],
   });
   assert.equal(result.ingestion.sessions, 2);
   assert.equal(result.ingestion.llm_calls, 2);
@@ -27,6 +33,8 @@ test('report compares one case and counts replayed ingestion sessions once', () 
   assert.equal(result.ingestion.observed_session_wall_ms, 3000);
   assert.equal(result.mem0.correct, true);
   assert.equal(result.dense_baseline.correct, false);
+  assert.equal(result.local_resources.processes.embedding.cpu_delta_seconds, 2);
+  assert.equal(result.local_resources.processes.embedding.sampled_peak_working_set_bytes, 1500);
   assert.doesNotMatch(JSON.stringify(result), /PRIVATE/);
 });
 

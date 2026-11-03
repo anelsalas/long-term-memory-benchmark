@@ -268,6 +268,13 @@ baseline. Count each ingested session once across progress files; preserve the
 longest observed per-session client time when a completed session is replayed.
 Report the sum as observed session time excluding gaps, not overall elapsed time.
 
+## Pilot resource sampling
+
+Sample CPU time, working set and private memory for the embedding server, bridge,
+sidecar and ingestion runner every five seconds. The sampler began after ingestion
+started, and excludes model subprocesses and remote inference. Report the sampling
+window and sampled peaks rather than claiming full-run or whole-machine peaks.
+
 ## Durable model-attempt budget
 
 When configured, reserve each attempt in a file-locked, flushed ledger before

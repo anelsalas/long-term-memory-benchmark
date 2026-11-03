@@ -36,3 +36,5 @@ sessions are replayed from the ledger without new model calls.
 `node report.js CASE_ID SESSION_COUNT COMPARISON_DIR BASELINE_JSON OUTPUT_JSON
 PROGRESS_JSONL...` creates a dialogue-free single-case comparison after ingestion
 and judging finish. It counts replayed sessions once and marks incomplete usage.
+An optional `--resources RESOURCE_JSONL` at the end adds sampled local-process
+CPU and memory. The sample window and process scope must be reported.

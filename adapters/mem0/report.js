@@ -15,7 +15,27 @@ function attemptUsage(attempts) {
     output_tokens: sumKnown(attempts.map((a) => a.usage && a.usage.output_tokens)) };
 }
 
-function summarize({ caseId, expectedSessions, progressRuns, record, detail, baselineCases }) {
+function summarizeResources(samples) {
+  if (!Array.isArray(samples) || !samples.length) return null;
+  const processes = {};
+  for (const role of ['embedding', 'bridge', 'sidecar', 'runner']) {
+    const rows = samples.map((sample) => sample.processes && sample.processes[role]).filter(Boolean);
+    if (!rows.length) continue;
+    const cpus = rows.map((row) => row.cpu_total_seconds);
+    const memory = rows.map((row) => row.working_set_bytes);
+    const privateBytes = rows.map((row) => row.private_bytes);
+    processes[role] = { samples: rows.length,
+      cpu_delta_seconds: cpus.every((value) => Number.isFinite(value)) && cpus.at(-1) >= cpus[0]
+        ? cpus.at(-1) - cpus[0] : null,
+      sampled_peak_working_set_bytes: memory.every(Number.isSafeInteger) ? Math.max(...memory) : null,
+      sampled_peak_private_bytes: privateBytes.every(Number.isSafeInteger) ? Math.max(...privateBytes) : null };
+  }
+  return { scope: 'sampled local processes only; excludes model subprocesses and remote inference',
+    sampling_coverage: 'Only the recorded sampling window; compare timestamps with the experiment.', samples: samples.length,
+    first_sample_utc: samples[0].timestamp_utc, last_sample_utc: samples.at(-1).timestamp_utc, processes };
+}
+
+function summarize({ caseId, expectedSessions, progressRuns, record, detail, baselineCases, resourceSamples }) {
   if (!caseId || !Number.isSafeInteger(expectedSessions) || expectedSessions < 1 || !Array.isArray(progressRuns))
     throw new Error('Invalid report inputs');
   const sessions = new Map();
@@ -56,11 +76,16 @@ function summarize({ caseId, expectedSessions, progressRuns, record, detail, bas
       provenance_complete: detail.memory_provenance_complete ?? null },
     dense_baseline: { correct: base[0].correct, reader_wall_ms: base[0].reader_wall_ms ?? null,
       input_tokens: base[0].input_tokens ?? null, output_tokens: base[0].output_tokens ?? null },
+    local_resources: summarizeResources(resourceSamples),
   };
 }
 
 function main() {
-  const [caseId, count, comparisonDir, baselineFile, outputFile, ...progressFiles] = process.argv.slice(2);
+  const [caseId, count, comparisonDir, baselineFile, outputFile, ...files] = process.argv.slice(2);
+  const resourceIndex = files.indexOf('--resources');
+  const resourceFile = resourceIndex < 0 ? null : files[resourceIndex + 1];
+  if (resourceIndex >= 0 && (!resourceFile || resourceIndex !== files.length - 2)) throw new Error('Invalid resources argument');
+  const progressFiles = resourceIndex < 0 ? files : files.slice(0, resourceIndex);
   if (!caseId || !count || !comparisonDir || !baselineFile || !outputFile || !progressFiles.length)
     throw new Error('Usage: node report.js CASE_ID SESSION_COUNT COMPARISON_DIR BASELINE_JSON OUTPUT_JSON PROGRESS_JSONL...');
   const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -70,7 +95,8 @@ function main() {
   const report = summarize({ caseId, expectedSessions: Number(count),
     progressRuns: progressFiles.map((file) => fs.readFileSync(file, 'utf8').split(/\r?\n/).filter(Boolean).map(JSON.parse)),
     record: records[0], detail: read(path.join(comparisonDir, 'case-0.result.json')),
-    baselineCases: read(baselineFile).cases });
+    baselineCases: read(baselineFile).cases,
+    resourceSamples: resourceFile ? fs.readFileSync(resourceFile, 'utf8').split(/\r?\n/).filter(Boolean).map(JSON.parse) : null });
   fs.writeFileSync(outputFile, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
   console.log('Wrote dialogue-free single-case report.');
 }
