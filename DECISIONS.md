@@ -208,3 +208,9 @@ Keep a leading system message separate from user content. The Codex runner uses
 a distinct temporary instructions file per attempt and removes it when the
 runner returns. Abrupt process termination can leave a temporary file behind;
 experimental input is fictional and cleanup after interruption needs validation.
+
+## Mem0 local storage dependency
+
+Pin `mem0ai` 3.3.1 and `better-sqlite3` 12.6.2. A native Windows ARM64 offline
+test verified Mem0's SQLite-backed vector store can persist and retrieve records.
+The full Mem0 ingestion and model workflow remains to be tested.

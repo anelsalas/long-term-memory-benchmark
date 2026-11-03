@@ -1,0 +1,13 @@
+{
+  "name": "ltm-benchmark-mem0-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local Mem0 integration for the long-term memory benchmark",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "12.6.2",
+    "mem0ai": "3.3.1"
+  }
+}
