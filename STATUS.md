@@ -1,6 +1,6 @@
 ## Mem0 context-budget correction — November 3, 2026
 
-Mem0 context now renders chronological dated text and counts the complete rendered block against the configured estimate. The Windows ARM64 suite passed 118/118, followed by two focused tests including the actual comparison prompt. The corrected first case was judged correct using two GPT calls; its reader used 10,978 input tokens versus dense's 10,894. The first remaining history stopped unexpectedly after recording 2 of 53 sessions; all helper processes exited, with no cause yet established. Inspect the sidecar ledger before resuming. A durable 1,449-call allowance plus the 51 prior calls enforces the 1,500-call total.
+Mem0 context now renders chronological dated text and counts the complete rendered block against the configured estimate. The Windows ARM64 suite passed 118/118, followed by two focused tests including the actual comparison prompt. The corrected first case was judged correct using two GPT calls; its reader used 10,978 input tokens versus dense's 10,894. The first remaining history is running and has recorded 21 of 53 sessions. An earlier restricted process check incorrectly reported that it had stopped; a full process check and advancing progress confirmed it is running. A durable 1,449-call allowance plus the 51 prior calls enforces the 1,500-call total.
 
 ## Mem0 benchmark implementation — November 3, 2026
 
