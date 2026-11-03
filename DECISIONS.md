@@ -223,3 +223,11 @@ the paper's original update design and must be reported as a versioned adaptatio
 It rejects `timestamp` on OSS add; session dates must be passed as metadata and
 in the input. The built-in entity store derives its path by replacing `.db`, so
 the adapter requires that suffix to keep its separate database distinct.
+
+## Interrupted Mem0 ingestion
+
+Record each session as pending before calling Mem0, then mark it complete after
+the call returns. A pending session after a failure or restart is uncertain and
+requires inspection instead of automatic replay, since Mem0's separate writes
+and the benchmark ledger cannot be committed in one transaction. Completed
+identical sessions can be replayed safely; changed content is rejected.
