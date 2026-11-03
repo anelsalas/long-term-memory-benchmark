@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.20)
+
+string(RANDOM LENGTH 12 ALPHABET 0123456789abcdef nonce)
+set(work "${LTM_TEST_DIR}/memory-export-${nonce}")
+file(MAKE_DIRECTORY "${work}")
+file(SHA256 "${LTM_FIXTURE}" fixture_sha)
+execute_process(COMMAND "${LTM_EXPORT_EXE}" --dataset "${LTM_FIXTURE}" --sha256 "${fixture_sha}"
+  --question fictional-school-01 --namespace case1 --out "${work}/input.json"
+  RESULT_VARIABLE code OUTPUT_VARIABLE out ERROR_VARIABLE err)
+if(NOT code EQUAL 0)
+  message(FATAL_ERROR "Memory export failed: ${code}: ${out} ${err}")
+endif()
+file(READ "${work}/input.json" input)
+string(JSON namespace GET "${input}" namespace)
+string(JSON first_session GET "${input}" sessions 0 session_id)
+if(NOT namespace STREQUAL "case1" OR NOT first_session STREQUAL "session-000001")
+  message(FATAL_ERROR "Memory export did not preserve namespace and opaque IDs")
+endif()
+if(input MATCHES "EVALUATOR_ONLY_MARKER|has_answer|answer_school")
+  message(FATAL_ERROR "Evaluator annotations leaked into ingestion")
+endif()
+execute_process(COMMAND "${LTM_EXPORT_EXE}" --dataset "${LTM_FIXTURE}" --sha256 "${fixture_sha}"
+  --question fictional-school-01 --namespace case1 --out "${work}/input.json" RESULT_VARIABLE existing)
+if(existing EQUAL 0)
+  message(FATAL_ERROR "Export must refuse to overwrite an existing file")
+endif()
+message(STATUS "Memory export checks passed")

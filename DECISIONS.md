@@ -268,3 +268,11 @@ service configuration, selected memory IDs and session-level provenance separate
 from original turn IDs. The reader receives dated extracted memories in the
 candidate format; this representation differs from full original conversation
 rounds and will be disclosed when comparing results.
+
+## Published history ingestion
+
+Export only the candidate-visible messages and opaque IDs from the existing
+checksum-verified loader. Preserve assistant messages before the first user turn
+as `leading_assistant`; a sampled multi-session case contained one such session.
+An exporter refuses to overwrite an existing output file. The selected case's
+47 sessions and 495 messages were accounted for without exposing gold labels.

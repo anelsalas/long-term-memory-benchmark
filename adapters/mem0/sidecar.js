@@ -18,9 +18,13 @@ function namespaceOf(value) {
 
 function normalizedSession(session) {
   if (!session || typeof session.session_id !== 'string' || !session.session_id ||
-      typeof session.date !== 'string' || !session.date || !Array.isArray(session.rounds) || !session.rounds.length)
+      typeof session.date !== 'string' || !session.date || !Array.isArray(session.rounds) ||
+      (session.leading_assistant !== undefined && (!Array.isArray(session.leading_assistant) ||
+        session.leading_assistant.some((message) => typeof message !== 'string'))) ||
+      (!session.rounds.length && !(session.leading_assistant || []).length))
     throw new Error('Invalid session');
-  return { session_id: session.session_id, date: session.date, rounds: session.rounds.map((round) => {
+  return { session_id: session.session_id, date: session.date, leading_assistant: session.leading_assistant || [],
+    rounds: session.rounds.map((round) => {
     if (!round || typeof round.round_id !== 'string' || !round.round_id || typeof round.user !== 'string' ||
         !Array.isArray(round.replies) || round.replies.some((reply) => typeof reply !== 'string'))
       throw new Error('Invalid round');
@@ -67,6 +71,8 @@ function createService({ runtimeDir, config, memoryFactory = openMemory, metrics
       // Record intent first: a crash after Mem0 writes is conservatively uncertain.
       begin.run(configHash, namespace, session.session_id, hash, 'pending');
       const messages = [];
+      for (const [index, reply] of session.leading_assistant.entries())
+        messages.push({ role: 'assistant', content: index === 0 ? `[Session date: ${session.date}] ${reply}` : reply });
       for (const round of session.rounds) {
         messages.push({ role: 'user', content: `[Session date: ${session.date}] ${round.user}` });
         for (const reply of round.replies) messages.push({ role: 'assistant', content: reply });

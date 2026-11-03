@@ -63,6 +63,23 @@ void isolation() {
     require(clean == ltm::candidate_input_json(load(changed.dump(), "opaque-selection-abs_abs").candidate),
         "Original question/session identities and abstention annotations remain sidecar-only");
 }
+void memory_ingestion_isolation() {
+    const auto loaded = load(fixture());
+    const auto body = ltm::memory_ingestion_json(loaded.candidate, "case1");
+    const auto data = Json::parse(body);
+    require(data.at("namespace") == "case1" && data.at("sessions").size() == 2, "Sessions exported for one namespace");
+    require(data["sessions"][0]["session_id"] == loaded.candidate.sessions[0].source_id &&
+        data["sessions"][0]["rounds"][0]["user"] == loaded.candidate.sessions[0].messages[0].content,
+        "Opaque IDs and user messages preserved");
+    require(data["sessions"][0]["rounds"][0]["replies"][0] == loaded.candidate.sessions[0].messages[1].content,
+        "Assistant replies stay with their user round");
+    require(body.find("has_answer") == std::string::npos && body.find("answer_school") == std::string::npos &&
+        body.find("EVALUATOR_ONLY_MARKER") == std::string::npos, "Evaluator labels stay out of ingestion");
+    auto leading = loaded.candidate;
+    leading.sessions[0].messages.insert(leading.sessions[0].messages.begin(), {"a0", "assistant", "Earlier"});
+    const auto preserved = Json::parse(ltm::memory_ingestion_json(leading, "case1"));
+    require(preserved["sessions"][0]["leading_assistant"][0] == "Earlier", "Leading assistant messages are preserved");
+}
 void identity() {
     const auto bytes = fixture(); auto p = provenance(bytes);
     p.expected_sha256 = std::string(64, '0');
@@ -160,7 +177,7 @@ int main(int argc, char** argv) {
     if (argc != 1) return 2;
     int failed = 0;
     for (const auto& item : std::vector<std::pair<const char*, std::function<void()>>>{
-        {"schema", schema}, {"gold isolation", isolation}, {"identity", identity},
+        {"schema", schema}, {"gold isolation", isolation}, {"memory ingestion isolation", memory_ingestion_isolation}, {"identity", identity},
         {"abstention", abstention}, {"malformed", malformed}, {"chronology", chronology},
         {"ISO dates", iso_dates}, {"repeated IDs", repeated_ids}, {"future session policy", future_session_policy}}) {
         try { item.second(); std::cout << "PASS " << item.first << '\n'; }

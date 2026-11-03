@@ -39,6 +39,9 @@ add_library(LongTermMemoryBenchmark::dataset ALIAS ltm_dataset)
 target_compile_features(ltm_dataset PUBLIC cxx_std_17)
 target_link_libraries(ltm_dataset PUBLIC LongTermMemoryBenchmark::experiment)
 target_include_directories(ltm_dataset SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+add_executable(ltm-memory-export src/memory_export_main.cpp)
+target_link_libraries(ltm-memory-export PRIVATE LongTermMemoryBenchmark::dataset)
+target_compile_definitions(ltm-memory-export PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
 
 add_library(ltm_provider STATIC src/provider.cpp)
 add_library(LongTermMemoryBenchmark::provider ALIAS ltm_provider)
@@ -200,6 +203,11 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
     LTM_FIXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json")
   add_test(NAME ltm.unit.longmemeval COMMAND ltm_longmemeval_tests)
   set_tests_properties(ltm.unit.longmemeval PROPERTIES LABELS "memory;component;unit;offline")
+  add_test(NAME ltm.integration.memory_export COMMAND ${CMAKE_COMMAND}
+    "-DLTM_EXPORT_EXE=$<TARGET_FILE:ltm-memory-export>" "-DLTM_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/cli-tests"
+    "-DLTM_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/longmemeval_development.json"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/memory_export_checks.cmake")
+  set_tests_properties(ltm.integration.memory_export PROPERTIES LABELS "memory;integration;offline")
   add_executable(ltm_schema_bridge_tests tests/schema_bridge_tests.cpp)
   target_link_libraries(ltm_schema_bridge_tests PRIVATE LongTermMemoryBenchmark::dataset)
   target_compile_definitions(ltm_schema_bridge_tests PRIVATE

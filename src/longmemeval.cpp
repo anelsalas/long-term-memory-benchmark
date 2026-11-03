@@ -188,4 +188,33 @@ std::string candidate_input_json(const CandidateCase& candidate) {
     return Json{{"case_id", candidate.case_id}, {"question", candidate.question},
         {"question_date", candidate.question_date}, {"sessions", sessions}}.dump();
 }
+
+std::string memory_ingestion_json(const CandidateCase& candidate, std::string_view memory_namespace) {
+    if (memory_namespace.empty() || memory_namespace.size() > 100 ||
+        !std::all_of(memory_namespace.begin(), memory_namespace.end(), [](char c) {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+                (c >= '0' && c <= '9') || c == '_' || c == '-';
+        })) throw std::invalid_argument("Invalid memory namespace");
+    Json sessions = Json::array();
+    for (const auto& session : candidate.sessions) {
+        Json rounds = Json::array();
+        Json leading_assistant = Json::array();
+        for (const auto& message : session.messages) {
+            if (message.role == "user") {
+                rounds.push_back({{"round_id", message.source_id}, {"user", message.content}, {"replies", Json::array()}});
+            } else if (message.role == "assistant" && !rounds.empty()) {
+                rounds.back()["replies"].push_back(message.content);
+            } else if (message.role == "assistant") {
+                leading_assistant.push_back(message.content);
+            } else {
+                throw std::invalid_argument("Unsupported message order for memory ingestion");
+            }
+        }
+        if (rounds.empty() && leading_assistant.empty()) throw std::invalid_argument("Memory ingestion requires messages");
+        sessions.push_back({{"session_id", session.source_id}, {"date", session.date},
+            {"leading_assistant", leading_assistant}, {"rounds", rounds}});
+    }
+    if (sessions.empty()) throw std::invalid_argument("Memory ingestion requires sessions");
+    return Json{{"namespace", std::string(memory_namespace)}, {"sessions", sessions}}.dump();
+}
 } // namespace ltm

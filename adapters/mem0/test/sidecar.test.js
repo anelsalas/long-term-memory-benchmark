@@ -28,7 +28,7 @@ test('sidecar ingests sessions once, preserves dates, and returns ranked memorie
     async search() { return { results: [{ id: 'm1', memory: 'grade 82', score: 0.9,
       metadata: { session_id: 's1', session_date: '2025-02-12' } }] }; },
   }) });
-  const session = { session_id: 's1', date: '2025-02-12', rounds: [
+  const session = { session_id: 's1', date: '2025-02-12', leading_assistant: ['Welcome back.'], rounds: [
     { round_id: 'r1', user: 'The grade is 82.', replies: ['Noted.'] },
   ] };
   try {
@@ -41,7 +41,8 @@ test('sidecar ingests sessions once, preserves dates, and returns ranked memorie
     assert.equal(first.usage_complete, true);
     assert.equal(calls.length, 1);
     assert.equal(calls[0].options.metadata.session_date, session.date);
-    assert.match(calls[0].messages[0].content, /2025-02-12/);
+    assert.equal(calls[0].messages[0].role, 'assistant');
+    assert.match(calls[0].messages[0].content, /2025-02-12.*Welcome back/);
     const found = await service.search({ namespace: 'case1', query: 'grade', limit: 5 });
     assert.equal(found[0].text, 'grade 82');
     assert.equal(found[0].metadata.session_id, 's1');

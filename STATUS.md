@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The bridge has an atomic call cap, concurrency limit, per-request system messages and model-usage counters. Mem0's sidecar reports ingestion call and token deltas when it has exclusive use of the bridge. The C++ comparison runner now supports a budgeted memory condition, tested against a fake local service. Windows ARM64 offline suites passed 115/115 C++/integration and 9/9 Node tests. Dataset ingestion, durable cross-restart budget, prompt provenance and the first measured case remain. No live model calls were made for this checkpoint.
+The bridge has an atomic call cap, concurrency limit, per-request system messages and model-usage counters. Mem0's sidecar reports ingestion call and token deltas when it has exclusive use of the bridge. The C++ comparison runner supports a budgeted memory condition. A pinned published multi-session case was exported for ingestion with all 47 sessions and 495 messages preserved. Windows ARM64 offline suites passed 116/116 C++/integration and 9/9 Node tests. Durable cross-restart budget, prompt provenance and the first measured case remain. No live model calls were made for this checkpoint.
 
 ## Stronger-reader report review — November 2, 2026
 

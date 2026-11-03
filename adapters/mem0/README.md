@@ -22,5 +22,10 @@ Start with `node server.js CONFIG_FILE RUNTIME_DIR PORT`, where the JSON config
 contains `model`, `llmBaseURL`, `embeddingBaseURL`, `embeddingModel`, and
 `dimensions`. Startup requires a GPT profile and loopback endpoints. The server
 binds to `127.0.0.1`; local processes can access it. `/config` records the pinned
-Mem0 version and the SHA-256 of its installed OSS bundle. The benchmark
-connection and per-prompt hashes are under development.
+Mem0 version and the SHA-256 of its installed OSS bundle. Per-prompt hashes are
+under development.
+
+`ltm-memory-export` converts a checksum-verified published question to the
+sidecar's ingestion JSON, preserving opaque session IDs and all user and assistant
+messages. It writes a new output file and omits evaluator annotations. Its inputs
+are `--dataset`, `--sha256`, `--question`, `--namespace`, and `--out`.
