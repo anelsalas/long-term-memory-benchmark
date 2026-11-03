@@ -1,4 +1,5 @@
 #include "long_term_memory_benchmark/retrieval.hpp"
+#include "long_term_memory_benchmark/memory_service.hpp"
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -47,6 +48,32 @@ std::vector<Unit> corpus(const std::vector<std::string>& texts) {
     return units;
 }
 bool near(double a, double b) { return std::fabs(a - b) < 1e-5; }
+
+void memory_service_packs_ranked_evidence() {
+    class FakeService : public MemoryService {
+      public:
+        std::vector<MemoryRecord> search(const std::string& name, const std::string& question, std::size_t limit) override {
+            require(name == "case1" && question == "What grade?" && limit == 3, "Search parameters are passed through");
+            return {{"m1", "grade 82", "2026-03-02T10:00:00Z", {"s2"}},
+                {"m2", "grade 23", "2026-03-01T10:00:00Z", {"s1"}},
+                {"m3", "longer text", "2026-03-03T10:00:00Z", {}}};
+        }
+    } service;
+    ltm::CandidateCase input;
+    input.case_id = "case1";
+    input.question = "What grade?";
+    const auto result = select_memories(input, service, "case1", 3, 4);
+    require(result.candidate.sessions.size() == 2 && result.candidate.sessions[0].messages[0].content == "grade 23" &&
+        result.candidate.sessions[1].messages[0].content == "grade 82", "Budgeted memories are presented by date");
+    require(result.memory_ids == Ids{"m1", "m2"} && result.source_sessions.count("s1") && result.source_sessions.count("s2"),
+        "Retained memory IDs preserve rank and source sessions remain distinct");
+    require(!result.unknown_provenance, "Known source sessions remain explicit");
+    const auto all = select_memories(input, service, "case1", 3, 100);
+    require(all.unknown_provenance && all.memory_ids.size() == 3, "Missing source metadata is marked unknown");
+    bool refused = false;
+    try { select_memories(input, service, "case1", 3, 0); } catch (const std::invalid_argument&) { refused = true; }
+    require(refused, "Zero budget is refused");
+}
 
 void terms_fold_case_and_split() {
     require(terms("Lina's GRADE: 82!") == Ids{"lina", "s", "grade", "82"}, "ASCII letters and digits form lowercase terms");
@@ -151,6 +178,7 @@ int main(int argc, char** argv) {
         {"bm25_ties_keep_input_order", bm25_ties_keep_input_order},
         {"cosine_orders_by_similarity", cosine_orders_by_similarity}, {"rrf_fuses_rankings", rrf_fuses_rankings},
         {"pack_fills_budget_in_rank_order", pack_fills_budget_in_rank_order},
+        {"memory_service_packs_ranked_evidence", memory_service_packs_ranked_evidence},
         {"evaluation_helpers", evaluation_helpers},
         {"select_rounds_keeps_packed_history", select_rounds_keeps_packed_history},
         {"rank_rounds_by_method", rank_rounds_by_method}};

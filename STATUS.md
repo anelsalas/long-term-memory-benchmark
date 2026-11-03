@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The bridge has an atomic call cap, concurrency limit, per-request system messages and model-usage counters. Mem0's sidecar reports ingestion call and token deltas when it has exclusive use of the bridge. The Windows ARM64 offline suites passed 111/111 C++ and 9/9 Node tests. Benchmark integration, prompt provenance and the first measured case remain. No live model calls were made for this checkpoint.
+The bridge has an atomic call cap, concurrency limit, per-request system messages and model-usage counters. Mem0's sidecar reports ingestion call and token deltas when it has exclusive use of the bridge. A C++ memory-service port now packs retrieved memories in rank order and presents them by date while tracking source-session provenance. The Windows ARM64 offline suites passed 112/112 C++ and 9/9 Node tests. HTTP integration, prompt provenance and the first measured case remain. No live model calls were made for this checkpoint.
 
 ## Stronger-reader report review — November 2, 2026
 

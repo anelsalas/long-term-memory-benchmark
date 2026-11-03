@@ -53,7 +53,7 @@ add_library(ltm_fresh_facts STATIC src/fresh_facts.cpp)
 add_library(LongTermMemoryBenchmark::fresh_facts ALIAS ltm_fresh_facts)
 target_link_libraries(ltm_fresh_facts PUBLIC LongTermMemoryBenchmark::dataset)
 
-add_library(ltm_retrieval STATIC src/retrieval.cpp src/embeddings.cpp src/retrieval_eval.cpp)
+add_library(ltm_retrieval STATIC src/retrieval.cpp src/embeddings.cpp src/retrieval_eval.cpp src/memory_service.cpp)
 add_library(LongTermMemoryBenchmark::retrieval ALIAS ltm_retrieval)
 target_link_libraries(ltm_retrieval PUBLIC LongTermMemoryBenchmark::dataset LongTermMemoryBenchmark::scoring)
 target_include_directories(ltm_retrieval SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
@@ -222,7 +222,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   foreach(case IN ITEMS rounds_group_user_with_replies rounds_score_user_text_only
       terms_fold_case_and_split bm25_matches_okapi bm25_ties_keep_input_order
       cosine_orders_by_similarity rrf_fuses_rankings pack_fills_budget_in_rank_order
-      evaluation_helpers select_rounds_keeps_packed_history rank_rounds_by_method)
+      evaluation_helpers select_rounds_keeps_packed_history rank_rounds_by_method memory_service_packs_ranked_evidence)
     add_test(NAME ltm.retrieval.${case} COMMAND ltm_retrieval_tests ${case})
     set_tests_properties(ltm.retrieval.${case} PROPERTIES LABELS "retrieval;unit;offline")
   endforeach()

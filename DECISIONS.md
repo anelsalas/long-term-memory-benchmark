@@ -247,3 +247,10 @@ The sidecar records before/after deltas while it has exclusive bridge use, flags
 missing usage and failed attempts, and marks totals unknown if the bridge restarts.
 Failed CLI attempts may have consumed unreported tokens. Counters reset with the
 bridge; preserve run-level accounting and enforce the cap across restarts.
+
+## Memory context packing
+
+Pack retrieved memory text in service rank order using the same estimated-token
+budget policy as retrieval baselines, then present the packed memories by session
+date. Keep memory IDs separate from original message IDs and identify missing
+session provenance as unknown rather than fabricating a source.
