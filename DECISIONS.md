@@ -253,6 +253,14 @@ so replay after a restart returns the original counters. Record SHA-256 hashes o
 system instructions observed by the bridge; the installed Mem0 bundle hash pins
 the upstream prompt code. Failed attempts may have unreported usage.
 
+## First Mem0 pilot configuration
+
+Run the first published multi-session case in stages: one session to validate the
+local embedding and GPT extraction path, then the remaining sessions after its
+result is inspected. Use a GPT-only bridge and a durable 150-attempt cap for the
+pilot. Record call, token, latency and failure observations before projecting to
+the ten-question cap.
+
 ## Durable model-attempt budget
 
 When configured, reserve each attempt in a file-locked, flushed ledger before

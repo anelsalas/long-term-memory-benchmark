@@ -141,7 +141,7 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Add and test the local memory-service HTTP adapter.
 - [x] Connect the memory-service port to the comparison runner and test it offline.
 - [x] Export a pinned published case with opaque IDs and intact conversation turns.
-- [ ] Feed published sessions to the sidecar and record ingestion results.
+- [ ] Complete the first-session pilot, then ingest the remaining published sessions and record results.
 - [x] Record actual system-prompt fingerprints and persist per-session usage.
 - [ ] Verify accounting in a live pilot.
 - [x] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
