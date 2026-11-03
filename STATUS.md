@@ -1,6 +1,6 @@
 ## Mem0 context-budget correction — November 3, 2026
 
-Mem0 context now renders chronological dated text and counts the complete rendered block against the configured estimate. The Windows ARM64 suite passed 118/118, followed by two focused tests including the actual comparison prompt. GPT judged Mem0 and dense correct on three of four completed questions; both were incorrect on [case 9d25d4e0](reports/2026-11-03-mem0-phase2-9d25d4e0.json). The next 45-session history is running. A durable 1,449-call allowance plus the 51 prior calls enforces the 1,500-call total.
+Mem0 context now renders chronological dated text and counts the complete rendered block against the configured estimate. The Windows ARM64 suite passed 118/118, followed by two focused tests including the actual comparison prompt. GPT judged Mem0 correct on four of five completed questions and dense correct on three; [the fifth case report](reports/2026-11-03-mem0-phase2-gpt4_372c3eed.json) records the difference. The next 48-session history is running. A durable 1,449-call allowance plus the 51 prior calls enforces the 1,500-call total.
 
 ## Mem0 benchmark implementation — November 3, 2026
 
