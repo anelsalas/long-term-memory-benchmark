@@ -1,0 +1,5 @@
+# Handoff — Mem0 phase 2 started
+
+The user approved ten published multi-session questions with GPT-only inference and a 1,500-call total. One corrected pilot case is complete. The first remaining history, 6456829e_abs, is ingesting 53 sessions; its progress and process IDs are in ignored runtime/mem0-phase2. The bridge uses a durable 1,449-call allowance, accounting for 51 prior pilot calls, with concurrency one and no CLI retries. The local embedding server, bridge, sidecar and ingestion are running.
+
+Resume by inspecting the active process, progress, error log and sidecar ledger. On any usage or rate limit stop and report blocked; never blindly replay an uncertain session. After successful ingestion run the same GPT reader and judge, produce a per-case report and proceed with the other eight histories. Report accuracy, evidence sessions, token usage, time and memory counts versus the fixed dense and labelled-evidence baselines; publish dialogue-free results. The phase 2 runner and all-ten results remain pending. Detailed constraints are in Claude coordination entry 23.
