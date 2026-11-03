@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "question_id": "a4996e51",
+  "interpretation": "Single-case adapted comparison; system-level accuracy requires more questions.",
+  "ingestion": {
+    "sessions": 48,
+    "memory_events": 571,
+    "llm_calls": 48,
+    "input_tokens": 759616,
+    "output_tokens": 39909,
+    "usage_complete": true,
+    "observed_session_wall_ms": 2911064,
+    "wall_time_definition": "Sum of longest observed client time per session across progress files; excludes gaps.",
+    "system_prompt_sha256": [
+      "75357d685f238b6afd7738be9786fdafde641eb6ca9a3be7471939715a68a4de",
+      "f7601d55bea65c561206224f3237689c63c06a5aafee54f415e764b0de6bff7e"
+    ]
+  },
+  "mem0": {
+    "correct": true,
+    "retrieval_preparation_ms": 110.9855,
+    "reader_wall_ms": 4866.6612,
+    "reader_usage": {
+      "requests": 1,
+      "input_tokens": 10946,
+      "output_tokens": 46
+    },
+    "judge_usage": {
+      "requests": 1,
+      "input_tokens": 5446,
+      "output_tokens": 5
+    },
+    "all_evidence_sessions_found": true,
+    "provenance_complete": true
+  },
+  "dense_baseline": {
+    "correct": true,
+    "reader_wall_ms": 3988,
+    "input_tokens": 10743,
+    "output_tokens": 9
+  },
+  "local_resources": null
+}
