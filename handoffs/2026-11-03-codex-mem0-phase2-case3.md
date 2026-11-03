@@ -1,0 +1,3 @@
+# Handoff — third Mem0 question complete
+
+The corrected pilot, 6456829e_abs and ef9cf60a are complete; GPT judged both Mem0 and dense correct on all three. Dialogue-free reports contain usage and timing. Case 9d25d4e0 is ingesting 44 sessions with the GPT-only bridge and persistent phase-2 ledger. Active process IDs and logs are in ignored runtime/mem0-phase2. Use full process visibility. After ingestion, run reader and judge, save a dialogue-free report, and proceed with the six remaining histories. Follow the 1,500-call total and stop on usage or rate limits. No new code was changed or tests needed for this checkpoint.
