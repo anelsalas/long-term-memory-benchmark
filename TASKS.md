@@ -31,7 +31,7 @@ evidence, official grades, timing, resources, token usage and cost.
 | P03 | Provider interface and bounded request lifecycle | Complete | Runner | P01 | Stubbed failures/retries/cancellation; request/token/spend caps; usage and request IDs recorded |
 | P04 | Official QA and retrieval scorer adapters | Complete | Data/evaluation | P01, P02 | Parity fixtures against upstream rules, including abstention and source-mapping exclusions |
 | P05 | Fresh event-ledger generator and independent gold | Complete | Data/evaluation | P01 | Consistent updates/dates/identities; changed-fact pairs; isolated hidden stories |
-| P06 | First live two-case comparison | Command verified; G01 pending | Integrator | P02â€“P05, G01 | Published and fresh case complete in both conditions; auditable result report |
+| P06 | First live two-case comparison | Command verified; G01 pending | Integrator | P02–P05, G01 | Published and fresh case complete in both conditions; auditable result report |
 | P07 | Resumable fixed development subset | Waiting | Integrator | P06 | Interrupted run resumes; matched comparison; failures and contamination controls reported |
 | P08 | Complete 500-question LongMemEval-S comparison | Waiting | Integrator/research | P07 | Frozen configuration; category results, uncertainty, human audit and reviewed artifacts |
 | P09 | Resource scaling and regression workloads | Ready | Runner/research | P01, P02 | Frozen larger histories, repeated queries, ingestion cost, cold/warm median/p95 and resource records |

@@ -79,7 +79,7 @@ model-selection/access and the first measured comparison. G01 selects
 model access and a pilot budget before live inference. P06 then compares one
 published question and one fresh case under fixed conditions.
 
-[Resource definitions](docs/RESOURCES.md) Â· [Schema](docs/EXPERIMENT.md) Â·
+[Resource definitions](docs/RESOURCES.md) · [Schema](docs/EXPERIMENT.md) ·
 [Dataset adapter](docs/LONGMEMEVAL.md)
 
 `ltm-compare` and the Windows HTTPS transport compile. Fresh and selected-public
