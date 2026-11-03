@@ -254,3 +254,9 @@ Pack retrieved memory text in service rank order using the same estimated-token
 budget policy as retrieval baselines, then present the packed memories by session
 date. Keep memory IDs separate from original message IDs and identify missing
 session provenance as unknown rather than fabricating a source.
+
+## Memory service transport
+
+Use an HTTP adapter restricted to IPv4 loopback for memory search and service
+configuration. Preserve the sidecar's source-session metadata; absent metadata
+remains unknown. Do not equate a memory ID with an original message ID.
