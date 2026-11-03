@@ -132,6 +132,7 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Add bridge concurrency control and verify the full offline suite.
 - [x] Implement and offline-test per-request system messages in the bridge.
 - [x] Pin Mem0 and verify SQLite-backed vector persistence on Windows ARM64.
+- [x] Exercise Mem0 extraction and search with offline fake providers.
 - [ ] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
 - [ ] Measure one case, project resource and call use, then evaluate the approved ten-question phase.
 - [ ] Review results before the full 54-question phase.

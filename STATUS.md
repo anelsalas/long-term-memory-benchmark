@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The bridge has an atomic call cap, concurrency limit, and per-request system messages. The Windows ARM64 offline C++ suite passed 110/110. Mem0 3.3.1 and its SQLite dependency installed under native ARM64 Node, and an offline test stored, reopened, and retrieved vectors through Mem0's SQLite-backed store. The adapter, memory-service integration and the first measured case remain. No model calls were made for this checkpoint.
+The bridge has an atomic call cap, concurrency limit, and per-request system messages. The Windows ARM64 offline C++ suite passed 110/110. Mem0 3.3.1 runs on native ARM64 Node: offline fake-provider tests exercised extraction, storage, metadata and retrieval (3/3 passed). The HTTP sidecar, memory-service integration and the first measured case remain. No live model calls were made for this checkpoint.
 
 ## Stronger-reader report review — November 2, 2026
 

@@ -214,3 +214,12 @@ experimental input is fictional and cleanup after interruption needs validation.
 Pin `mem0ai` 3.3.1 and `better-sqlite3` 12.6.2. A native Windows ARM64 offline
 test verified Mem0's SQLite-backed vector store can persist and retrieve records.
 The full Mem0 ingestion and model workflow remains to be tested.
+
+## Mem0 package behavior and provenance
+
+Mem0 OSS 3.3.1's extraction prompt specifies additive memories and its search
+combines semantic, keyword and entity-related signals. This version differs from
+the paper's original update design and must be reported as a versioned adaptation.
+It rejects `timestamp` on OSS add; session dates must be passed as metadata and
+in the input. The built-in entity store derives its path by replacing `.db`, so
+the adapter requires that suffix to keep its separate database distinct.
