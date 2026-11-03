@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The first GPT-only Mem0 pilot is running on a published case with 47 sessions. The first session reached the GPT bridge; its answer and the comparison are pending. The bridge has a durable 150-attempt cap, and ingestion records per-session usage and prompt fingerprints. The local embedding service returned a 1,024-dimensional test vector. Before the live pilot, the Windows ARM64 offline suites passed 118/118 C++/integration and 11/11 Node tests.
+The first GPT-only Mem0 pilot is running on a published case with 47 sessions. Its first session produced 22 memories using one GPT call in approximately 116 seconds; ingestion of the full case has started. The bridge has a durable 150-attempt cap, and ingestion records per-session usage and prompt fingerprints. The final answer comparison is pending. Before the live pilot, Windows ARM64 offline suites passed 118/118 C++/integration and 11/11 Node tests.
 
 ## Stronger-reader report review — November 2, 2026
 
