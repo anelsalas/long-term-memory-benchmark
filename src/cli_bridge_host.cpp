@@ -6,6 +6,7 @@
 #include <boost/beast/http.hpp>
 #include <atomic>
 #include <condition_variable>
+#include <filesystem>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
@@ -29,6 +30,48 @@ class Handle {
     explicit operator bool() const { return h_ != nullptr; }
   private:
     HANDLE h_;
+};
+class TemporaryInstructions {
+  public:
+    explicit TemporaryInstructions(const std::string& content) {
+        wchar_t folder[MAX_PATH + 1]{};
+        const auto length = GetTempPathW(MAX_PATH + 1, folder);
+        if (!length || length > MAX_PATH) fail("GetTempPathW");
+        wchar_t file[MAX_PATH + 1]{};
+        if (!GetTempFileNameW(folder, L"ltm", 0, file)) fail("GetTempFileNameW");
+        path_ = file;
+        try {
+            Handle out(CreateFileW(path_.c_str(), GENERIC_WRITE, 0, nullptr, TRUNCATE_EXISTING,
+                FILE_ATTRIBUTE_TEMPORARY, nullptr));
+            if (!out) fail("Open instructions file");
+            std::size_t offset = 0;
+            while (offset < content.size()) {
+                DWORD written = 0;
+                const auto amount = static_cast<DWORD>(std::min<std::size_t>(content.size() - offset, 65536));
+                if (!WriteFile(out.get(), content.data() + offset, amount, &written, nullptr) || written == 0)
+                    fail("Write instructions file");
+                offset += written;
+            }
+        } catch (...) {
+            DeleteFileW(path_.c_str());
+            throw;
+        }
+    }
+    ~TemporaryInstructions() { DeleteFileW(path_.c_str()); }
+    TemporaryInstructions(const TemporaryInstructions&) = delete;
+    TemporaryInstructions& operator=(const TemporaryInstructions&) = delete;
+    std::string toml_path() const {
+        const auto path = std::filesystem::path(path_).generic_u8string();
+        std::string result = "\"";
+        for (const unsigned char ch : path) {
+            if (ch < 0x20 || ch == 0x7f) throw std::invalid_argument("Invalid instructions path");
+            if (ch == '\\' || ch == '"') result += '\\';
+            result += static_cast<char>(ch);
+        }
+        return result + "\"";
+    }
+  private:
+    std::wstring path_;
 };
 struct Pipe {
     Handle read, write;
@@ -82,7 +125,18 @@ Handle kill_on_close_job() {
 
 RunResult WindowsCommandRunner::run(const Invocation& invocation) {
     if (invocation.command.empty()) throw std::invalid_argument("Command is empty");
-    auto line = ltm::dashboard::windows_command_line(invocation.command);
+    auto command = invocation.command;
+    std::unique_ptr<TemporaryInstructions> instructions;
+    if (invocation.system_prompt) {
+        for (auto& arg : command) {
+            if (arg.rfind("model_instructions_file=", 0) == 0) {
+                instructions = std::make_unique<TemporaryInstructions>(*invocation.system_prompt);
+                arg = "model_instructions_file=" + instructions->toml_path();
+                break;
+            }
+        }
+    }
+    auto line = ltm::dashboard::windows_command_line(command);
     const auto folder = wide(invocation.working_directory);
     auto job = kill_on_close_job();
     auto input = pipe(true);

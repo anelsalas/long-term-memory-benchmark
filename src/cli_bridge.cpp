@@ -188,12 +188,22 @@ Response Bridge::handle(const std::string& body) {
     if (!profile) return error(400, "unknown_model");
     if (request.value("stream", false)) return error(400, "streaming_unsupported");
     const auto& messages = request.value("messages", Json::array());
-    if (messages.size() != 1 || !messages[0].is_object() || messages[0].value("role", "") != "user" ||
-        !messages[0].contains("content") || !messages[0].at("content").is_string())
+    if (!messages.is_array() || messages.empty() || messages.size() > 2 ||
+        !messages.back().is_object() || messages.back().value("role", "") != "user" ||
+        !messages.back().contains("content") || !messages.back().at("content").is_string() ||
+        (messages.size() == 2 && (!messages[0].is_object() || messages[0].value("role", "") != "system" ||
+            !messages[0].contains("content") || !messages[0].at("content").is_string())))
         return error(400, "one_user_message_required");
 
-    const Invocation invocation{command(settings_, *profile), messages[0].at("content").get<std::string>(),
+    Invocation invocation{command(settings_, *profile), messages.back().at("content").get<std::string>(),
         settings_.working_directory, settings_.timeout_ms};
+    if (messages.size() == 2) {
+        invocation.system_prompt = messages[0].at("content").get<std::string>();
+        if (profile->cli == Cli::claude) {
+            for (std::size_t i = 0; i + 1 < invocation.command.size(); ++i)
+                if (invocation.command[i] == "--system-prompt") invocation.command[i + 1] = *invocation.system_prompt;
+        }
+    }
     Reply reply;
     for (std::uint32_t attempt = 0;; ++attempt) {
         if (attempt) std::this_thread::sleep_for(std::chrono::milliseconds(settings_.retry_delay_ms) * attempt);

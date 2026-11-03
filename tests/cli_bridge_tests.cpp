@@ -167,6 +167,26 @@ void bridge_refuses_bad_requests() {
     require(bridge.handle(streamed.dump()).status == 400, "No streaming");
     require(runner.calls.empty(), "Refused requests start nothing");
 }
+void bridge_preserves_system_message() {
+    const auto settings = parse_settings(settings_json);
+    FakeRunner runner({0, codex_success, false});
+    Bridge bridge(settings, runner);
+    auto request = Json::parse(chat("gpt-6.1-sol/low", "Find the correction"));
+    request["messages"] = Json::array({{{"role", "system"}, {"content", "Return JSON only"}},
+        {{"role", "user"}, {"content", "Find the correction"}}});
+    require(bridge.handle(request.dump()).status == 200, "A leading system message is accepted");
+    require(runner.calls.size() == 1 && runner.calls[0].system_prompt == "Return JSON only" &&
+        runner.calls[0].input == "Find the correction", "System and user content remain separate");
+    FakeRunner other({0, claude_success, false});
+    Bridge other_bridge(settings, other);
+    request["model"] = "claude-opus-5-5/high";
+    require(other_bridge.handle(request.dump()).status == 200 &&
+        contains(other.calls[0].command, {"--system-prompt", "Return JSON only"}),
+        "The leading instruction reaches the requested CLI system setting");
+    request["messages"][0]["role"] = "assistant";
+    require(other_bridge.handle(request.dump()).status == 400 && other.calls.size() == 1,
+        "Unexpected message sequences are refused");
+}
 void bridge_limits_cli_attempts() {
     auto config = Json::parse(settings_json);
     config["max_calls"] = 2;
@@ -275,6 +295,7 @@ int main(int argc, char** argv) {
         {"claude_result_is_parsed", claude_result_is_parsed}, {"codex_events_are_parsed", codex_events_are_parsed},
         {"bridge_answers_in_chat_completions_shape", bridge_answers_in_chat_completions_shape},
         {"bridge_refuses_bad_requests", bridge_refuses_bad_requests},
+        {"bridge_preserves_system_message", bridge_preserves_system_message},
         {"bridge_limits_cli_attempts", bridge_limits_cli_attempts},
         {"bridge_call_limit_is_atomic", bridge_call_limit_is_atomic},
         {"bridge_limits_concurrent_runs", bridge_limits_concurrent_runs},

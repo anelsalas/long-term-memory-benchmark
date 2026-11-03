@@ -130,7 +130,7 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 
 - [x] Add an offline-tested actual model-call cap, including retries and concurrent requests.
 - [x] Add bridge concurrency control and verify the full offline suite.
-- [ ] Implement per-request system messages in the bridge.
+- [x] Implement and offline-test per-request system messages in the bridge.
 - [ ] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
 - [ ] Measure one case, project resource and call use, then evaluate the approved ten-question phase.
 - [ ] Review results before the full 54-question phase.

@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -18,6 +19,7 @@ namespace asio = boost::asio;
 namespace http = boost::beast::http;
 using namespace ltm::cli_bridge;
 using Json = nlohmann::json;
+std::string executable;
 
 void require(bool condition, const std::string& message) {
     if (!condition) throw std::runtime_error(message);
@@ -53,6 +55,17 @@ void runner_streams_large_input() {
     for (int i = 0; i < 200000; ++i) input += "same line\r\n";
     const auto result = runner.run({{system_tool("sort.exe")}, input, "", 60000});
     require(!result.timed_out && result.output == input, "Megabytes flow both ways without blocking");
+}
+void runner_uses_isolated_instructions() {
+    WindowsCommandRunner runner;
+    Invocation invocation{{executable, "instructions_child", "model_instructions_file=placeholder"}, "", "", 10000};
+    invocation.system_prompt = "extract facts as JSON";
+    const auto result = runner.run(invocation);
+    require(!result.timed_out && result.exit_code == 0, "Instruction reader runs");
+    const auto newline = result.output.find('\n');
+    require(newline != std::string::npos && result.output.substr(newline + 1) == *invocation.system_prompt,
+        "Child receives the system instruction in its own file");
+    require(!std::filesystem::exists(result.output.substr(0, newline)), "Temporary instructions are removed");
 }
 
 class FakeRunner : public CommandRunner {
@@ -130,10 +143,23 @@ void server_refuses_browsers_and_foreign_hosts() {
 }
 
 int main(int argc, char** argv) {
+    if (argc == 3 && std::string(argv[1]) == "instructions_child") {
+        const std::string arg = argv[2];
+        const auto first = arg.find('"');
+        const auto last = arg.rfind('"');
+        if (first == std::string::npos || last <= first) return 3;
+        const auto path = arg.substr(first + 1, last - first - 1);
+        std::ifstream in(path, std::ios::binary);
+        if (!in) return 4;
+        std::cout << path << '\n' << in.rdbuf();
+        return 0;
+    }
+    executable = std::filesystem::absolute(argv[0]).string();
     const std::vector<std::pair<std::string, std::function<void()>>> cases = {
         {"runner_passes_input_and_folder", runner_passes_input_and_folder},
         {"runner_reports_exit_codes", runner_reports_exit_codes}, {"runner_stops_at_timeout", runner_stops_at_timeout},
         {"runner_streams_large_input", runner_streams_large_input},
+        {"runner_uses_isolated_instructions", runner_uses_isolated_instructions},
         {"server_serves_chat_completions", server_serves_chat_completions},
         {"server_refuses_browsers_and_foreign_hosts", server_refuses_browsers_and_foreign_hosts}};
     if (argc != 2) return 2;

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <functional>
 #include <mutex>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -62,6 +63,7 @@ struct Invocation {
     std::string input;
     std::string working_directory;
     std::uint32_t timeout_ms = 0;
+    std::optional<std::string> system_prompt;
 };
 struct RunResult {
     int exit_code = 0;

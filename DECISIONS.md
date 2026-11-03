@@ -201,3 +201,10 @@ Count actual CLI process attempts, including retries, against a process-wide ato
 Use `max_concurrent` to queue CLI attempts until a slot is available. Count each
 retry separately and release its slot immediately after the process ends. A zero
 or omitted limit preserves prior behavior.
+
+## Mem0 request instructions
+
+Keep a leading system message separate from user content. The Codex runner uses
+a distinct temporary instructions file per attempt and removes it when the
+runner returns. Abrupt process termination can leave a temporary file behind;
+experimental input is fictional and cleanup after interruption needs validation.

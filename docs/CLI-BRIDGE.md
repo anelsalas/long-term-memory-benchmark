@@ -49,6 +49,11 @@ with zero prices. Each request runs one CLI process:
 
 ## Behavior
 
+- **Messages.** A request may provide a leading system message followed by a
+  user message. Codex receives the system message in a temporary per-attempt
+  instructions file, removed when the runner returns. Abrupt process termination
+  can leave a temporary file behind. Requests with only a user message retain the
+  configured default instruction.
 - **Concurrency.** `max_concurrent` limits simultaneously running CLI attempts.
   Additional requests wait for a slot; a missing or zero value leaves this
   limit unrestricted. Each retry acquires a slot separately.

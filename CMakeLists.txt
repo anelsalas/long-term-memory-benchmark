@@ -249,7 +249,8 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   foreach(case IN ITEMS settings_name_profiles claude_runs_without_tools_or_settings
       codex_runs_without_tools_or_user_config claude_result_is_parsed codex_events_are_parsed
       bridge_answers_in_chat_completions_shape bridge_refuses_bad_requests bridge_reports_cli_failures
-      bridge_retries_failed_runs_and_logs_them bridge_limits_cli_attempts bridge_call_limit_is_atomic bridge_limits_concurrent_runs)
+      bridge_retries_failed_runs_and_logs_them bridge_limits_cli_attempts bridge_call_limit_is_atomic bridge_limits_concurrent_runs
+      bridge_preserves_system_message)
     add_test(NAME ltm.cli_bridge.${case} COMMAND ltm_cli_bridge_tests ${case})
     set_tests_properties(ltm.cli_bridge.${case} PROPERTIES LABELS "cli_bridge;unit;offline")
   endforeach()
@@ -348,7 +349,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS AND TARGET ltm_cli_bridge_host)
     target_compile_options(ltm_cli_bridge_host_tests PRIVATE /bigobj)
   endif()
   foreach(case IN ITEMS runner_passes_input_and_folder runner_reports_exit_codes runner_stops_at_timeout
-      runner_streams_large_input server_serves_chat_completions server_refuses_browsers_and_foreign_hosts)
+      runner_streams_large_input runner_uses_isolated_instructions server_serves_chat_completions server_refuses_browsers_and_foreign_hosts)
     add_test(NAME ltm.cli_bridge.host.${case} COMMAND ltm_cli_bridge_host_tests ${case})
     set_tests_properties(ltm.cli_bridge.host.${case} PROPERTIES LABELS "cli_bridge;integration;offline" TIMEOUT 60)
   endforeach()
