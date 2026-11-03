@@ -32,3 +32,7 @@ are `--dataset`, `--sha256`, `--question`, `--namespace`, and `--out`.
 `node ingest.js INPUT_JSON SERVICE_URL OUTPUT_JSONL` sends one session at a time
 and saves dialogue-free progress. Use a new output file when resuming; completed
 sessions are replayed from the ledger without new model calls.
+
+`node report.js CASE_ID SESSION_COUNT COMPARISON_DIR BASELINE_JSON OUTPUT_JSON
+PROGRESS_JSONL...` creates a dialogue-free single-case comparison after ingestion
+and judging finish. It counts replayed sessions once and marks incomplete usage.

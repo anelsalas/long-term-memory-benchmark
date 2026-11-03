@@ -261,6 +261,13 @@ result is inspected. Use a GPT-only bridge and a durable 150-attempt cap for the
 pilot. Record call, token, latency and failure observations before projecting to
 the ten-question cap.
 
+## Single-case report
+
+Compare the measured Mem0 case with its matching previously recorded GPT dense
+baseline. Count each ingested session once across progress files; preserve the
+longest observed per-session client time when a completed session is replayed.
+Report the sum as observed session time excluding gaps, not overall elapsed time.
+
 ## Durable model-attempt budget
 
 When configured, reserve each attempt in a file-locked, flushed ledger before
