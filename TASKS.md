@@ -142,13 +142,14 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Connect the memory-service port to the comparison runner and test it offline.
 - [x] Export a pinned published case with opaque IDs and intact conversation turns.
 - [x] Validate the first published session through the GPT-only Mem0 pipeline.
-- [ ] Complete ingestion of the remaining published sessions and record results.
+- [x] Complete the first published case and record its Mem0 and dense-baseline results.
 - [x] Prepare an offline-tested, dialogue-free single-case comparison report.
 - [x] Start scoped local CPU and memory sampling during the pilot.
 - [x] Record actual system-prompt fingerprints and persist per-session usage.
-- [ ] Verify accounting in a live pilot.
+- [x] Verify accounting in a live pilot.
 - [x] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
-- [ ] Measure one case, project resource and call use, then evaluate the approved ten-question phase.
+- [x] Measure one case and project resource and call use.
+- [ ] Evaluate the ten-question phase using a shared durable call cap.
 - [ ] Review results before the full 54-question phase.
 
 Use GPT only; configure no Claude model profiles for these experiments.

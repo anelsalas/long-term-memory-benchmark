@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The first GPT-only Mem0 pilot is running on a published case with 47 sessions. Its first session produced 22 memories using one GPT call in approximately 116 seconds; the remaining ingestion is underway. A sampler is recording local CPU and memory for the embedding service, bridge, sidecar and ingestion runner; sampling began after the pilot started and excludes model subprocesses. The bridge has a durable 150-attempt cap. Offline suites passed 118/118 C++/integration and 13/13 Node tests. The final answer comparison is pending.
+The first GPT-only Mem0 pilot completed on one published multi-session question. GPT judged both Mem0 and the existing dense baseline correct. Mem0 ingested 47 sessions using 47 calls and 741,357 reported input tokens; its reader used 17,363 input tokens versus 10,894 for the dense baseline. The [pilot report](reports/2026-11-03-mem0-pilot.md) records timing, resources and limitations. Windows ARM64 offline suites passed 118/118 C++/integration and 13/13 Node tests. The ten-question comparison is next.
 
 ## Stronger-reader report review — November 2, 2026
 

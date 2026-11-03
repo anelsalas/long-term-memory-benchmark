@@ -275,6 +275,13 @@ sidecar and ingestion runner every five seconds. The sampler began after ingesti
 started, and excludes model subprocesses and remote inference. Report the sampling
 window and sampled peaks rather than claiming full-run or whole-machine peaks.
 
+## First Mem0 pilot interpretation
+
+Report one-case correctness as a model-judged observation. The dense baseline
+used cached query embeddings, while Mem0's retrieval included a live local
+embedding; label the timings and JSON framing differences explicitly. Keep
+one-time ingestion tokens and time separate from per-question reader costs.
+
 ## Durable model-attempt budget
 
 When configured, reserve each attempt in a file-locked, flushed ledger before
