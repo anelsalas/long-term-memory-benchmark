@@ -30,7 +30,15 @@ function main() {
   if (!configFile || !runtimeDir || !Number.isInteger(port) || port < 1 || port > 65535)
     throw new Error('Usage: node server.js CONFIG_FILE RUNTIME_DIR PORT');
   const config = normalizeConfig(JSON.parse(fs.readFileSync(configFile, 'utf8')));
-  const service = createService({ runtimeDir, config });
+  // Snapshot deltas are attributable to this service when it has exclusive use
+  // of the bridge during ingestion. Failed attempts may have unreported tokens.
+  const metricsUrl = new URL('/metrics', config.llmBaseURL);
+  const metricsProvider = async () => {
+    const response = await fetch(metricsUrl, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) throw new Error('Bridge metrics unavailable');
+    return response.json();
+  };
+  const service = createService({ runtimeDir, config, metricsProvider });
   const server = createHttpServer(service);
   server.listen(port, '127.0.0.1', () => console.log(`Mem0 service listening on 127.0.0.1:${port}`));
   function stop() {

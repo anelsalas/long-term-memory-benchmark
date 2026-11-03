@@ -154,7 +154,8 @@ if(ltm_boost_beast_dir)
     add_library(LongTermMemoryBenchmark::cli_bridge_host ALIAS ltm_cli_bridge_host)
     target_link_libraries(ltm_cli_bridge_host PUBLIC LongTermMemoryBenchmark::cli_bridge
       LongTermMemoryBenchmark::dashboard_windows ws2_32 mswsock)
-    target_include_directories(ltm_cli_bridge_host SYSTEM PUBLIC "${ltm_boost_beast_dir}")
+    target_include_directories(ltm_cli_bridge_host SYSTEM PUBLIC "${ltm_boost_beast_dir}"
+      PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
     target_compile_definitions(ltm_cli_bridge_host PUBLIC _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN NOMINMAX)
     if(MSVC)
       target_compile_options(ltm_cli_bridge_host PRIVATE /W4 /permissive- /bigobj)
@@ -250,7 +251,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
       codex_runs_without_tools_or_user_config claude_result_is_parsed codex_events_are_parsed
       bridge_answers_in_chat_completions_shape bridge_refuses_bad_requests bridge_reports_cli_failures
       bridge_retries_failed_runs_and_logs_them bridge_limits_cli_attempts bridge_call_limit_is_atomic bridge_limits_concurrent_runs
-      bridge_preserves_system_message)
+      bridge_preserves_system_message bridge_reports_usage_and_attempts)
     add_test(NAME ltm.cli_bridge.${case} COMMAND ltm_cli_bridge_tests ${case})
     set_tests_properties(ltm.cli_bridge.${case} PROPERTIES LABELS "cli_bridge;unit;offline")
   endforeach()

@@ -144,6 +144,8 @@ Reply parse_claude_result(std::string_view output) {
     reply.input_tokens = count(usage, "input_tokens") + count(usage, "cache_creation_input_tokens") +
         count(usage, "cache_read_input_tokens");
     reply.output_tokens = count(usage, "output_tokens");
+    reply.usage_reported = usage.contains("input_tokens") && usage.at("input_tokens").is_number_unsigned() &&
+        usage.contains("output_tokens") && usage.at("output_tokens").is_number_unsigned();
     if (reply.text.empty()) throw CliError("no_answer");
     return reply;
 }
@@ -170,6 +172,8 @@ Reply parse_codex_events(std::string_view output) {
             const auto& usage = event.value("usage", Json::object());
             reply.input_tokens = count(usage, "input_tokens");
             reply.output_tokens = count(usage, "output_tokens");
+            reply.usage_reported = usage.contains("input_tokens") && usage.at("input_tokens").is_number_unsigned() &&
+                usage.contains("output_tokens") && usage.at("output_tokens").is_number_unsigned();
             completed = true;
         }
     }
@@ -177,8 +181,15 @@ Reply parse_codex_events(std::string_view output) {
     return reply;
 }
 
-Bridge::Bridge(Settings settings, CommandRunner& runner) : settings_(std::move(settings)), runner_(runner) {}
+Bridge::Bridge(Settings settings, CommandRunner& runner) : settings_(std::move(settings)), runner_(runner) {
+    static std::atomic<std::uint64_t> sequence{0};
+    instance_id_ = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + "-" +
+        std::to_string(++sequence);
+}
 void Bridge::on_failure(FailureLog log) { log_ = std::move(log); }
+Metrics Bridge::metrics() const {
+    return {instance_id_, calls_.load(), completed_.load(), input_tokens_.load(), output_tokens_.load(), missing_usage_.load()};
+}
 
 Response Bridge::handle(const std::string& body) {
     const auto request = Json::parse(body, nullptr, false);
@@ -234,7 +245,13 @@ Response Bridge::handle(const std::string& body) {
             log_(*profile, "model_mismatch", run);
             return error(502, "model_mismatch");
         }
-        if (code.empty()) break;
+        if (code.empty()) {
+            input_tokens_.fetch_add(reply.input_tokens);
+            output_tokens_.fetch_add(reply.output_tokens);
+            if (!reply.usage_reported) ++missing_usage_;
+            ++completed_;
+            break;
+        }
         log_(*profile, code, run);
         if (attempt >= settings_.retries) return error(502, code);
     }

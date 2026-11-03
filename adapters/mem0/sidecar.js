@@ -28,7 +28,7 @@ function normalizedSession(session) {
   }) };
 }
 
-function createService({ runtimeDir, config, memoryFactory = openMemory }) {
+function createService({ runtimeDir, config, memoryFactory = openMemory, metricsProvider }) {
   const configHash = digest(JSON.stringify(config));
   fs.mkdirSync(runtimeDir, { recursive: true });
   const ledger = new Database(path.join(runtimeDir, 'ledger.db'));
@@ -53,6 +53,7 @@ function createService({ runtimeDir, config, memoryFactory = openMemory }) {
     const namespace = namespaceOf(request.namespace);
     if (!Array.isArray(request.sessions) || !request.sessions.length) throw new Error('Invalid sessions');
     const sessions = request.sessions.map(normalizedSession);
+    const before = metricsProvider ? await metricsProvider() : null;
     let memories = 0;
     for (const session of sessions) {
       const hash = digest(JSON.stringify(session));
@@ -78,7 +79,24 @@ function createService({ runtimeDir, config, memoryFactory = openMemory }) {
       finish.run(count, configHash, namespace, session.session_id);
       memories += count;
     }
-    return { memories, llm_calls: null, input_tokens: null, output_tokens: null, wall_ms: Date.now() - started };
+    let usage = { llm_calls: null, input_tokens: null, output_tokens: null, usage_complete: false };
+    if (before) {
+      try {
+        const after = await metricsProvider();
+        const names = ['attempts', 'completed', 'input_tokens', 'output_tokens', 'missing_usage'];
+        if (typeof before.instance_id !== 'string' || !before.instance_id || before.instance_id !== after.instance_id ||
+            !names.every((name) => Number.isSafeInteger(before[name]) && Number.isSafeInteger(after[name]) &&
+            before[name] >= 0 && after[name] >= before[name])) throw new Error('Invalid usage metrics');
+        const attempts = after.attempts - before.attempts;
+        const completed = after.completed - before.completed;
+        usage = { llm_calls: attempts, input_tokens: after.input_tokens - before.input_tokens,
+          output_tokens: after.output_tokens - before.output_tokens,
+          usage_complete: attempts === completed && after.missing_usage === before.missing_usage };
+      } catch (_) {
+        // Ingestion succeeded; unavailable counters remain explicitly unknown.
+      }
+    }
+    return { memories, ...usage, wall_ms: Date.now() - started };
   }
   return {
     ingest(request) {

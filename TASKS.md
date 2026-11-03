@@ -135,7 +135,8 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Exercise Mem0 extraction and search with offline fake providers.
 - [x] Test the sidecar ingestion, search, local HTTP and interruption safeguards.
 - [x] Add local-only sidecar startup and record the upstream package bundle hash.
-- [ ] Complete prompt provenance and model usage accounting.
+- [x] Add bridge-attempt and reported-token accounting with incomplete-usage flags.
+- [ ] Complete prompt provenance and verify accounting in a live pilot.
 - [ ] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
 - [ ] Measure one case, project resource and call use, then evaluate the approved ten-question phase.
 - [ ] Review results before the full 54-question phase.

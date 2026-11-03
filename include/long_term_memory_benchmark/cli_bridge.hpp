@@ -49,6 +49,7 @@ struct Reply {
     std::string model;  // as served, when the CLI reports it
     std::uint64_t input_tokens = 0;
     std::uint64_t output_tokens = 0;
+    bool usage_reported = false;
 };
 // Messages are short codes, safe to return to clients and keep in artifacts.
 class CliError : public std::runtime_error {
@@ -83,6 +84,15 @@ struct Response {
 // Called for each failed run with the error code and the CLI's output.
 using FailureLog = std::function<void(const Profile&, const std::string& code, const RunResult&)>;
 
+struct Metrics {
+    std::string instance_id;
+    std::uint64_t attempts = 0;
+    std::uint64_t completed = 0;
+    std::uint64_t input_tokens = 0;
+    std::uint64_t output_tokens = 0;
+    std::uint64_t missing_usage = 0;
+};
+
 // Handles one POST /v1/chat/completions body. Safe to call from several threads
 // if the failure log is.
 class Bridge {
@@ -90,11 +100,15 @@ class Bridge {
     Bridge(Settings settings, CommandRunner& runner);
     void on_failure(FailureLog log);
     Response handle(const std::string& body);
+    Metrics metrics() const;
 
   private:
     Settings settings_;
     CommandRunner& runner_;
     std::atomic<std::uint64_t> calls_{0};
+    std::atomic<std::uint64_t> completed_{0}, input_tokens_{0}, output_tokens_{0};
+    std::atomic<std::uint64_t> missing_usage_{0};
+    std::string instance_id_;
     std::mutex slots_mutex_;
     std::condition_variable slots_available_;
     std::uint32_t active_ = 0;

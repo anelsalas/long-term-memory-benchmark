@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-The bridge has an atomic call cap, concurrency limit, and per-request system messages. The Windows ARM64 offline C++ suite passed 110/110. Mem0 3.3.1 runs on native ARM64 Node. The local sidecar now has executable startup, package provenance and a full fake-provider HTTP ingestion/retrieval test; all 7 Node tests passed. Usage accounting, benchmark integration and the first measured case remain. No live model calls were made for this checkpoint.
+The bridge has an atomic call cap, concurrency limit, per-request system messages and model-usage counters. Mem0's sidecar reports ingestion call and token deltas when it has exclusive use of the bridge. The Windows ARM64 offline suites passed 111/111 C++ and 9/9 Node tests. Benchmark integration, prompt provenance and the first measured case remain. No live model calls were made for this checkpoint.
 
 ## Stronger-reader report review — November 2, 2026
 

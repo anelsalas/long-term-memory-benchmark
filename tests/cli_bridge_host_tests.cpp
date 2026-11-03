@@ -120,6 +120,9 @@ void server_serves_chat_completions() {
     const auto reply = send(port, http::verb::post, "/v1/chat/completions", chat("hi"), host);
     require(reply.result() == http::status::ok, "Chat completion");
     require(Json::parse(reply.body())["choices"][0]["message"]["content"] == "echo:hi", "The bridge answers");
+    const auto metrics = send(port, http::verb::get, "/metrics", "", host);
+    require(metrics.result() == http::status::ok && Json::parse(metrics.body())["attempts"] == 1 &&
+        Json::parse(metrics.body())["input_tokens"] == 5, "Usage metrics are available to local clients");
     std::vector<std::thread> clients;
     std::vector<unsigned> statuses(4);
     for (std::size_t i = 0; i < statuses.size(); ++i)

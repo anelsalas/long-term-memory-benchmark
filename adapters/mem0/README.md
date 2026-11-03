@@ -13,7 +13,10 @@ integration is under development.
 The sidecar service exposes ingestion and ranked search through a local HTTP
 contract. A SQLite ledger records each session before ingestion and rejects
 automatic replay when an interrupted session may have partially written. The
-current usage fields are `null` until model-call accounting is connected.
+The service snapshots bridge counters to report call and token deltas. Use the
+bridge exclusively during ingestion so deltas are attributable to Mem0. Failed
+attempts can have unreported token use; the response marks usage incomplete.
+If counters become unavailable or the bridge restarts, usage is unknown.
 
 Start with `node server.js CONFIG_FILE RUNTIME_DIR PORT`, where the JSON config
 contains `model`, `llmBaseURL`, `embeddingBaseURL`, `embeddingModel`, and

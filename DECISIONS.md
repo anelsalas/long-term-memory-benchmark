@@ -238,4 +238,12 @@ Bind the service to IPv4 loopback, reject browser origins and foreign hosts, and
 require a GPT profile in the startup configuration. Include the pinned Mem0
 version and OSS bundle SHA-256 in the configuration hash. Local processes can
 still access the service; use only benchmark records while that boundary is in
-place. Per-prompt hashes and model usage accounting remain pending.
+place. Per-prompt hashes remain pending.
+
+## Mem0 ingestion usage accounting
+
+Expose aggregate bridge attempt and reported token counters to loopback clients.
+The sidecar records before/after deltas while it has exclusive bridge use, flags
+missing usage and failed attempts, and marks totals unknown if the bridge restarts.
+Failed CLI attempts may have consumed unreported tokens. Counters reset with the
+bridge; preserve run-level accounting and enforce the cap across restarts.

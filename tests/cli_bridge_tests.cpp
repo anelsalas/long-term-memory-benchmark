@@ -198,6 +198,23 @@ void bridge_limits_cli_attempts() {
     require(bridge.handle(chat("gpt-6.1-sol/low", "q")).status == 429, "Exhausted limit is refused");
     require(runner.calls.size() == 2, "Exhausted limit starts no process");
 }
+void bridge_reports_usage_and_attempts() {
+    auto config = Json::parse(settings_json);
+    config["retries"] = 1;
+    FakeRunner runner(std::vector<RunResult>{{1, "failed", false}, {0, codex_success, false}});
+    Bridge bridge(parse_settings(config.dump()), runner);
+    require(bridge.handle(chat("gpt-6.1-sol/low", "q")).status == 200, "Request succeeds after retry");
+    const auto metrics = bridge.metrics();
+    require(metrics.attempts == 2 && metrics.completed == 1 && metrics.input_tokens == 6547 &&
+        metrics.output_tokens == 5, "Usage records successful CLI output and counts every attempt");
+    const std::string no_usage =
+        "{\"type\":\"item.completed\",\"item\":{\"type\":\"agent_message\",\"text\":\"42\"}}\n"
+        "{\"type\":\"turn.completed\"}\n";
+    FakeRunner missing({0, no_usage, false});
+    Bridge missing_bridge(parse_settings(settings_json), missing);
+    require(missing_bridge.handle(chat("gpt-6.1-sol/low", "q")).status == 200 &&
+        missing_bridge.metrics().missing_usage == 1, "An answer without token counts is identified");
+}
 void bridge_call_limit_is_atomic() {
     class CountingRunner : public CommandRunner {
       public:
@@ -297,6 +314,7 @@ int main(int argc, char** argv) {
         {"bridge_refuses_bad_requests", bridge_refuses_bad_requests},
         {"bridge_preserves_system_message", bridge_preserves_system_message},
         {"bridge_limits_cli_attempts", bridge_limits_cli_attempts},
+        {"bridge_reports_usage_and_attempts", bridge_reports_usage_and_attempts},
         {"bridge_call_limit_is_atomic", bridge_call_limit_is_atomic},
         {"bridge_limits_concurrent_runs", bridge_limits_concurrent_runs},
         {"bridge_reports_cli_failures", bridge_reports_cli_failures},

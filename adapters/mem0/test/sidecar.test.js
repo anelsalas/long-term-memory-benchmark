@@ -20,8 +20,11 @@ test('startup accepts an explicit GPT profile and rejects other providers or ext
 test('sidecar ingests sessions once, preserves dates, and returns ranked memories', async () => {
   const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'ltm-sidecar-'));
   const calls = [];
-  const service = createService({ runtimeDir: folder, config: { version: 'test' }, memoryFactory: () => ({
-    async add(messages, options) { calls.push({ messages, options }); return { results: [{ memory: 'grade 82' }] }; },
+  let attempts = 0;
+  const metricsProvider = async () => ({ instance_id: 'bridge-1', attempts, completed: attempts, input_tokens: attempts * 20,
+    output_tokens: attempts * 5, missing_usage: 0 });
+  const service = createService({ runtimeDir: folder, config: { version: 'test' }, metricsProvider, memoryFactory: () => ({
+    async add(messages, options) { ++attempts; calls.push({ messages, options }); return { results: [{ memory: 'grade 82' }] }; },
     async search() { return { results: [{ id: 'm1', memory: 'grade 82', score: 0.9,
       metadata: { session_id: 's1', session_date: '2025-02-12' } }] }; },
   }) });
@@ -32,6 +35,10 @@ test('sidecar ingests sessions once, preserves dates, and returns ranked memorie
     const first = await service.ingest({ namespace: 'case1', sessions: [session] });
     await service.ingest({ namespace: 'case1', sessions: [session] });
     assert.equal(first.memories, 1);
+    assert.equal(first.llm_calls, 1);
+    assert.equal(first.input_tokens, 20);
+    assert.equal(first.output_tokens, 5);
+    assert.equal(first.usage_complete, true);
     assert.equal(calls.length, 1);
     assert.equal(calls[0].options.metadata.session_date, session.date);
     assert.match(calls[0].messages[0].content, /2025-02-12/);
@@ -64,6 +71,46 @@ test('sidecar blocks an uncertain interrupted ingestion from being repeated', as
     service = createService(options);
     await assert.rejects(service.ingest({ namespace: 'case1', sessions: [session] }), /uncertain/i);
     assert.equal(calls, 1);
+  } finally {
+    service.close();
+    fs.rmSync(path.join(folder, 'ledger.db'), { force: true });
+    fs.rmdirSync(folder);
+  }
+});
+
+test('sidecar marks token totals incomplete when an attempt fails', async () => {
+  const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'ltm-sidecar-'));
+  let called = false;
+  const metricsProvider = async () => called
+    ? { instance_id: 'bridge-1', attempts: 2, completed: 1, input_tokens: 20, output_tokens: 5, missing_usage: 0 }
+    : { instance_id: 'bridge-1', attempts: 0, completed: 0, input_tokens: 0, output_tokens: 0, missing_usage: 0 };
+  const service = createService({ runtimeDir: folder, config: { version: 'test' }, metricsProvider,
+    memoryFactory: () => ({ async add() { called = true; return { results: [] }; } }) });
+  try {
+    const result = await service.ingest({ namespace: 'case1', sessions: [{ session_id: 's1', date: '2025-02-12',
+      rounds: [{ round_id: 'r1', user: 'A fact.', replies: [] }] }] });
+    assert.equal(result.llm_calls, 2);
+    assert.equal(result.usage_complete, false);
+  } finally {
+    service.close();
+    fs.rmSync(path.join(folder, 'ledger.db'), { force: true });
+    fs.rmdirSync(folder);
+  }
+});
+
+test('sidecar reports unknown usage if the bridge restarts during ingestion', async () => {
+  const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'ltm-sidecar-'));
+  let called = false;
+  const metricsProvider = async () => ({ instance_id: called ? 'bridge-2' : 'bridge-1',
+    attempts: called ? 1 : 0, completed: called ? 1 : 0, input_tokens: called ? 20 : 0,
+    output_tokens: called ? 5 : 0, missing_usage: 0 });
+  const service = createService({ runtimeDir: folder, config: { version: 'test' }, metricsProvider,
+    memoryFactory: () => ({ async add() { called = true; return { results: [] }; } }) });
+  try {
+    const result = await service.ingest({ namespace: 'case1', sessions: [{ session_id: 's1', date: '2025-02-12',
+      rounds: [{ round_id: 'r1', user: 'A fact.', replies: [] }] }] });
+    assert.equal(result.llm_calls, null);
+    assert.equal(result.usage_complete, false);
   } finally {
     service.close();
     fs.rmSync(path.join(folder, 'ledger.db'), { force: true });

@@ -4,6 +4,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
+#include <nlohmann/json.hpp>
 #include <atomic>
 #include <condition_variable>
 #include <filesystem>
@@ -219,6 +220,12 @@ struct Server::State {
         if (request.count(http::field::origin) || (host != "127.0.0.1:" + port && host != "localhost:" + port))
             return {403, R"({"error":{"code":"forbidden"}})"};
         if (request.method() == http::verb::get && request.target() == "/health") return {200, R"({"status":"ok"})"};
+        if (request.method() == http::verb::get && request.target() == "/metrics") {
+            const auto metrics = bridge.metrics();
+            return {200, nlohmann::json{{"instance_id", metrics.instance_id}, {"attempts", metrics.attempts}, {"completed", metrics.completed},
+                {"input_tokens", metrics.input_tokens}, {"output_tokens", metrics.output_tokens},
+                {"missing_usage", metrics.missing_usage}}.dump()};
+        }
         if (request.method() == http::verb::post && request.target() == "/v1/chat/completions")
             return bridge.handle(request.body());
         return {404, R"({"error":{"code":"not_found"}})"};
