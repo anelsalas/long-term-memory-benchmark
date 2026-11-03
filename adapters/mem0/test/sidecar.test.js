@@ -7,6 +7,15 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { createService, createHttpServer } = require('../sidecar');
+const { normalizeConfig } = require('../server');
+
+test('startup accepts an explicit GPT profile and rejects other providers or extra fields', () => {
+  const config = { model: 'gpt-6.1-sol/high', llmBaseURL: 'http://127.0.0.1:8773/v1',
+    embeddingBaseURL: 'http://127.0.0.1:8771/v1', embeddingModel: 'qwen3-embedding', dimensions: 1024 };
+  assert.equal(normalizeConfig(config).model, config.model);
+  assert.throws(() => normalizeConfig({ ...config, model: 'claude-model' }), /GPT/);
+  assert.throws(() => normalizeConfig({ ...config, apiKey: 'unneeded' }), /field/);
+});
 
 test('sidecar ingests sessions once, preserves dates, and returns ranked memories', async () => {
   const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'ltm-sidecar-'));

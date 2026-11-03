@@ -9,6 +9,7 @@ const test = require('node:test');
 
 process.env.MEM0_TELEMETRY = 'false';
 const { openMemory } = require('../memory');
+const { createService, createHttpServer } = require('../sidecar');
 
 test('memory configuration restricts providers to loopback and separates entity storage', () => {
   const settings = { dbPath: 'fixture.db', model: 'fake', embeddingModel: 'fake', dimensions: 2,
@@ -38,28 +39,37 @@ test('Mem0 extracts and retrieves a dated fictional session through local fake p
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'ltm-mem0-ingest-'));
-  const dbPath = path.join(folder, 'vectors.db');
-  const entityPath = path.join(folder, 'vectors_entities.db');
-  let memory;
+  let service;
+  let sidecar;
   try {
     const baseURL = `http://127.0.0.1:${server.address().port}/v1`;
-    memory = openMemory({ dbPath, model: 'fake', llmBaseURL: baseURL, embeddingBaseURL: baseURL,
-      embeddingModel: 'fake-embedding', dimensions: 2 });
-    await memory.add([{ role: 'user', content: 'On 2025-02-12, Lina’s grade was corrected to 82.' }],
-      { userId: 'fixture', metadata: { session_id: 'session-1', session_date: '2025-02-12' } });
-    const result = await memory.search('What was Lina’s corrected grade?',
-      { filters: { user_id: 'fixture' }, topK: 5 });
-    assert.ok(result.results.some((item) => item.memory.includes('82')));
-    assert.ok(result.results.some((item) => item.metadata.session_id === 'session-1'));
+    service = createService({ runtimeDir: folder, config: { model: 'fake', llmBaseURL: baseURL,
+      embeddingBaseURL: baseURL, embeddingModel: 'fake-embedding', dimensions: 2 } });
+    sidecar = createHttpServer(service);
+    await new Promise((resolve) => sidecar.listen(0, '127.0.0.1', resolve));
+    const sidecarURL = `http://127.0.0.1:${sidecar.address().port}`;
+    async function post(route, body) {
+      const reply = await fetch(sidecarURL + route, { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body) });
+      assert.equal(reply.status, 200);
+      return reply.json();
+    }
+    const request = { namespace: 'fixture', sessions: [{ session_id: 'session-1', date: '2025-02-12',
+      rounds: [{ round_id: 'r1', user: 'Lina’s grade was corrected to 82.', replies: [] }] }] };
+    await post('/ingest', request);
+    await post('/ingest', request);
+    const result = await post('/search', { namespace: 'fixture', query: 'What was Lina’s corrected grade?', limit: 5 });
+    assert.ok(result.some((item) => item.text.includes('82')));
+    assert.ok(result.some((item) => item.metadata.session_id === 'session-1'));
     const chat = calls.find((call) => call.url === '/v1/chat/completions');
     assert.equal(chat.body.messages[0].role, 'system');
     assert.equal(chat.body.messages[1].role, 'user');
+    assert.equal(calls.filter((call) => call.url === '/v1/chat/completions').length, 1);
   } finally {
-    if (memory && memory.vectorStore) memory.vectorStore.db.close();
-    if (memory && memory._entityStore) memory._entityStore.db.close();
+    if (sidecar) await new Promise((resolve) => sidecar.close(resolve));
+    if (service) service.close();
     await new Promise((resolve) => server.close(resolve));
-    fs.rmSync(dbPath, { force: true });
-    fs.rmSync(entityPath, { force: true });
+    for (const file of fs.readdirSync(folder)) fs.rmSync(path.join(folder, file), { force: true });
     fs.rmdirSync(folder);
   }
 });

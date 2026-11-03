@@ -26,4 +26,4 @@ function openMemory({ dbPath, model, llmBaseURL, embeddingBaseURL, embeddingMode
   });
 }
 
-module.exports = { openMemory };
+module.exports = { openMemory, loopbackEndpoint };

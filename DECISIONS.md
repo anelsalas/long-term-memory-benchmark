@@ -231,3 +231,11 @@ the call returns. A pending session after a failure or restart is uncertain and
 requires inspection instead of automatic replay, since Mem0's separate writes
 and the benchmark ledger cannot be committed in one transaction. Completed
 identical sessions can be replayed safely; changed content is rejected.
+
+## Mem0 service startup
+
+Bind the service to IPv4 loopback, reject browser origins and foreign hosts, and
+require a GPT profile in the startup configuration. Include the pinned Mem0
+version and OSS bundle SHA-256 in the configuration hash. Local processes can
+still access the service; use only benchmark records while that boundary is in
+place. Per-prompt hashes and model usage accounting remain pending.
