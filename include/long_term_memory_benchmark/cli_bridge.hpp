@@ -1,8 +1,10 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
 #include <cstdint>
 #include <functional>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -32,6 +34,7 @@ struct Settings {
     // A run that ends without an answer is tried again; a subscription CLI has no
     // per-request charge. Timeouts are not retried.
     std::uint64_t max_calls = 0;  // zero leaves call count unrestricted
+    std::uint32_t max_concurrent = 0;  // zero leaves concurrency unrestricted
     std::uint32_t retries = 0;
     std::uint32_t retry_delay_ms = 0;  // multiplied by the attempt number
     std::vector<Profile> profiles;
@@ -90,6 +93,9 @@ class Bridge {
     Settings settings_;
     CommandRunner& runner_;
     std::atomic<std::uint64_t> calls_{0};
+    std::mutex slots_mutex_;
+    std::condition_variable slots_available_;
+    std::uint32_t active_ = 0;
     FailureLog log_ = [](const Profile&, const std::string&, const RunResult&) {};
 };
 } // namespace ltm::cli_bridge

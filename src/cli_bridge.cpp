@@ -38,6 +38,28 @@ Json parse_or_fail(std::string_view text) {
 Response error(unsigned status, const std::string& code) {
     return {status, Json{{"error", {{"code", code}}}}.dump()};
 }
+class Slot {
+  public:
+    Slot(std::mutex& mutex, std::condition_variable& available, std::uint32_t& active, std::uint32_t limit)
+        : mutex_(mutex), available_(available), active_(active) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        available_.wait(lock, [&] { return limit == 0 || active_ < limit; });
+        ++active_;
+    }
+    ~Slot() {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            --active_;
+        }
+        available_.notify_one();
+    }
+    Slot(const Slot&) = delete;
+    Slot& operator=(const Slot&) = delete;
+  private:
+    std::mutex& mutex_;
+    std::condition_variable& available_;
+    std::uint32_t& active_;
+};
 }
 
 Settings parse_settings(const std::string& json) {
@@ -62,6 +84,11 @@ Settings parse_settings(const std::string& json) {
     if (root.contains("max_calls")) {
         if (!root.at("max_calls").is_number_unsigned()) throw std::invalid_argument("max_calls must be nonnegative");
         settings.max_calls = root.at("max_calls").get<std::uint64_t>();
+    }
+    if (root.contains("max_concurrent")) {
+        if (!root.at("max_concurrent").is_number_unsigned() || root.at("max_concurrent").get<std::uint64_t>() > 1024)
+            throw std::invalid_argument("max_concurrent must be between 0 and 1024");
+        settings.max_concurrent = root.at("max_concurrent").get<std::uint32_t>();
     }
     if (!root.contains("profiles") || !root.at("profiles").is_array() || root.at("profiles").empty())
         throw std::invalid_argument("profiles must list at least one profile");
@@ -170,11 +197,15 @@ Response Bridge::handle(const std::string& body) {
     Reply reply;
     for (std::uint32_t attempt = 0;; ++attempt) {
         if (attempt) std::this_thread::sleep_for(std::chrono::milliseconds(settings_.retry_delay_ms) * attempt);
-        auto current = calls_.load();
-        do {
-            if (settings_.max_calls && current >= settings_.max_calls) return error(429, "call_limit_reached");
-        } while (!calls_.compare_exchange_weak(current, current + 1));
-        const auto run = runner_.run(invocation);
+        RunResult run;
+        {
+            Slot slot(slots_mutex_, slots_available_, active_, settings_.max_concurrent);
+            auto current = calls_.load();
+            do {
+                if (settings_.max_calls && current >= settings_.max_calls) return error(429, "call_limit_reached");
+            } while (!calls_.compare_exchange_weak(current, current + 1));
+            run = runner_.run(invocation);
+        }
         if (run.timed_out) {
             log_(*profile, "cli_timeout", run);
             return error(504, "cli_timeout");

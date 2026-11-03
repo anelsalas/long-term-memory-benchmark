@@ -1,6 +1,6 @@
 ## Mem0 benchmark implementation — November 3, 2026
 
-Implementation has started with an offline-tested bridge call cap. The cap counts actual CLI attempts including retries and remains correct under concurrent requests. Eleven bridge unit checks passed; an earlier full suite passed 106/106 before the final concurrency test was added. Sidecar, concurrency limit, memory-service integration and the first measured case remain. No model calls were made for this checkpoint.
+The bridge now has an atomic call cap and concurrency limit. A new test confirmed six simultaneous requests honor a one-process limit; the complete Windows ARM64 offline suite passed 108/108. Mem0 3.3.1 exposes an OSS SQLite-backed memory vector store. System-message support, the adapter, memory-service integration and the first measured case remain. No model calls were made for this checkpoint.
 
 ## Stronger-reader report review — November 2, 2026
 

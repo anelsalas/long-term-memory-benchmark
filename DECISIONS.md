@@ -195,3 +195,9 @@ Present matching source-ID selection, model-judged outcomes and serving differen
 ## Mem0 bridge call accounting
 
 Count actual CLI process attempts, including retries, against a process-wide atomic `max_calls` cap. A zero or omitted cap is unrestricted; Mem0 experiments must configure a positive value and record restarts.
+
+## Mem0 bridge concurrency
+
+Use `max_concurrent` to queue CLI attempts until a slot is available. Count each
+retry separately and release its slot immediately after the process ends. A zero
+or omitted limit preserves prior behavior.

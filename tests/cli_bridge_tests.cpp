@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <thread>
 #include <functional>
 #include <iostream>
@@ -75,6 +76,11 @@ void settings_name_profiles() {
         bad["profiles"][0]["cli"] = "gemini";
         parse_settings(bad.dump());
     }), "Unknown CLIs are refused");
+    require(throws<std::invalid_argument>([] {
+        auto bad = Json::parse(settings_json);
+        bad["max_concurrent"] = -1;
+        parse_settings(bad.dump());
+    }), "Negative concurrency is refused");
 }
 void claude_runs_without_tools_or_settings() {
     const auto settings = parse_settings(settings_json);
@@ -191,6 +197,30 @@ void bridge_call_limit_is_atomic() {
     for (auto& thread : threads) thread.join();
     require(allowed == 5 && refused == 15 && runner.calls == 5, "Concurrent requests cannot exceed cap");
 }
+void bridge_limits_concurrent_runs() {
+    class ConcurrentRunner : public CommandRunner {
+      public:
+        std::atomic<unsigned> active{0}, peak{0};
+        RunResult run(const Invocation&) override {
+            const auto now = ++active;
+            auto observed = peak.load();
+            while (now > observed && !peak.compare_exchange_weak(observed, now)) {}
+            std::this_thread::sleep_for(std::chrono::milliseconds(40));
+            --active;
+            return {0, codex_success, false};
+        }
+    } runner;
+    auto config = Json::parse(settings_json);
+    config["max_concurrent"] = 1;
+    Bridge bridge(parse_settings(config.dump()), runner);
+    std::atomic<unsigned> completed{0};
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 6; ++i) threads.emplace_back([&] {
+        if (bridge.handle(chat("gpt-6.1-sol/low", "q")).status == 200) ++completed;
+    });
+    for (auto& thread : threads) thread.join();
+    require(completed == 6 && runner.peak == 1, "Concurrent requests wait for an available slot");
+}
 void bridge_reports_cli_failures() {
     const auto settings = parse_settings(settings_json);
     FakeRunner timed_out({-1, "", true});
@@ -247,6 +277,7 @@ int main(int argc, char** argv) {
         {"bridge_refuses_bad_requests", bridge_refuses_bad_requests},
         {"bridge_limits_cli_attempts", bridge_limits_cli_attempts},
         {"bridge_call_limit_is_atomic", bridge_call_limit_is_atomic},
+        {"bridge_limits_concurrent_runs", bridge_limits_concurrent_runs},
         {"bridge_reports_cli_failures", bridge_reports_cli_failures},
         {"bridge_retries_failed_runs_and_logs_them", bridge_retries_failed_runs_and_logs_them}};
     if (argc != 2) return 2;

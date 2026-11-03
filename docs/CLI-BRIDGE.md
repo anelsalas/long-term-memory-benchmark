@@ -49,6 +49,9 @@ with zero prices. Each request runs one CLI process:
 
 ## Behavior
 
+- **Concurrency.** `max_concurrent` limits simultaneously running CLI attempts.
+  Additional requests wait for a slot; a missing or zero value leaves this
+  limit unrestricted. Each retry acquires a slot separately.
 - **Call budget.** `max_calls` optionally caps actual CLI attempts across the
   process, including retries; exhausted requests receive HTTP 429. A missing
   or zero value leaves this cap unrestricted. Set a positive limit for benchmark
