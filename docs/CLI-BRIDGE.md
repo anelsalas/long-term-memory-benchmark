@@ -49,6 +49,11 @@ with zero prices. Each request runs one CLI process:
 
 ## Behavior
 
+- **Call budget.** `max_calls` optionally caps actual CLI attempts across the
+  process, including retries; exhausted requests receive HTTP 429. A missing
+  or zero value leaves this cap unrestricted. Set a positive limit for benchmark
+  runs. Restarting the bridge starts a new counter, so preserve run accounting.
+
 - **Endpoints.** Only `POST /v1/chat/completions` (one user message, no
   streaming) and `GET /health`, on 127.0.0.1. Requests that carry an `Origin`
   header, or a `Host` other than the bridge's own loopback port, get 403. This

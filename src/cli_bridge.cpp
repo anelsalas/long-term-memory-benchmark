@@ -59,6 +59,10 @@ Settings parse_settings(const std::string& json) {
             throw std::invalid_argument(std::string(name) + " must be a small nonnegative integer");
         *field = root.at(name).get<std::uint32_t>();
     }
+    if (root.contains("max_calls")) {
+        if (!root.at("max_calls").is_number_unsigned()) throw std::invalid_argument("max_calls must be nonnegative");
+        settings.max_calls = root.at("max_calls").get<std::uint64_t>();
+    }
     if (!root.contains("profiles") || !root.at("profiles").is_array() || root.at("profiles").empty())
         throw std::invalid_argument("profiles must list at least one profile");
     for (const auto& item : root.at("profiles")) {
@@ -166,6 +170,10 @@ Response Bridge::handle(const std::string& body) {
     Reply reply;
     for (std::uint32_t attempt = 0;; ++attempt) {
         if (attempt) std::this_thread::sleep_for(std::chrono::milliseconds(settings_.retry_delay_ms) * attempt);
+        auto current = calls_.load();
+        do {
+            if (settings_.max_calls && current >= settings_.max_calls) return error(429, "call_limit_reached");
+        } while (!calls_.compare_exchange_weak(current, current + 1));
         const auto run = runner_.run(invocation);
         if (run.timed_out) {
             log_(*profile, "cli_timeout", run);

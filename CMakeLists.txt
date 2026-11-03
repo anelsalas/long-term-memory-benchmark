@@ -249,7 +249,7 @@ if(LONG_TERM_MEMORY_BENCHMARK_BUILD_TESTS)
   foreach(case IN ITEMS settings_name_profiles claude_runs_without_tools_or_settings
       codex_runs_without_tools_or_user_config claude_result_is_parsed codex_events_are_parsed
       bridge_answers_in_chat_completions_shape bridge_refuses_bad_requests bridge_reports_cli_failures
-      bridge_retries_failed_runs_and_logs_them)
+      bridge_retries_failed_runs_and_logs_them bridge_limits_cli_attempts bridge_call_limit_is_atomic)
     add_test(NAME ltm.cli_bridge.${case} COMMAND ltm_cli_bridge_tests ${case})
     set_tests_properties(ltm.cli_bridge.${case} PROPERTIES LABELS "cli_bridge;unit;offline")
   endforeach()

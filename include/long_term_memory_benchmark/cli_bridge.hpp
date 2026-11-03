@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <stdexcept>
@@ -30,6 +31,7 @@ struct Settings {
     std::uint32_t timeout_ms = 0;
     // A run that ends without an answer is tried again; a subscription CLI has no
     // per-request charge. Timeouts are not retried.
+    std::uint64_t max_calls = 0;  // zero leaves call count unrestricted
     std::uint32_t retries = 0;
     std::uint32_t retry_delay_ms = 0;  // multiplied by the attempt number
     std::vector<Profile> profiles;
@@ -87,6 +89,7 @@ class Bridge {
   private:
     Settings settings_;
     CommandRunner& runner_;
+    std::atomic<std::uint64_t> calls_{0};
     FailureLog log_ = [](const Profile&, const std::string&, const RunResult&) {};
 };
 } // namespace ltm::cli_bridge

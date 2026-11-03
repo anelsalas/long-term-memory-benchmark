@@ -191,3 +191,7 @@ Use the dataset adapter's validated timestamp comparison for diagnostics, and tr
 ## Stronger-reader report review
 
 Present matching source-ID selection, model-judged outcomes and serving differences separately. Report subscription-credit spending as unmeasured and describe the local bridge's access boundary.
+
+## Mem0 bridge call accounting
+
+Count actual CLI process attempts, including retries, against a process-wide atomic `max_calls` cap. A zero or omitted cap is unrestricted; Mem0 experiments must configure a positive value and record restarts.

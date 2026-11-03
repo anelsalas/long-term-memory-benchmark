@@ -125,3 +125,13 @@ Localrun is opt-in via saved run_mode. Physical phone/LAN check is still pending
 - [x] Recount 270 answer outcomes and fix mixed-format timestamp diagnostics.
 - [ ] Recover the judge-audit sample identifiers, labels and selection seed.
 - [ ] Validate answer judgments with an independent reviewer and compare memory methods under matched settings.
+
+## Mem0 benchmark — November 3, 2026
+
+- [x] Add an offline-tested actual model-call cap, including retries and concurrent requests.
+- [ ] Implement the bounded system-message bridge and concurrency control.
+- [ ] Add the pinned Mem0 sidecar and memory-service benchmark condition with offline tests.
+- [ ] Measure one case, project resource and call use, then evaluate the approved ten-question phase.
+- [ ] Review results before the full 54-question phase.
+
+Use GPT only; configure no Claude model profiles for these experiments.

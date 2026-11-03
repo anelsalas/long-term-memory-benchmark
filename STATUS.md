@@ -1,3 +1,7 @@
+## Mem0 benchmark implementation — November 3, 2026
+
+Implementation has started with an offline-tested bridge call cap. The cap counts actual CLI attempts including retries and remains correct under concurrent requests. Eleven bridge unit checks passed; an earlier full suite passed 106/106 before the final concurrency test was added. Sidecar, concurrency limit, memory-service integration and the first measured case remain. No model calls were made for this checkpoint.
+
 ## Stronger-reader report review — November 2, 2026
 
 Independently verified 105/105 ARM64 tests, 270 matched source-ID pairs, 15 answer-summary totals and 803 cross-judge records on frozen 95e6534. The public report identifies serving-stack differences, unmeasured credit spending and judge limitations. The loopback bridge is stopped; its current access controls allow local processes to submit requests.
