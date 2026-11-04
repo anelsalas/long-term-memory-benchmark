@@ -1,5 +1,7 @@
 # Memory evaluation protocol
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 Measure which memory methods deliver correct, supported answers with useful
 latency and affordable computation on everyday computers. Use a native C++17
 ARM64 runner and versioned adapters for memory, inference and scoring.

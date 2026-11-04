@@ -1,5 +1,7 @@
 # Qwen four-condition comparison
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November 1, 2026. Twenty fresh correction histories, seeds 42–61, four evidence
 conditions each: 80 completed local model requests, API cost $0.
 

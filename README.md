@@ -8,7 +8,7 @@ Compare memory methods by answer accuracy, evidence retrieval, latency, token
 usage and cost. Build native C++17 components for Windows ARM64, with
 CMake targets and automated tests that applications can consume as a pinned dependency.
 
-**Terms used below**
+**Terms used below** (all terms: [glossary](docs/GLOSSARY.md))
 - **Reader:** the model that answers from the context it is given.
 - **Judge:** the model that grades each answer against the benchmark's reference
   answer.
@@ -17,7 +17,8 @@ CMake targets and automated tests that applications can consume as a pinned depe
 - **Dense embeddings (dense search):** each message is turned into a vector of
   numbers that captures its meaning. The messages closest in meaning to the
   question are picked.
-- **BM25:** classic keyword search.
+- **BM25:** classic keyword search. It scores each message by the question words it
+  shares, with rare words counting more, and ignores meaning.
 - **RRF:** a way to merge the BM25 and dense rankings into one.
 - **Mem0:** an open-source memory system that first reads every session with a
   language model and writes short facts, then searches those facts.

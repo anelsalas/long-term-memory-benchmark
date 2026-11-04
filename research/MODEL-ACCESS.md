@@ -1,5 +1,7 @@
 # Model access and pilot choice
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 Checked October 31, 2026 against official provider documentation. Account access
 and effective project quotas are verified when configuring G01.
 

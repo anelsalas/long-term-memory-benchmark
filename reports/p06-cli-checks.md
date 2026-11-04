@@ -1,5 +1,7 @@
 # P06 command acceptance checks
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Native Windows ARM64 offline CLI acceptance.
 
 Added `tests/compare_cli_checks.cmake`, using CMake 3.20 process and JSON APIs.

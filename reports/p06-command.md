@@ -1,5 +1,7 @@
 # P06 command implementation checkpoint
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Native Windows ARM64 command and injected HTTP validation.
 
 Implemented the `ltm-compare` executable with dry-run planning and explicit execute

@@ -1,5 +1,7 @@
 # Project objective
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 Build a public, reproducible benchmark for trustworthy, affordable personal memory.
 
 1. Reproduce declared experiments from LongMemEval, Mem0 and Zep.

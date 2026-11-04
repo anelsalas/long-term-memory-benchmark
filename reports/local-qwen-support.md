@@ -1,5 +1,7 @@
 # Local Qwen adapter support
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November1,2026. Native runner worker summary and handoff.
 
 Implemented explicit numeric-loopback execution in http_provider.hpp/.cpp and

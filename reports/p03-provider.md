@@ -1,5 +1,7 @@
 # P03 provider lifecycle report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Native ARM64 implementation and injected-provider evidence.
 
 Implemented standard C++17 provider/request/reply types, synchronous bounded

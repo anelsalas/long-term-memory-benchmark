@@ -1,5 +1,7 @@
 # Bounded provider lifecycle
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 P03 adds `Provider`, `ProviderRunner` and standard C++17 request/outcome types in
 `long_term_memory_benchmark/provider.hpp`. Link `LongTermMemoryBenchmark::provider`.
 An injected provider implements synchronous `generate(request, control)`.

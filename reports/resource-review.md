@@ -1,5 +1,7 @@
 # Resource measurement review
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Static review of the native resource implementation and API
 semantics. Runtime build and test outcomes are recorded by the native worker
 and coordinator.

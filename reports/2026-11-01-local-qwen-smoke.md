@@ -1,5 +1,7 @@
 # First measured local Qwen comparison
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November1,2026. Coordinator observed actual model responses through the native
 comparison command. Two local requests completed; APIspendingUSD0.
 

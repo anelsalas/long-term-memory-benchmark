@@ -1,5 +1,7 @@
 # Reader comparison on LongMemEval_S
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November 2, 2026. Claude (Opus 5.5), branch `claude/stronger-readers`. Record:
 [2026-11-02-reader-comparison.json](2026-11-02-reader-comparison.json), which holds
 verdicts, token counts and timings, without dialogue text.

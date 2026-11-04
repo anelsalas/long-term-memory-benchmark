@@ -1,5 +1,7 @@
 # P02 dataset adapter evidence
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Native Windows ARM64 Release validation.
 
 ## Delivered

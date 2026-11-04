@@ -1,5 +1,7 @@
 # Contributing
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 Start from PROJECT.md and research/PROTOCOL.md. Propose one measurable change,
 its expected behavior and the comparison that can establish its effect.
 

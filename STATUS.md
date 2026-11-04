@@ -45,6 +45,8 @@ then compare semantic retrieval, Mem0 and Graphiti on frozen cases.
 Dashboard LAN access is user-confirmed; the existing service remains running.
 # Current progress
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 Updated November 1, 2026. [Task board](TASKS.md).
 
 ## Latest measured run

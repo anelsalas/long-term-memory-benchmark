@@ -1,5 +1,7 @@
 # P01 experiment schema report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Native ARM64 implementation and observed checks.
 
 Implemented versioned manifests, exact canonical configuration SHA256, typed

@@ -1,5 +1,7 @@
 # Native comparison command
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 `ltm-compare` prepares or executes a fixed-reader full-history versus retrieved-
 evidence comparison on Windows ARM64. The command always includes one generated
 fictional score case and optionally one provenance-checked LongMemEval case.

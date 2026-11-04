@@ -1,5 +1,7 @@
 # Dashboard UI report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Four-page responsive interface for native service integration.
 
 Implemented Control, Setup, Results and Credits in plain HTML/CSS/JavaScript.

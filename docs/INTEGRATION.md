@@ -1,5 +1,7 @@
 # Application integration
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 Pin this repository to a reviewed commit. Add it as a CMake subdirectory and link
 the adapter or test target to `LongTermMemoryBenchmark::core`.
 

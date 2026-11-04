@@ -1,5 +1,7 @@
 # Research sources and code provenance
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 ## Three foundation papers
 
 1. **Di Wu, Hongwei Wang, Wenhao Yu, Yuwei Zhang, Kai-Wei Chang and Dong Yu.**

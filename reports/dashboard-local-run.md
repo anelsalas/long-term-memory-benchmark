@@ -1,5 +1,7 @@
 # Explicit local dashboard execution
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November 1, 2026. Isolated `codex/local-dashboard` checkout; existing audio and
 Claude's source checkout preserved. Implementation covers settings, plan
 preparation and the existing browser UI/API.

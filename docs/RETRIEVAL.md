@@ -1,5 +1,7 @@
 # Retrieval baselines
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 Simple retrievers that every memory system should beat, compared under the same
 context budget. They follow LongMemEval's finding that conversation rounds are
 the right retrieval unit.

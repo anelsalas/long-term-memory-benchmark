@@ -1,5 +1,7 @@
 # Coordinator verification
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Independent integration review.
 
 Reviewed native source, behavioral tests, research protocol, citations and public

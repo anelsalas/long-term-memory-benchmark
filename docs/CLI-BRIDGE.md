@@ -1,5 +1,7 @@
 # Subscription CLI bridge
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 `ltm-cli-bridge` lets `ltm-compare` use Claude and GPT models through the owner's
 own signed-in Claude Code and Codex CLIs. It serves OpenAI-shaped chat
 completions on loopback, so `ltm-compare` reaches it in its local execution mode

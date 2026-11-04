@@ -1,5 +1,7 @@
 # Resource measurement report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Native process instrumentation and observed component checks.
 
 Added optional process resource samples and stage intervals to the offline JSON

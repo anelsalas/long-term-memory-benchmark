@@ -1,5 +1,7 @@
 # P03-P05 correctness review
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Bounded native Windows ARM64 review for core integration.
 This worker previously implemented P04/P05; this pass re-examined those components
 and reviewed P03 read-only. Coordinator verification supplies the integration check.

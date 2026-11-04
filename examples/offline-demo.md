@@ -1,5 +1,7 @@
 # Offline retrieval example
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 Run `long-term-memory-benchmark --offline-demo` to emit a JSON component report.
 
 | Source | Person | Recorded UTC | Fictional event |

@@ -1,5 +1,7 @@
 # LongMemEval dataset adapter
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 Load a selected published-schema case with byte-level identity and separate
 candidate/evaluator data. Link `LongTermMemoryBenchmark::dataset` and include
 `long_term_memory_benchmark/longmemeval.hpp`.

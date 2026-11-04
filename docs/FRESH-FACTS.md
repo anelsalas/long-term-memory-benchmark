@@ -1,5 +1,7 @@
 # Fresh fictional fact controls
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 P05 builds consistent school-score timelines from structured event records.
 Expected answers come from the ledger, independently of conversation rendering
 or a language model. Native tests use original fictional records.

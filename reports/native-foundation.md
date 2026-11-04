@@ -1,5 +1,7 @@
 # Native foundation report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Agent implementation and observed test evidence.
 
 Implemented a C++17 `MemoryPort`, a deterministic lexical reference, an offline

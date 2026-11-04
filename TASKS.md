@@ -1,5 +1,7 @@
 # Task board
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 November 4: the ten-question Mem0 phase and Claude's review are complete; [the report](reports/2026-11-03-mem0-phase2.md) incorporates the review. The user requested publication and a stop to model calls.
 
 Updated October 31, 2026. Status: P01-P05 reviewed on main; paired command implemented; integrated suite passes27/27.

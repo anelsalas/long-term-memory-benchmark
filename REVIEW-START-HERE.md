@@ -1,5 +1,7 @@
 # Review and continuation guide
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 October 31, 2026. Codex summary of observed work.
 
 ## Objective

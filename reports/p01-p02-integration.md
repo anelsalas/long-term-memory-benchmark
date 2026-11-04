@@ -1,5 +1,7 @@
 # P01 and P02 integration verification
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Coordinator independently reviewed both modules and built their
 combined Release configuration with native MSVC ARM64. CTest passed 22/22 checks:
 the existing 19 checks, P01's nine-group suite, P02's seven-group suite and a

@@ -1,5 +1,7 @@
 # Existing Qwen endpoint discovery
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November 1, 2026, approximately 10:36 America/New_York. Read-only discovery;
 generation requests made: **0**. Existing audio and model services remained running.
 

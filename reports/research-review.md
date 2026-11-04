@@ -1,5 +1,7 @@
 # Research protocol review
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Research documentation assignment completed.
 
 ## Delivered

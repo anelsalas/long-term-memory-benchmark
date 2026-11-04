@@ -1,5 +1,7 @@
 # JSON dependency
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 JSON for Modern C++ 3.11.3, Niels Lohmann and contributors.
 
 - Source: https://github.com/nlohmann/json/tree/v3.11.3

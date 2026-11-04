@@ -1,5 +1,7 @@
 # Resource measurements
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 Compare methods using the same workload, build, hardware, concurrency and cache
 state. Capture ingestion and retrieval separately, alongside answer quality.
 

@@ -1,5 +1,7 @@
 # Decisions
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 ## Public benchmark and Dumas integration
 
 Maintain an independent public benchmark with a versioned CMake integration point.

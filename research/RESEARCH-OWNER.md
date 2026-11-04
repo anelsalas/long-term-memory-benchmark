@@ -1,5 +1,7 @@
 # Research owner instructions
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 Own the methodological review for a public benchmark of reliable long-term memory.
 Read [PROJECT.md](../PROJECT.md), [STATUS.md](../STATUS.md),
 [PROTOCOL.md](PROTOCOL.md) and [SOURCES.md](SOURCES.md), then the latest handoff.

@@ -1,5 +1,7 @@
 # Project instructions
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 Build a C++17 benchmark for reliable long-term memory access. Target
 native Windows ARM64 and use CMake/CTest, behavioral unit tests and TDD.
 Read README.md, PROJECT.md, STATUS.md, DECISIONS.md and the latest handoff before

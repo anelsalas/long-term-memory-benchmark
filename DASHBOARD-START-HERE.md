@@ -1,5 +1,7 @@
 # Dashboard continuation guide
 
+Terms are explained in the [glossary](docs/GLOSSARY.md).
+
 October 31, 2026. Codex summary.
 
 Branch: codex/dashboard. Base: core review commit ebc0105.

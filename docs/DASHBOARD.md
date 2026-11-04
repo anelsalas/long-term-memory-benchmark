@@ -1,5 +1,7 @@
 # Dashboard
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 A thin local control panel for benchmark runs: save the model setup and limits,
 start and stop runs, and read their output. [ltm-compare](COMPARE.md) does the
 work; the saved mode selects a dry plan or a real local-model comparison.

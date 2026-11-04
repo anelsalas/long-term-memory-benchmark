@@ -1,5 +1,7 @@
 # Retrieval baselines report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November 1, 2026. Claude (Opus 5.5), branch `claude/retrieval-baselines`.
 Method details are in [docs/RETRIEVAL.md](../docs/RETRIEVAL.md). Codex supplied the
 pinned dataset, the development ID list and the local embedding server, and fixed

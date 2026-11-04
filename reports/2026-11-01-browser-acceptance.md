@@ -1,5 +1,7 @@
 # Browser and local model acceptance
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 November1,2026. Codex coordinator observed actual browser state and native tests.
 
 - Original Claude20a6d91 checkout:56/56 native tests passed; Node webchecks passed.

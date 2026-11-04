@@ -1,5 +1,7 @@
 # Experiment configuration and results
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 P01 provides C++17 types in `long_term_memory_benchmark/experiment.hpp` and
 `sha256(std::string_view)` in `hash.hpp`. Link `LongTermMemoryBenchmark::experiment`.
 

@@ -1,5 +1,7 @@
 # Dashboard service report
 
+Terms are explained in the [glossary](../docs/GLOSSARY.md).
+
 October 31, 2026. Claude (Opus 5.5), branch claude/thin-dashboard from codex/dashboard 4f40c15.
 
 ## Scope

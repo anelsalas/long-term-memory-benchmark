@@ -1,5 +1,7 @@
 # Official LongMemEval scoring adapter
 
+Terms are explained in the [glossary](GLOSSARY.md).
+
 Link `LongTermMemoryBenchmark::scoring` and include
 `long_term_memory_benchmark/scoring.hpp`. P04 implements retrieval mathematics
 and isolated QA judge requests using the pinned [LongMemEval source](https://github.com/xiaowu0162/LongMemEval/tree/9e0b455f4ef0e2ab8f2e582289761153549043fc).
