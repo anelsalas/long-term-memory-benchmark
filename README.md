@@ -8,6 +8,38 @@ Compare memory methods by answer accuracy, evidence retrieval, latency, token
 usage and cost. Build native C++17 components for Windows ARM64, with
 CMake targets and automated tests that applications can consume as a pinned dependency.
 
+## Latest result: Mem0 (November 3, 2026)
+
+[Mem0 report](reports/2026-11-03-mem0-phase2.md) and its
+[per-question record](reports/2026-11-03-mem0-phase2.json)
+
+Mem0 3.3.1 (open source) was run on the 10 multi-session questions, where dense
+retrieval lost the most in the run below. Mem0 and dense used the same reader and
+judge, GPT-6.1-sol at high effort, and the same 6,000-token context budget. The
+reader's input across the ten was 109,443 tokens for Mem0 and 108,007 for dense.
+
+| Reader's context (GPT-6.1-sol) | Correct, out of 10 |
+|---|---|
+| Dense embeddings | 6 |
+| **Mem0** | **9** |
+| Labelled evidence only (control) | 10 |
+
+- **Mem0 vs dense.** Mem0 won 3, lost 0 and tied 7. A two-sided sign test gives
+  p = 0.25, so ten questions can't separate the two methods.
+- **Ingestion cost.** Mem0 reads each history before it can answer:
+  - **Total:** 490 GPT-6.1-sol calls at low effort, with 7.7M input and 0.39M
+    output tokens, about 8 hours 10 minutes for the ten histories.
+  - **Per question:** about 771k ingestion input tokens, against about 11k to
+    answer.
+  - **CLI framing:** an estimated 2.4M of the input tokens is framing the Codex
+    CLI adds to every call.
+- **Caveats.**
+  - The dense and labelled-evidence results are reused from the November 2 run,
+    not rerun beside Mem0, so run-to-run variance is unmeasured.
+  - GPT is both reader and judge.
+  - Evidence presence is checked at the session level, not the turn level.
+  - No Claude model was called.
+
 ## Latest results (November 2, 2026)
 
 Full reports:
@@ -70,8 +102,8 @@ scorable questions, official LongMemEval retrieval metrics:
   included quota or additional paid credits.
 - The judges aren't the official GPT-4o, and no human has graded the answers.
 - Token budgets are byte estimates.
-- Full history (~115k tokens), Mem0 and Graphiti haven't been run on these
-  questions yet.
+- Full history (~115k tokens) and Graphiti haven't been run on these questions
+  yet. Mem0 has run only on the 10 multi-session questions (above).
 
 ## Run
 
