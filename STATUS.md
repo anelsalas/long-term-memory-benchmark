@@ -1,6 +1,6 @@
 ## Mem0 context-budget correction — November 3, 2026
 
-Mem0 context now renders chronological dated text and counts the complete rendered block against the configured estimate. The Windows ARM64 suite passed 118/118, followed by two focused tests including the actual comparison prompt. GPT judged Mem0 correct on eight of nine completed questions and dense correct on six; [the ninth case report](reports/2026-11-03-mem0-phase2-681a1674.json) records the latest results. The final 51-session history is running. A durable 1,449-call allowance plus the 51 prior calls enforces the 1,500-call total.
+The [ten-question Mem0 comparison](reports/2026-11-03-mem0-phase2.md) is complete. GPT judged Mem0 correct on 9/10 questions, dense search on 6/10, and labelled evidence on 10/10. Mem0 ingestion used 7,712,359 input tokens across 490 calls; the total was 512 bridge attempts including the superseded pilot. This is a small, model-graded sample. The Windows ARM64 suite previously passed 118/118; dashboard tests passed after publishing the result page. The local model and benchmark bridge services are stopped; the previously authorized dashboard is available on port 18080. Claude review and user review of the ten-case result are next.
 
 ## Mem0 benchmark implementation — November 3, 2026
 

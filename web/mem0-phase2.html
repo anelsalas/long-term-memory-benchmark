@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mem0 comparison · Memory Benchmark</title><link rel="stylesheet" href="styles.css"></head>
+<body><header class="app-header"><strong>Memory Benchmark</strong><a href="/">Dashboard controls</a></header>
+<main><div class="page-heading"><div><p class="eyebrow">Completed · November 3, 2026</p><h1>Mem0 versus vector search</h1><p>Ten selected LongMemEval questions · GPT reader and judge</p></div></div>
+<article class="card"><h2>Answer accuracy</h2><div class="table-scroll"><table><thead><tr><th>Evidence supplied</th><th>Answers judged correct</th></tr></thead><tbody><tr><td>Mem0</td><td>9 / 10</td></tr><tr><td>Dense vector search</td><td>6 / 10</td></tr><tr><td>Labelled evidence</td><td>10 / 10</td></tr></tbody></table></div><p>These selected cases are a small pilot, graded by GPT. More questions and independent review will test how broadly the result holds.</p></article>
+<article class="card"><h2>Usage and preparation</h2><p>Mem0 processed 490 conversation sessions in 490 extraction calls, using 7,712,359 input and 394,401 output tokens. Its reader used 109,443 input tokens across ten answers; dense search used 108,007.</p><p>Session processing totaled about 8 hours 10 minutes, excluding gaps. This is preparation time on the tested setup; actual monetary cost was not measured.</p></article>
+<article class="card"><h2>Evidence and interpretation</h2><p>Selected memories referenced all labelled evidence sessions in each case. This measures session-level provenance. The two retrieval methods chose different content; their timing paths differed.</p><p><a href="https://github.com/anelsalas/long-term-memory-benchmark/blob/main/reports/2026-11-03-mem0-phase2.md">Read the complete report</a> · <a href="mem0-pilot.html">First-case pilot</a></p></article>
+</main></body></html>

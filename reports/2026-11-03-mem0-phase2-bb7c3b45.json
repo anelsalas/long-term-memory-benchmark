@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "question_id": "bb7c3b45",
+  "interpretation": "Single-case adapted comparison; system-level accuracy requires more questions.",
+  "ingestion": {
+    "sessions": 47,
+    "memory_events": 541,
+    "llm_calls": 47,
+    "input_tokens": 741357,
+    "output_tokens": 37277,
+    "usage_complete": true,
+    "observed_session_wall_ms": 2797766,
+    "wall_time_definition": "Sum of longest observed client time per session across progress files; excludes gaps.",
+    "system_prompt_sha256": [
+      "f7601d55bea65c561206224f3237689c63c06a5aafee54f415e764b0de6bff7e"
+    ]
+  },
+  "mem0": {
+    "correct": true,
+    "retrieval_preparation_ms": 690.4697,
+    "reader_wall_ms": 5833.6507,
+    "reader_usage": {
+      "requests": 1,
+      "input_tokens": 10978,
+      "output_tokens": 32
+    },
+    "judge_usage": {
+      "requests": 1,
+      "input_tokens": 5443,
+      "output_tokens": 5
+    },
+    "all_evidence_sessions_found": true,
+    "provenance_complete": true
+  },
+  "dense_baseline": {
+    "correct": true,
+    "reader_wall_ms": 3421,
+    "input_tokens": 10894,
+    "output_tokens": 13
+  },
+  "local_resources": {
+    "scope": "sampled local processes only; excludes model subprocesses and remote inference",
+    "sampling_coverage": "Only the recorded sampling window; compare timestamps with the experiment.",
+    "samples": 439,
+    "first_sample_utc": "2026-11-03T12:14:09.1364407Z",
+    "last_sample_utc": "2026-11-03T12:50:57.7485131Z",
+    "processes": {
+      "embedding": {
+        "samples": 439,
+        "cpu_delta_seconds": 13743.578125,
+        "sampled_peak_working_set_bytes": 1090576384,
+        "sampled_peak_private_bytes": 1112104960
+      },
+      "bridge": {
+        "samples": 439,
+        "cpu_delta_seconds": 1.3125,
+        "sampled_peak_working_set_bytes": 6893568,
+        "sampled_peak_private_bytes": 1658880
+      },
+      "sidecar": {
+        "samples": 439,
+        "cpu_delta_seconds": 346.390625,
+        "sampled_peak_working_set_bytes": 362332160,
+        "sampled_peak_private_bytes": 338354176
+      },
+      "runner": {
+        "samples": 438,
+        "cpu_delta_seconds": 0.25,
+        "sampled_peak_working_set_bytes": 76804096,
+        "sampled_peak_private_bytes": 47955968
+      }
+    }
+  }
+}
