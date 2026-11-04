@@ -1,6 +1,6 @@
 # Task board
 
-November 3: the ten-question Mem0 phase is complete; review [the report](reports/2026-11-03-mem0-phase2.md), arrange Claude's requested review, and select the next experiment after the user reviews these results.
+November 4: the ten-question Mem0 phase and Claude's review are complete; [the report](reports/2026-11-03-mem0-phase2.md) incorporates the review. The user requested publication and a stop to model calls.
 
 Updated October 31, 2026. Status: P01-P05 reviewed on main; paired command implemented; integrated suite passes27/27.
 Owner names below describe roles. Agents are activated for bounded assignments.

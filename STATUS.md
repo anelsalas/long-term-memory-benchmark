@@ -1,6 +1,6 @@
 ## Mem0 context-budget correction — November 3, 2026
 
-The [ten-question Mem0 comparison](reports/2026-11-03-mem0-phase2.md) is complete. GPT judged Mem0 correct on 9/10 questions, dense search on 6/10, and labelled evidence on 10/10. Mem0 ingestion used 7,712,359 input tokens across 490 calls; the total was 512 bridge attempts including the superseded pilot. This is a small, model-graded sample. The Windows ARM64 suite previously passed 118/118; dashboard tests passed after publishing the result page. The local model and benchmark bridge services are stopped; the previously authorized dashboard is available on port 18080. Claude review and user review of the ten-case result are next.
+The [ten-question Mem0 comparison](reports/2026-11-03-mem0-phase2.md) is complete. GPT judged Mem0 correct on 9/10 questions, dense search on 6/10, and labelled evidence on 10/10. Mem0 ingestion used 7,712,359 input tokens across 490 calls; the total was 512 bridge attempts including the superseded pilot. Claude reviewed the report and context-budget change; the report now clarifies reused baselines, statistical uncertainty, labelled-session counts and estimated CLI overhead. The abstention case has two labelled sessions in the checksum-verified dataset. The Windows ARM64 suite previously passed 118/118; dashboard tests passed after publishing the result page. The user has requested publication and a stop to model calls.
 
 ## Mem0 benchmark implementation — November 3, 2026
 
