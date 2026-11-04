@@ -8,6 +8,24 @@ Compare memory methods by answer accuracy, evidence retrieval, latency, token
 usage and cost. Build native C++17 components for Windows ARM64, with
 CMake targets and automated tests that applications can consume as a pinned dependency.
 
+**Terms used below**
+- **Reader:** the model that answers from the context it is given.
+- **Judge:** the model that grades each answer against the benchmark's reference
+  answer.
+- **Context budget:** the reader sees about 6,000 tokens picked from a ~115k-token
+  chat history, not the whole history.
+- **Dense embeddings (dense search):** each message is turned into a vector of
+  numbers that captures its meaning. The messages closest in meaning to the
+  question are picked.
+- **BM25:** classic keyword search.
+- **RRF:** a way to merge the BM25 and dense rankings into one.
+- **Mem0:** an open-source memory system that first reads every session with a
+  language model and writes short facts, then searches those facts.
+- **Labelled evidence (control):** only the messages the benchmark marks as
+  holding the answer; the best case for any retrieval.
+- **Multi-session question:** the answer needs facts from more than one past
+  conversation.
+
 ## Latest result: Mem0 (November 3, 2026)
 
 [Mem0 report](reports/2026-11-03-mem0-phase2.md) and its
