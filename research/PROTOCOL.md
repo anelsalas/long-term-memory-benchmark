@@ -87,6 +87,8 @@ fresh-fact evidence dependence supplies a separate generalization measurement.
 
 ## Analysis and publication
 
+Use the [experiment report template](../reports/REPORT-TEMPLATE.md) for a consistent executive summary, comparison and measurement record. Link detailed artifacts and preserve the scope and limitations of every metric.
+
 Report paired differences with uncertainty clustered by shared history/fact family.
 Audit a blinded human sample and judge disagreements. Preserve failed cases,
 category regressions and the number of tested variants. Use ablations to separate

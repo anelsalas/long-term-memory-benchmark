@@ -323,6 +323,10 @@ An exporter refuses to overwrite an existing output file. The selected case's
 
 Count the entire dated plain-text memory block in the context estimate. The original pilot counted memory text alone and its JSON metadata made the reader input substantially larger than the dense baseline. Re-run the reader and judge with the existing memory store before comparing results.
 
+## 2026-11-21: Standardize experiment reports
+
+Use one linked report template for conclusions, comparable conditions, model and hardware setup, stage-level time, token usage, resource scope, costs and limitations. Keep unmeasured values explicit and retain detailed dialogue-free artifacts for review.
+
 ## 2026-11-04: Clarify Mem0 pilot evidence and comparison
 
 Preserve the original scores while identifying the reused baseline runs, paired sign-test result and estimated CLI overhead. Count labelled session IDs directly from each checksum-verified dataset case. The abstention case has two labelled sessions; their provenance does not establish an answer exists. The user requested stopping model calls after publication.

@@ -4,6 +4,8 @@ Measure and improve reliable long-term memory access on everyday computers.
 
 [Pending tasks](TASKS.md) · [Current status](STATUS.md) · [Research protocol](research/PROTOCOL.md)
 
+[Report template](reports/REPORT-TEMPLATE.md) · [Example executive report](reports/2026-11-03-mem0-executive-summary.md)
+
 Compare memory methods by answer accuracy, evidence retrieval, latency, token
 usage and cost. Build native C++17 components for Windows ARM64, with
 CMake targets and automated tests that applications can consume as a pinned dependency.

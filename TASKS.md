@@ -2,6 +2,8 @@
 
 Terms are explained in the [glossary](docs/GLOSSARY.md).
 
+November 21: use the [report template](reports/REPORT-TEMPLATE.md) for future experiments; the [Mem0 example](reports/2026-11-03-mem0-executive-summary.md) demonstrates the format.
+
 November 4: the ten-question Mem0 phase and Claude's review are complete; [the report](reports/2026-11-03-mem0-phase2.md) incorporates the review. The user requested publication and a stop to model calls.
 
 Updated October 31, 2026. Status: P01-P05 reviewed on main; paired command implemented; integrated suite passes27/27.
