@@ -1,3 +1,7 @@
+## Cloud-first memory requirements — November 21, 2026
+
+The [memory architecture](docs/MEMORY-ARCHITECTURE.md) maps human-memory concepts to testable requirements, specifies the three proposed storage comparisons and documents ChatGPT and Claude exports. A native in-memory reference catalog now tests category and person separation, tag replacement, capacity and deletion. Windows ARM64 CTest passed 119/119. This prototype has no cloud or SQLite persistence; cloud configuration, real provider adapters and measured comparisons remain pending.
+
 ## Standard reporting — November 21, 2026
 
 A reusable [experiment report template](reports/REPORT-TEMPLATE.md) and [completed Mem0 example](reports/2026-11-03-mem0-executive-summary.md) standardize executive findings, comparisons, costs, resources and limitations. The example uses the existing published results; no model calls were made.

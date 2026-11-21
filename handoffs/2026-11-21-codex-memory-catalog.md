@@ -1,0 +1,5 @@
+# Handoff — cloud-first memory and catalog prototype
+
+Added docs/MEMORY-ARCHITECTURE.md, memory_catalog.hpp, memory_catalog.cpp and memory_catalog_tests.cpp; wired the reference component into CMake and updated README.md, STATUS.md, TASKS.md and DECISIONS.md. The catalog holds bounded in-memory metadata and exact tags, with person and memory-kind filtering. Its owner labels are not authentication, its entry cap is not a byte limit, and it has no cloud or SQLite persistence. It does not implement the three requested comparisons.
+
+The Windows ARM64 Release build and 119/119 CTest checks passed. No benchmark, paid cloud or model process was launched and no conversation data was imported. Resume by selecting the user's Google Cloud project and storage access, defining an authenticated archive adapter and export/import fixtures, then implementing cloud-only, cloud-plus-catalog and Mem0 cloud-backed comparisons with matching inputs. Preserve the existing model-call stop until an experiment and budget are established. The user has been asked for their Google Cloud project ID.

@@ -323,6 +323,10 @@ An exporter refuses to overwrite an existing output file. The selected case's
 
 Count the entire dated plain-text memory block in the context estimate. The original pilot counted memory text alone and its JSON metadata made the reader input substantially larger than the dense baseline. Re-run the reader and judge with the existing memory store before comparing results.
 
+## 2026-11-21: Cloud-first memory with a compact local catalog
+
+Place the authoritative long-term archive in the user's chosen cloud and keep local working context and an optional bounded catalog. Compare cloud-only, cloud plus local catalog, and Mem0 with cloud storage using shared fictional histories and measured resources. A local catalog miss requires an authoritative search; identity labels alone are not access control. The first reference catalog is in-memory and uses exact tags.
+
 ## 2026-11-21: Standardize experiment reports
 
 Use one linked report template for conclusions, comparable conditions, model and hardware setup, stage-level time, token usage, resource scope, costs and limitations. Keep unmeasured values explicit and retain detailed dialogue-free artifacts for review.

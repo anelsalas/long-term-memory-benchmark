@@ -2,6 +2,8 @@
 
 Terms are explained in the [glossary](docs/GLOSSARY.md).
 
+November 21: build the cloud-first storage adapters, bounded persistent local index and three matched comparisons specified in [memory architecture](docs/MEMORY-ARCHITECTURE.md). Implement private, resumable ChatGPT and Claude export importers after inspecting appropriate export samples. The in-memory reference catalog and its tests are an initial component.
+
 November 21: use the [report template](reports/REPORT-TEMPLATE.md) for future experiments; the [Mem0 example](reports/2026-11-03-mem0-executive-summary.md) demonstrates the format.
 
 November 4: the ten-question Mem0 phase and Claude's review are complete; [the report](reports/2026-11-03-mem0-phase2.md) incorporates the review. The user requested publication and a stop to model calls.
