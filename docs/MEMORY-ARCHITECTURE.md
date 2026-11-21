@@ -6,6 +6,14 @@ Terms are explained in the [glossary](GLOSSARY.md).
 
 Keep the authoritative archive of conversations, images and other sources in the user's chosen cloud. A small local catalog and working context help Dumas find useful information quickly. Each cloud provider sits behind a replaceable storage interface. Cloud access, account selection, data transfer and spending follow the user's settings.
 
+## Hippocampus service design
+
+**Hippocampus** is the planned C++ service within Dumas that collects from user-enabled sources and organizes information into linked memories. Its name is an analogy to the brain structure discussed in Lisa Genova's [*Remember*](https://penguinrandomhousehighereducation.com/book/?isbn=9780593137970), rather than a claim of biological equivalence.
+
+For each enabled source, a connector fetches the next item; an archive adapter preserves the source, an organizer adapter prepares linked memories, and a checkpoint records progress after both complete. The intended host runs this worker locally with explicit start, stop and per-source controls. Its authoritative archive can be remote; its compact local catalog and working context are independently size-managed. Dumas's conversation component requests relevant context from the memory service.
+
+Adapters must make source archival and organization idempotent by source, record and revision: a crash after a write but before its checkpoint can replay the item. Durable, per-source checkpoints and authorization must be supplied by real adapters. Model extraction, entity matching, timestamps, uncertainty, cloud access, deletion, concurrency and large-media streaming need their own behavior and failure tests.
+
 ## Human memory as a design guide
 
 These categories are engineering analogies. Tests establish Dumas's behavior; they do not prove biological equivalence.
@@ -46,8 +54,12 @@ For an eligible personal account, use ChatGPT **Settings → Data controls → E
 
 For an eligible individual Claude account, use **Settings → Privacy → Export data** on Claude web or desktop. Claude's export includes conversations, but not the original uploaded files. [Claude export instructions](https://support.claude.com/en/articles/9450526-export-your-claude-data). Both services provide time-limited download links; record imported and unsupported material without publishing the export.
 
+The desired source list also includes Gemini, Muse and Dumas's own chats. [Google Takeout](https://support.google.com/gemini/answer/16920332?hl=en) offers Gemini Apps activity export; inspect its actual coverage. Identify the Muse application before designing its adapter. Dumas chats require integration with the actual application conversation store.
+
 ## Current implementation
 
-The first native reference catalog holds bounded in-memory metadata: record ID, person, memory category and tags. Its test covers category and person separation, replacement, capacity and removal. The capacity is an entry count, not a disk-byte limit, and caller-supplied person IDs do not provide authentication or authorization. It is a reference component; it does not persist to SQLite, build a vector index, connect to a cloud service, or implement the three measured comparisons yet. Firestore is a candidate to assess, not a configured backend. No real account data is used by the tests.
+The native reference catalog holds bounded in-memory metadata: record ID, person, memory category and tags. Its test covers category and person separation, replacement, capacity and removal. The capacity is an entry count, not a disk-byte limit, and caller-supplied person IDs do not provide authentication or authorization.
+
+The Dumas repository contains the Hippocampus ingestion core under `src/hippocampus/`; it performs one source step using injected source, archive, organizer and checkpoint interfaces. Offline tests cover disabled sources, archiving and organization failures, retry with idempotent fake adapters, and checkpoint progression. This is a reference component: it has no background service host, durable checkpoints, real connectors, cloud adapter, model, SQLite persistence, vector index, or implemented three-way comparison. It is not integrated with Dumas's conversation service yet. Firestore is a candidate to assess, not a configured backend. No real account data is used by the tests.
 
 Firestore's [vector-search documentation](https://docs.cloud.google.com/firestore/native/docs/vector-search) describes flat indexes and currently lists Python, Node.js, Go and Java vector-search clients. Evaluate C++ access, configuration, costs, access controls and data export before choosing the adapter. A local catalog miss must not be interpreted as proof that the cloud archive lacks a record.
